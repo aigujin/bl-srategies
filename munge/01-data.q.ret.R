@@ -15,10 +15,10 @@
 
 stock.ref <- setkey(unique(rbindlist(lapply(list.files('~/Dropbox/Datastream/AllStocks/names/',pattern='name.ds.*.csv'),function(i){fread(paste('~/Dropbox/Datastream/AllStocks/names/',i,sep=''),header=T,na.strings = '')})),by='DSCD')[,Stock:=WC05601],DSCD,Stock)
 
-load('~/Dropbox/workspace/Projects/Black-Litterman/BL-strategies/data/ref.matrix.RData')
+load('~/Dropbox/workspace/Projects/BL-strategies/data/ref.matrix.RData')
 #make DT of it
 ref.dt <- setkey(data.table(Stock=ref.matrix[,1],DSCD=rownames(ref.matrix)),DSCD)
-sp.id <- setkey(setnames(fread('~/Dropbox/workspace/Projects/Black-Litterman/BL-strategies/data/sp.ids.new.csv',header=F),'DSCD'),DSCD)
+sp.id <- setkey(setnames(fread('~/Dropbox/workspace/Projects/BL-strategies/data/sp.ids.new.csv',header=F),'DSCD'),DSCD)
 miss.tkt <- c('AMP','ANV','ATCH','ACS','ASND','BT','HPH','MEYR','MWI','MII','RN','UCC')
 miss.dt <- data.table(Stock=miss.tkt,DSCD=ref.dt[sp.id][which(is.na(Stock))][,DSCD])
 ref.dt <- setkey(rbind(ref.dt,miss.dt)[,Stock:=as.character(Stock)][which(duplicated(rbind(ref.dt,miss.dt)[,Stock])),Stock:=paste(Stock,'1',sep='.')],DSCD,Stock)
@@ -121,7 +121,7 @@ set(s.ex.ret, i=which(is.na(s.ex.ret[[6]])), 6L, value=0)
 ###quarterly SP500 index, value and market weights
 quarters <- seq(as.Date('1999-04-01'),as.Date('2010-01-01'),by='3 month')-1
 
-sp.set.tkt <- setkey(na.omit(s.id[,list(DSCD,Stock)][setkey(data.table(setkey(melt(setnames(data.table(read.csv('~/Dropbox/workspace/Projects/Black-Litterman/BL-strategies/data/sp.500.complete.csv',header=T,sep=',',dec='.',skip=1,na.strings=''))[,.SD,.SDcols=seq(1,176,4)],as.character(as.yearqtr(quarters))),measure.vars = as.character(as.yearqtr(quarters)),variable.name='Quarters',value.name='DSCD'),Quarters),setkey(melt(setnames(data.table(read.csv('~/Dropbox/workspace/Projects/Black-Litterman/BL-strategies/data/sp.500.complete.csv',header=T,sep=',',dec='.',skip=1,na.strings=''))[,.SD,.SDcols=seq(4,176,4)],as.character(as.yearqtr(quarters))),measure.vars = as.character(as.yearqtr(quarters)),variable.name='Quarters',value.name='value'),Quarters))[,q.num:=.GRP,by=Quarters][,Quarters:=NULL],DSCD)][,list(DSCD,Stock,Quarters,mv=value)][,q.id:=as.yearqtr(Quarters)]),q.id)[,q.num:=.GRP,by=q.id][,mw:=mv/sum(mv,na.rm=T),by=q.num]
+sp.set.tkt <- setkey(na.omit(s.id[,list(DSCD,Stock)][setkey(data.table(setkey(melt(setnames(data.table(read.csv('~/Dropbox/workspace/Projects/BL-strategies/data/sp.500.complete.csv',header=T,sep=',',dec='.',skip=1,na.strings=''))[,.SD,.SDcols=seq(1,176,4)],as.character(as.yearqtr(quarters))),measure.vars = as.character(as.yearqtr(quarters)),variable.name='Quarters',value.name='DSCD'),Quarters),setkey(melt(setnames(data.table(read.csv('~/Dropbox/workspace/Projects/BL-strategies/data/sp.500.complete.csv',header=T,sep=',',dec='.',skip=1,na.strings=''))[,.SD,.SDcols=seq(4,176,4)],as.character(as.yearqtr(quarters))),measure.vars = as.character(as.yearqtr(quarters)),variable.name='Quarters',value.name='value'),Quarters))[,q.num:=.GRP,by=Quarters][,Quarters:=NULL],DSCD)][,list(DSCD,Stock,Quarters,mv=value)][,q.id:=as.yearqtr(Quarters)]),q.id)[,q.num:=.GRP,by=q.id][,mw:=mv/sum(mv,na.rm=T),by=q.num]
 
 
 

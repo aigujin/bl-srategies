@@ -42,10 +42,10 @@ dt[,unique(colnames(dt)),with=F][,Sector:=sec]
 
 stock.ref <- setkey(unique(rbindlist(lapply(list.files('~/Dropbox/Datastream/AllStocks/names/',pattern='name.ds.*.csv'),function(i){fread(paste('~/Dropbox/Datastream/AllStocks/names/',i,sep=''),header=T,na.strings = '')})),by='DSCD')[,Stock:=WC05601],DSCD,Stock)
 
-load('~/Dropbox/workspace/Projects/Black-Litterman/BL-strategies/data/ref.matrix.RData')
+load('~/Dropbox/workspace/Projects/BL-strategies/data/ref.matrix.RData')
 #make DT of it
 ref.dt <- setnames(setkey(data.table(Stock=ref.matrix[,1],s.id=rownames(ref.matrix)),s.id),1:2,c('Stock','DSCD'))
-sp.id <- setkey(setnames(fread('~/Dropbox/workspace/Projects/Black-Litterman/BL-strategies/data/sp.ids.new.csv',header=F),'DSCD'),DSCD)
+sp.id <- setkey(setnames(fread('~/Dropbox/workspace/Projects/BL-strategies/data/sp.ids.new.csv',header=F),'DSCD'),DSCD)
 miss.tkt <- c('AMP','ANV','ATCH','ACS','ASND','BT','HPH','MEYR','MWI','MII','RN','UCC')
 miss.dt <- data.table(Stock=miss.tkt,DSCD=ref.dt[sp.id][which(is.na(Stock))][,DSCD])
 ref.dt <- setkey(rbind(ref.dt,miss.dt)[,Stock:=as.character(Stock)][which(duplicated(rbind(ref.dt,miss.dt)[,Stock])),Stock:=paste(Stock,'1',sep='.')],DSCD,Stock)

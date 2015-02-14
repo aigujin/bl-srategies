@@ -1,6 +1,6 @@
 ###This script for data.table excercise
 
-setwd('~/Dropbox/workspace/Projects/Black-Litterman/BL-strategies')
+setwd('~/Dropbox/workspace/Projects/BL-strategies')
 source("lib/my.paths.R")
 
 lapply(list('xts','reshape2','data.table','plyr','stringr'),function(X) {do.call("require", list(X)) })

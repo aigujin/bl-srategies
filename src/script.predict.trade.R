@@ -1,5 +1,5 @@
 rm(list=ls())
-setwd('~/Dropbox/workspace/Projects/Black-Litterman/BL-strategies/')
+setwd('~/Dropbox/workspace/Projects/BL-strategies/')
 
 library(ProjectTemplate)
 load.project()
