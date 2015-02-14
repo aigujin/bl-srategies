@@ -1,0 +1,616 @@
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage{authblk}
+\usepackage{amsmath, amssymb}
+\usepackage{caption}
+\captionsetup[table]{textfont={large},labelfont={normalsize},labelsep=newline,justification=justified,singlelinecheck=true, skip=0pt}
+\captionsetup[figure]{textfont={large},labelfont={normalsize},labelsep=newline,justification=justified,singlelinecheck=true, skip=0pt}
+%\usepackage{fullpage}
+\usepackage{rotating}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,urlcolor=blue,citecolor=black]{hyperref}
+\usepackage{times}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{multirow}
+%\onehalfspacing
+\doublespace
+%\usepackage{natbib}
+\usepackage[natbibapa]{apacite}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+%\newcommand{\r}{\Sexpr{}}
+\DeclareMathOperator{\rank}{rank}
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+\newcommand{\tr}{\textit{true}}
+\newcommand{\naive}{\textit{recent}}
+\newcommand{\default}{\textit{all-time}}
+\newcommand{\market}{\textit{market}}
+\newcolumntype{Y}{>{\raggedleft\arraybackslash}X}% raggedleft column X
+%\newcommand{\raw}{\textit{raw}}
+%\newcommand{\diff}{\textit{diff}}
+%\newcommand{\random}{\textit{random}}
+%\newcommand{\rollsd}{\textit{roll.sd}}
+
+
+\newcommand{\ra}[1]{\renewcommand{\arraystretch}{#1}}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+
+
+
+
+
+\title{Are rankings of financial analysts useful for investors?}
+ \author[1,2]{ Artur Aiguzhinov (\href{mailto:artur.aiguzhinov@inescporto.pt}{artur.aiguzhinov@inescporto.pt})}
+ \author[1,3]{ Ana Paula Serra (\href{mailto:aserra@pbs.up.pt}{aserra@pbs.up.pt})}
+ \author[2,4]{Carlos Soares (\href{mailto:csoares@fe.up.pt}{csoares@fe.up.pt})}
+
+\affil[1]{FEP \& CEF.UP, University of Porto}
+\affil[2]{INESC TEC}
+\affil[4]{FEUP, University of Porto}
+\affil[3]{CEF.UP \& Porto Business School, University of Porto}
+
+
+\maketitle
+\begin{abstract}
+Some institutions issue rankings of the financial analysts. Given that these rankings are \textit{ex-post}, it is arguable if they are useful for investors. In this paper we show that a relative performance by a set of financial analysts seems to be valuable. We show that the rankings can identify the top analysts and a trading strategy based on these rankings outperforms the passive strategy -- ``buy and hold'' a general index. Moreover, the strategy based on the average analysts' performance fails to attain abnormal returns. In addition, we report that analysts issuing accurate price targets are more favorable for the investors  to follow rather than analysts issuing accurate EPS forecasts. %Finally, we show that a strategy based on the perfect foresight of analysts' performance gains the highest cumulative return.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+
+Financial analysts play an important role, as they are the experts in interpreting financial information. In the literature, there is still a debate if following the  advice of analysts bring value to investors after transaction costs \citep{womack1996,mikhail2004sae,li2005persistence}. The essence of this debate lies in the problem of identifying the analysts with good stock picking skills. In this paper we show that rankings of financial analysts can identify such analysts and an investor, by leveraging these rankings, can gain positive abnormal returns.
+
+
+
+In recent years, some institutions were very active in publishing and  selling  rankings of financial analysts. Some rankings  are based on privately held surveys of  buy-side analysts (e.g., the Institutional Investor's rankings of the All-America Research Teams\footnote{\url{http://www.institutionalinvestor.com/Research/4560/First-Team.html}} and Bloomberg's America's Best Stock Analysts\footnote{\url{http://www.bloomberg.com/news/2013-08-14/jpmorgan-top-stock-picker-with-equities-out-of-lockstep.html}}); others are based on the performance of sell-side analysts (ThomsonReuters' top StarMine analysts\footnote{\url{http://excellence.thomsonreuters.com/award/starmine}}). In any of the cases, these rankings serve as one way to identify the best analysts. However, aside from personal acknowledgment among the peers, it is still arguable whether these rankings can truly identify the best specialists \citep{desai2000ass} or they are just  ``popularity contests" \citep{emery2009}. %In this paper, we support the argument that the top-ranked analysts, indeed, have stock picking skills.
+
+
+Our approach in forming the rankings is purely academic and is based on  accuracy of reports that financial analysts supply. We show that the top-ranked analysts, indeed, have stock picking skills. The contributions of our research are the following. First, we develop a trading strategy that transforms rankings of financial analysts into inputs for the Black-Litterman model \citep{black1992}. Second, we show that annualized cumulative returns form trading strategies that are  based on analysts' rankings achieve outperform the passive strategy: buy-and-hold the general index. Third, we show that a strategy with a perfect foresight of rankings yields the highest potential cumulative annualized return. Finally, we find that, for investors, it is favorable to follow analysts who issue the most accurate target price reports as opposed to the ones who issue the most accurate EPS forecasts.
+
+
+
+The paper is organized as follows: section \ref{sec:ranking} provides motivation to use rankings of financial analysts; section \ref{sec:trading} outlines the trading strategy; section \ref{sec:rankings} summarizes the methodology of building the rankings and provides the database description used in the paper; section \ref{sec:results} analyzes the results; and section \ref{sec:conclusion} concludes.
+
+\section{Rankings of Financial  Analysts}
+\label{sec:ranking}
+
+In the finance literature there has been a long debate on whether financial analysts produce valuable  advice. Some argue that following the advice of financial analysts,  translated as recommendations of buying, holding, or selling a particular stock, does not yield  abnormal returns, i.e.,  returns that are above the required return to compensate for risk \citep{fama1970ecm}. The Efficient Market Hypothesis (EMH) states that financial markets are efficient and any past information  regarding a stock would  be reflected in its current price; hence, it would be  impossible to generate abnormal returns based upon publicly available information.
+
+Yet there are information-gathering costs and the information is not immediately reflected on prices  \citep{grossman1980iie}. As such, prices might not  reflect all the available information because if this were the case, those who spent resources to collect and analyze   information would not receive a compensation for it.
+
+Many trading strategies try to forecast the price movements relying on the historical prices or estimate the intrinsic value of a company. Obviously, this type of research is associated with significant amount of up-front costs to acquire databases, software, etc. On the other hand, financial analysts have these tools and, presumably, skills to identify  stocks that worth be invested. Thus, for an investor, it is cheaper to follow the recommendations of financial analysts rather than perform a proper stock market analysis.
+
+
+
+Assuming that financial analysts' recommendations create value to investors \citep{womack1996,barber2001}, it is possible to rank analysts based on the accuracy of their reports. In fact, StarMine does exactly this: it ranks analysts according to their performance in forecasting earnings (the EPS forecast accuracy) and in predicting stock prices (the price targets accuracy).
+
+To rank analysts based on EPS forecasts, StarMine developed a proprietary metric called a Single-stock Estimating Score (SES). It measures ``... [a] relative accuracy; that is, analysts are compared against their peers. An analyst's SES can range from 0 to 100, with 50 representing the average analyst. To get a score higher than 50, an analyst must make estimates that are both significantly different from and more accurate than other analysts' estimates".\footnote{\url{http://excellence.thomsonreuters.com/award/starmine?award=Analyst+Awards&award_group=Overall+Analyst+Awards}}
+
+
+For target price ranking, StarMine's methodology compares the non-leveraged portfolio for each analyst based on his/her recommendations. The portfolio is constructed as follows. For each ``Buy'' recommendation, the portfolio is one unit long the stock and simultaneously one unit short the benchmark (Comparable index). ``Strong buy'' gets a larger investment of two units long the stock and two units short the benchmark. ``Holds'' invest one unit in the benchmark (i.e., for an excess return of zero). Sell are reverse. StarMine re-balances its calculations at the end of each month to adjust for when an analyst changes his or her mind (by adding, dropping or altering a rating) or when a stock enters or exits an industry grouping.
+
+The rankings that StarMine obtains are not only used for the broad media coverage and a ``red carpet" ceremony to praise the best analysts, but also to develop and sell ranking based models to monitor stock market (e.g., SmartEstimates\footnote{\url{http://www.starmine.com/index.phtml?page_set=sm_products&sub_page_set=sm_professional&topic=analytical&section=accurate_estimates}}). In addition, the top-ranked financial analysts affect the market participants: the market  reacts more to the recommendations issued by the top-ranked analysts \citep{emery2009}.
+%Evidence shows that market response to analysts' recommendations is stronger when analysts issue them with a good forecasting tracking record \citep{park2000analyst,loh2006aef}. Thus, it seems to be the case that only a subset of analysts influences the stock prices and, as such, only that subset of analysts deserves to be followed \citep{loh2011}.
+
+
+
+The goal of this study is to evaluate if rankings indeed add value to the investors; that is, if following advice of the top analysts truly yields positive abnormal returns compared to following the advice of analysts' consensus. For this purpose, we develop two types of  active trading strategies. The first, the ranking strategy,  leverages the analysts' rankings as the main component in obtaining the information about future performance of a stock. The second, the consensus strategy, relies on the consensus among the analysts regarding future stock performance.
+
+Each of these strategies uses information about analysts' past performance. Different analysts' profiles can be obtained by looking at different horizons in the past. If only recent information is used, then it better reflects the recent performance of the analysts. However, it is more sensitive to spurious events (e.g., a quarter, which has been surprisingly good or bad). As we incorporate older information, the analysts' historical performance become less affected by these spurious events but it may not reflect the current abilities of the analysts. Based on this, we define two information availability sets representing the two scenarios: 1) only use information about analysts' performance  from the period $t-1$ and 2) use information from the beginning of the trading period up to $t-1$. We call the former the \naive{} set and the latter --- the \default{}. 
+
+In addition to feasible approaches, we also create the one that uses future information about analysts' performance that only would be available at the end of $t$. In case of rankings, this would mean that we would know the true rankings of the analysts. Naturally, this scenario is not feasible; however, it is still important to consider it as it represents a perfect foresight strategy. Therefore, it serves as a reference point to the feasible trading strategies. We call this approach as the \tr{}. 
+
+
+There seems to be a debate in the literature on whether the analysts in issuing the target price reports rely on growth-based models (e.g., PEG ratio) or on more rigorous models (such as the residual income model of \cite{ohlson1995}). On one hand, \cite{bradshaw2004} suggests that analysts' EPS forecasts are consistent with their price targets and that analysts use growth models based on EPS forecasts to evaluate stocks' target prices. On the other hand, \cite{simon2011} argues the most accurate analysts rely more on the rigorous models in setting their price targets. As we create two types of rankings that are based on accuracy of analysts' target price reports and  EPS forecasts, we can evaluate if the most accurate analysts' use growth heuristics or rigorous models in setting their target prices.
+% and it is, in a sense, an upper bound of all trading strategies.
+
+%In addition, for each strategy, we have three timing scenarios of when we know the analysts' information: we use the \tr{} timing for the case when the information is known at time $t$ (a hypothetical case); we use the \naive{} timing for the $t-1$ case, and we use the \default{} timing \citep{aiguzhinov2010} for the $t=1 \ldots t-1$ case.
+
+%We claim that the ranking strategies outperform the consensus ones as well as the passive strategy.
+
+
+%we investigate the problem with two ranking  methods that are used further as the inputs for the trading strategy. The first is the \naive{} rankings and this is simply the last known analysts' actual rankings. The second method is taken from the Machine Learning literature \citep{aiguzhinov2010} and it is so-called the \default{} ranking. It is the average rank of an analyst since the beginning of the sample period and it encompasses the average analyst's relative performance. We formalize these methods in the appropriate section of the paper.
+
+\section{Trading Strategy}
+\label{sec:trading}
+The Black-Litterman (BL) model is a tool for  active portfolio management\citep{black1992}. The model incorporates views in a CAPM framework, forming optimal portfolios in a mean-variance optimization setting. Compared to CAPM model, where expected return is a function of systematic risk, expected market risk premium and the risk-free assets, in the BL model investors have views regarding individual stocks. As such, the model blends the subjective views of an investor about future performance of a stock with the market implicit returns. Hence, it is important to have the views that the BL model transforms into a portfolio, which should outperform the general market.
+
+Previous research in applying the BL model that relates to this paper includes a work of \cite{da2011bl}. In this study, the authors combine the consensus expected returns with the market implicit returns. They report that the resulted strategy outperformed the market. Our consensus strategy is based upon the strategy outlined in \cite{da2011bl}.
+
+
+The literature on the BL model has established a notation. The views are formalized as: $Q$ - the expected returns for stock $s$; $\Omega$ - the confidence of $Q$. In this paper, we use analysts' 12-month target price (TP) reports as proxy for stock expected return \citep{da2011bl}. Confidence $\Omega$ for stock $s$ is based on the coefficient of variation  among the analysts which is similar to the measure of dispersion in analysts' options outlined in \cite{diether2002}.
+
+
+Operationally, the trading strategy applies as follows (fig. \ref{fig:bl}):
+\begin{enumerate}
+\item For each stock $s$, at the beginning of quarter $t$,   we define $Q$ and $\Omega$ (see \ref{def-q} and \ref{def-omega} below);
+
+\item Using market information available at the last day of quarter $t-1$, we obtain the market inputs: vector of implicit returns and variance/co-variance matrix);
+
+\item Apply BL model to get  optimized portfolio weights and buy/sell stocks accordingly;
+
+\end{enumerate}
+
+\subsection{Defining analysts' expected returns}
+\label{def-q}
+
+For the consensus strategy, we follow \cite{da2011bl} to obtain analysts' expected returns as follows:
+\begin{equation}
+\label{consq}
+consQ_{s,t}= \frac{1}{N_a} \sum_1^{N_a} r_{a,s}
+\end{equation}
+where $N_a$ is the number of analysts with valid TP report and $r_{a,s}=TP_{a,s}/P_{s}-1$  is the analysts' expected return for a stock $s$ based on the analyst's price target $TP_{a,s}$ and $P_{s}$ is a stock price three days before the $TP$ announcement.
+
+In the ranking strategy, we convert the rankings into expected returns as follows:
+
+\begin{enumerate}
+\item We calculate the weights for each of the analysts $a$ based on the analyst's rank, such that rank 1 receives the weight of 1 and then the weights diminish as the ranks increase:
+\begin{equation}
+\label{eq:weight}
+w_{a,s}=1-\frac{rank_{a,s}-\min{ \{rank \} }}{\max{\{rank \}}}
+\end{equation}
+
+\item The expected rank-weighted return is:
+\begin{equation}
+\label{rankq}
+rankQ_{s,t}=\frac{\sum_{i=1}^{N_a} (w_{i,s} \times r_{i,s})}{\sum_{i=1}^{N_a} w_{i,s}}
+\end{equation}
+\end{enumerate}
+
+
+\paragraph{Target Price ranking.} In these strategy, we rank analysts based on the Proportional  Mean Absolute Forecast Error (PMAFE) that measures the accuracy of a forecast  \citep{clement1999,brown2001,ertimur2007}. First,  we define the forecast daily error  $FE_{d,a,s}$ as an absolute value of the difference between analysts' $TP_{a,s}$ and daily stock price $P_{s}$:
+\begin{equation}
+\label{dfe}
+FE_{d,a,s}=|{P_{s}-TP_{a,s}}|
+\end{equation}
+The daily PMAFE is given as:
+\begin{equation}
+\label{tp:pmafe}
+PMAFE_{d,a,s}=\frac{FE_{d,a,s}}{\mu(FE_{t,s})}
+\end{equation}
+where $\mu({FE}_{t,s})$ is the average per quarter forecasting error.
+The rank of an analyst that goes into equation (\ref{eq:weight}) is the ranked average analyst's $PMAFE$ per quarter:
+\begin{eqnarray}
+\label{tp:rank}
+\mu(PMAFE)=&\frac{1}{N_d} \sum_{i=1}^{N_d} PMAFE_{i,a,s} \\
+rank_{a,s}=&\rank_{i=1}^{N_a} \{ \mu(PMAFE_{i,s}) \}
+\end{eqnarray}
+where $N_d$ is the number of trading days in a quarter.
+
+\paragraph{EPS ranking.} For the EPS rankings, we apply the same procedure as for the TP rankings that the equations (\ref{dfe}) through (\ref{tp:rank}) for the case of EPS ranking are as follows:
+\begin{eqnarray}
+\label{eps:rank}
+FE_{a,s}=&|{ACT_{s}-PRED_{a,s}}| \nonumber \\
+PMAFE_{a,s}=& \frac{FE_{a,s}}{\mu(FE_{s})} \nonumber \\
+rank_{a,s}=&\rank_{i=1}^{N_a} \{ PMAFE_{i,s} \}  \nonumber
+\end{eqnarray}
+where $ACT_{s}$ and $PRED_{a,s}$ are actual quarterly and forecasted EPS respectively.
+
+
+\subsection{Defining the confidence of expected returns}
+\label{def-omega}
+We base the confidence of BL views on coefficient of variation of forecasting error:
+
+\begin{equation}
+CV = \frac{\sigma (FE)}{\mu (FE)}
+\end{equation}
+where $\sigma$ and $\mu$ are the standard deviation and the mean of the analysts' forecasting error for either TP or EPS. The low value of $CV$ means a general agreement among analysts about stocks' performance.
+
+\section{Data and experimental setup}
+\label{sec:rankings}
+
+\subsection{Database and data sample}
+To implement the trading strategy, we focus on the  S\&P500 stocks. We get both the target price information and the EPS forecasts from ThomsonReuters  I/B/E/S detailed history database. The  S\&P500 constituents list and stock daily prices are from DataStream.
+
+
+The total number of brokers\footnote{We use words ``analyst" and ``broker" interchangeably  and we assume it is  one person.} in TP dataset is 351, covering 497 S\&P500 stocks. Given the fact that financial analyst mostly issue TP annually,\footnote{According to Wharton Research Data Services (WRDS), 92.33\% of all price targets reported in I/B/E/S have 12-month horizon \citep{glushkov2009}} we assume that an analyst keeps her TP forecast valid for one calendar year until it gets revised or expires after one year.
+
+Consistent with other studies on analysts' expected returns based on price targets  \citep{bradshaw2002,brav2003,da2011}, we truncate the sample of $TP/P-1$ at the 5\textsuperscript{th} percentile (values below \ensuremath{-0.114}) and the 95\textsuperscript{th} percentile (values above 0.791). This is done due to the extreme values cause by misalignment errors found on I/B/E/S data.\footnote{We found some differences in the databases as there can the cases when one of the databases did not performed the stock-splits or dividend payment adjustment.} The final sample size of $TP/P-1$ observations is reduced from 145 628 to 131 066.
+
+The initial file of quarterly EPS forecast consists of  571 brokers covering 3655 stocks. To implement the ranking, we require that a stock had at least three brokers per quarter that issue EPS forecasts. In addition, we require that a broker has to be active in covering a particular stock for at least 3 years (12 quarters). Finally, we consider only S\&P500 stocks. All these requirements reduce our sample of EPS forecasts to 172 brokers covering 449 stocks. The total number of EPS-Stock-Broker observation is 107 626.
+Panel A shows the composition of each category for rankings based on the accuracy in target prices. We observe that the distribution of the $top_{t}$ group is as follows: 14.5\%  of analysts stay at the same ranking category from the $top_{t-1}$; 53.6\% move from the $middle_{t-1}$; 13.1\% from the $bottom_{t-1}$; and 18.8\%  from the $noRank_{t-1}$. It is clear to observe that the $top_{t}$ category, on the average, mostly consists of brokers from the past quarter \emph{middle} rank. Observe that for the $noRank_{t}$ category, most of the contribution comes from the same category of the past quarter (78.4\%). This suggests that analysts are not frequent in issuing target price reports. 
+
+
+Table (\ref{tab:ret-stat}) provides descriptive statistics of target price and EPS data. Panel A shows the number of target prices per stock per quarter. For the sample period (1999-2009), we report 15 079 stock-quarter observations with average of 6.7 target price reports per quarter per stock. Panel B of the table presents the statistics of the number of EPS forecasts. In total, the EPS forecast sample has 14 354 forecast-quarter observations. The average number of forecasts per stock per quarter is 7.5.
+
+We applied the ranking procedure outline in section \ref{def-q} on both datasets. For target price rankings, we use the average per quarter daily errors as the measure of analysts' forecasting ability (\ref{tp:pmafe}). The daily frequency allows us to capture the analysts' performance with better precision. Panel A of table (\ref{tab:example}) shows an example of rankings based on target prices. As we observe, during the second quarter of 1999, four analysts have valid target prices for Amazon (AMZN) stock. At the end of the quarter, we calculate the average daily error for each of the analysts and apply equations (\ref{tp:pmafe}) and (\ref{tp:rank}) to obtain the ranks of each of the analysts. Figure (\ref{fig:example}) demonstrates the daily AMZN stock price and the levels of the analysts' target prices. The model gives to brokers the follow ranking: LEGG(1), MONTSEC(2), KAUFBRO(3), DLJ(4). In this example, LEGG is the most accurate in forecasting the AMZN stock and DLJ is the least.
+\subsection{Ranking contingency analysis}
+The rankings allows us to perform a contingency analysis of analysts' ranks and their intetemporal changes. Table (\ref{tab:rank-stat}) demonstrates the results. For this table, we split rankings into four categories: the analysts fall into \emph{top} category if they have ranks below or equal to 3,\footnote{The choice comes from the restriction of a stock having at least 3 brokers of coverage in a quarter.} the \emph{bottom} category includes analysts whose ranks fall into the last 3 ranks, the \emph{middle} category is for analysts who neither \emph{top} nor \emph{bottom}, and if analysts do not issue any report they fall into the \emph{noRank} category.  We, then, calculate a distribution of analysts for each of the category for the period $t$,i.e., for a given ranking group, we would like to know how it was composed.
+
+
+
+%This also represents ... variation to justify the effor of  trying to update the ranking every quarter in order to 
+%An interesting observation is for the \emph{noRank} category:  round(cont.tab[[2]][4,1],3)*100\% of the analysts who did not have rankings in the current quarter once issued a target price report move to the \emph{top} in the following quarter. 
+
+Panel B depicts the similar analysis for the EPS forecast rankings. For this case, we observe that the composition of the $top_{t}$ is quite similar to the  one we see in target price case: the most contributive group for $top_{t}$ is the \emph{middle} ranks from $t-1$. However, one interesting observation is that $noRank_{t-1}$ shows significant contribution for each of the ranking groups in $t$: for the \emph{top} ranking it contributes 34.3\%, for the \emph{middle} --- 43.9\%, and for the \emph{bottom} --- 48.7\%. This suggests that analysts, probably, issue the EPS forecasts after the availability of firm's management EPS forecast as that could entail new information about a firm \citep{hassel1986}.
+
+
+
+\subsection{Stocks' expected returns}
+With analysts' rankings and corresponding analysts' expected returns, we obtain rank-weighted stocks' expected returns (eq. \ref{rankq}). The literature on target price analysis reports different values: \cite{bradshaw2002} reports 24\% for the period of 2000--2009, \cite{da2011} post 40\% for the period of 1996--2004, \cite{zhou2013} for the sample period of 2000--2009 reports 96\%. None of these studies discuss these values from the historical perspective, i.e., how the values of expected stock returns go inline with historical stock returns. \cite{bodie2009} show that geometric average rate of return for the U.S. large stocks (S\&P 500) for the period of 1926--2005 is 10.17\% and the average rate of excess return is 8.39\% with the risk premium estimated 6--8\%. While it is not the best idea to extrapolate the historical values, still, we can say that the expected stocks return should be around 14--16\%. Clearly, the values presented in the literature shows that analysts are very optimistic in issuing target price reports.
+
+We present descriptive statistics of the expected stock returns in table (\ref{tab:view-stat}). Panel A show the statistics for $consQ$ defined in eq. (\ref{consq}). The consensus among the analysts about stock expected return is 20.1\%.  Panel B of the table shows the statistics for $rankQ$ obtained from the rankings based on the target price accuracy. We observe a reduction in average per stock expected return with the mean of 15.4\%. The case of rankings based on EPS forecasts (panel C) shows even more moderate average stock expected return of 11.2\%. Overall, compared to the consensus, both ranking-based methods exhibit less optimistic expected returns and are pretty close to the historical averages.
+
+
+\subsection{Feasible strategies}
+To proceed with the trading strategy, we formalize the two feasibility sets mentioned at the end of section (\ref{sec:ranking}). We use the \naive{} views for case when the analysts' information known only at $t-1$, and we use the \default{} views when the analysts' information known from the beginning of the period for up to the period $t-1$. Formally, we define:
+\begin{itemize}
+
+\item  the \naive{} views information:
+\begin{equation}
+\label{naive:ranking}
+\widehat{Q_{t}}=Q_{t-1}
+\end{equation}
+
+\item  the \default{} views information:
+%\begin{itemize}
+%\item ranking based views:
+\begin{equation}
+\label{default.rank}
+\widehat{Q_{t}} = \frac{1}{N_{t-1}} \sum_{i=1}^{N_{t-1}} Q_{i}
+\end{equation}
+%\item consensus based views:
+%\begin{equation}
+%\label{default.cons}
+%\widehat{consQ_{t,s}} = \frac{1}{T} \sum_{T=1}^{T-1} consQ_{t,s}
+%\end{equation}
+%\end{itemize}
+\end{itemize}
+
+\section{Empirical Results}
+\label{sec:results}
+
+We report results from trading strategies in table (\ref{tab:strategy}). We split the table into four panels: one for the passive strategy and three for each of the information availability sets. 
+
+\subsection{Passive strategy}
+Panel A shows  the performance of the passive strategy \textit{Market}. The strategy resulted in an annualized cumulative return of 4.49\% and an annualized Sharpe ratio (SR) of 0.278. The average number of stocks used per quarter is 499 and the turnover ratio of strategy is 0.003, which demonstrates the ins/outs of the S\&P 500 constituents list.
+
+\subsection{Results of the perfect ranking foresight strategy}
+Panel B presents the result for the case of \tr{} information availability set. The annualized cumulative returns for each of the active strategies (CONS,TP,and EPS) are: CONS =5.61\%, TP = 8.2\%, and EPS = 4.93\%. All the strategies outperform the benchmark. The result confirms that these strategies set an upper bound for the cumulative return yield. It follows, that we setup a boundary for the results of the feasible strategies: the upper bound is the perfect foresight strategy and the lower bound is the market benchmark.
+
+In addition, the result from the perfect foresight strategy implies that knowing the information in advance is beneficial. Namely, knowing in advance the rankings of the analysts who issue accurate target price reports would result in positive trading strategy. At fist sight this seems to be an impossible task; however, one of the possibilities is to apply methods developed in Machine Learning literature (e.g., \cite{aiguzhinov2010,brazdil2003}) where this type of problem (referred as a label ranking problem) has been broadly studied. For example, in \cite{aiguzhinov2010} a label ranking algorithm takes the Bayesian approach in predicting the rankings --- the same Bayesian approach that is in the core of the Black-Litterman model. 
+
+
+
+
+\subsection{Results of feasible strategies}
+Panels C and D of the table (\ref{tab:strategy}) show the trading results of the feasible information availability sets. In the case of the \naive{}, the strategy that outperforms all the others (including the \emph{Market}) is the TP strategy which yields an annualized cumulative return of 5.46\%. The other two strategies (CONS and EPS) resulted in below-the-market performance (annualized cumulative return of 4.36\% and 2.04\% respectively). The case of the \default{}, demonstrates the worse results as none of the active strategies is able to outperform the \emph{Market} (TP = 4.08\%, CONS = 4.4\%, EPS = 2.32\%)
+
+
+The feasible information sets demonstrate interesting results. It seems to be the case that the information about stock's expected return based on rankings create more value than the same information but based on analysts' consensus. Thus, rankings do identify the best analysts and this findings supports the argument of \cite{desai2000ass}. In addition, the results show that keeping all available information about analysts' performance does not create any value. As we see, the \default{} strategy is the worse in term of the annualized cumulative returns. 
+
+Finally, the trading results suggest that, from an investor's point of view, following analysts who are accurate in setting price targets create more value than that of following analysts issuing accurate EPS forecasts. This result contradicts with findings of \cite{bradshaw2004} and supports the argument of \cite{simon2011} that the stock recommendations of the most accurate analysts are less correlated with the growth-based heuristics (such as EPS forecasts) as these are optimistic and not good predictors of future returns. 
+
+Figure (\ref{fig:bl-results}) shows the graphical representation of the cumulative portfolio wealth for all of the information sets. The $y$-axis is the monetary value of wealth and $x$-axis is the time starting at October of  2000 and ending at December 2009. Observe that strategies under the \tr{} panel out-perform the \emph{Market} and that value of the portfolio of the TP strategy considerably outruns the other alternative strategies.
+
+\section{Conclusions}
+\label{sec:conclusion}
+
+Some institutions, such as StarMine, rank financial analysts based on their accuracy. These rankings are published and are relevant: stocks favored by top-ranked analysts will probably receive more attention from investors. Therefore, there is a growing interest in understanding the relative performance of analysts.
+
+We show that rankings do bring value to investors as they identify the top analysts. By applying the Black-Litterman model, we developed the simulations of trading with different information availability sets. We report that under the \tr{} information (the information known at time $t$) about stock's expected return we get the upper bound of the trading strategies, that is the maximum yield any strategy can achieve. The \naive{} information (the information known at time $t-1$) create more value from the following the top-ranked analysts who set accurate stock price targets. The \default{} information (the information known from the beginning up to $t-1$), because of its outdated nature, fails to show any positive outcomes and the passive strategy is the only choice for this information set.
+
+For the future work we would like to develop the new methods to be able to get closer to the upper bound.
+
+
+\bibliographystyle{apalike}
+\bibliography{rank}
+\appendix
+
+\section{Tables and Figures}
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=\linewidth]{figure/Black-litterman}
+\end{center}
+\caption{Trading strategy schematics}
+\label{fig:bl}
+\ Schematics of the implementation of the Black-Litterman model. We gather all necessary inputs at the end of  $t-1$. At the beginning of $t$ we apply the BL model and form the portfolio of stocks based on the optimal weights. At the end of $t$, we evaluate the portfolio.
+\end{figure}
+
+
+
+%Descriptive  table
+\begin{table}[htb]
+  \caption{Descriptive statistics of data}
+  \label{tab:ret-stat}
+\ Descriptive statistics of target price reports (panel A) and EPS forecasts (panel B) per stock per quarter.
+
+\begin{tabularx}{\linewidth}{r*{6}{Y}}
+    \toprule
+   \multicolumn{6}{l}{\textbf{Panel A: TP}} \\
+Years & Observ & Min& Mean & Median &Max& std.dev\\
+\midrule 
+ 1999 & 304 & 3.00 & 4.29 & 4.00 & 11.00 & 1.66 \\ 
+  2000 & 1 021 & 3.00 & 4.87 & 4.00 & 14.00 & 2.01 \\ 
+  2001 & 1 202 & 3.00 & 5.54 & 5.00 & 16.00 & 2.45 \\ 
+  2002 & 1 426 & 3.00 & 6.41 & 6.00 & 19.00 & 3.11 \\ 
+  2003 & 1 509 & 3.00 & 7.00 & 6.00 & 21.00 & 3.53 \\ 
+  2004 & 1 559 & 3.00 & 7.46 & 7.00 & 22.00 & 3.67 \\ 
+  2005 & 1 643 & 3.00 & 7.65 & 7.00 & 24.00 & 3.74 \\ 
+  2006 & 1 663 & 3.00 & 7.73 & 7.00 & 22.00 & 3.57 \\ 
+  2007 & 1 710 & 3.00 & 7.39 & 7.00 & 22.00 & 3.50 \\ 
+  2008 & 1 653 & 3.00 & 6.71 & 6.00 & 18.00 & 3.02 \\ 
+  2009 & 1 389 & 3.00 & 5.51 & 5.00 & 19.00 & 2.41 \\ 
+   \midrule 
+Total period & 15 079 & 3.00 & 6.70 & 6.00 & 24.00 & 3.34 \\ 
+  
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{r*{6}{Y}}
+\midrule
+   \multicolumn{6}{l}{\textbf{Panel B: EPS}} \\
+ 1999 & 768 & 3.00 & 6.36 & 5.00 & 24.00 & 3.46 \\ 
+  2000 & 932 & 3.00 & 6.28 & 5.00 & 40.00 & 3.55 \\ 
+  2001 & 1 101 & 3.00 & 6.59 & 6.00 & 24.00 & 3.36 \\ 
+  2002 & 1 244 & 3.00 & 7.15 & 6.00 & 48.00 & 4.02 \\ 
+  2003 & 1 318 & 3.00 & 7.43 & 6.00 & 26.00 & 3.90 \\ 
+  2004 & 1 435 & 3.00 & 8.03 & 7.00 & 32.00 & 4.36 \\ 
+  2005 & 1 518 & 3.00 & 8.40 & 8.00 & 30.00 & 4.33 \\ 
+  2006 & 1 558 & 3.00 & 8.85 & 8.00 & 54.00 & 4.91 \\ 
+  2007 & 1 605 & 3.00 & 8.29 & 7.00 & 40.00 & 4.42 \\ 
+  2008 & 1 512 & 3.00 & 7.17 & 6.00 & 34.00 & 3.67 \\ 
+  2009 & 1 363 & 3.00 & 6.39 & 6.00 & 30.00 & 3.29 \\ 
+   \midrule 
+Total period & 14 354 & 3.00 & 7.50 & 6.00 & 54.00 & 4.12 \\ 
+  
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+\begin{table}[htb]
+  \caption{Example of ranking}
+  \label{tab:example}
+\ An example of rankings for target price (panel A) and EPS forecasts (panel B). The brokers cover the stock of Amazon (AMZN) during the second quarter of 1999. We apply (\ref{tp:rank}) to obtain ranks of the brokers. \emph{TP} is a valid target price; $\mu(P)$ is the average stock price in quarter; $\mu(PMAFE)$ is the average proportional mean adjusted error. In EPS case, $PRED$ is the EPS forecast issued by the brokers; $ACT$ is the actual earnings reported by a company.
+\begin{tabularx}{\linewidth}{r*{5}{Y}}
+    \toprule
+    \multicolumn{5}{l}{\textbf{Panel A: TP}} \\
+Broker & TP & $\mu(P)$ & $\mu(PMAFE)$ & rank \\ 
+  \midrule 
+LEGG & 58.50 & 71.09 & 0.05 &   1 \\ 
+  MONTSEC & 87.50 & 71.09 & 0.46 &   2 \\ 
+  KAUFBRO & 125.00 & 71.09 & 1.65 &   3 \\ 
+  DLJ & 140.00 & 71.09 & 1.97 &   4 \\ 
+   \midrule 
+
+\end{tabularx}
+\begin{tabularx}{\linewidth}{r*{5}{Y}}
+    \multicolumn{5}{l}{\textbf{Panel B: EPS}} \\
+Broker & $PRED$ & ACT & $PMAFE$ & rank \\ 
+  \midrule 
+PACCREST & -0.130 & -0.115 & 0.066 &    1 \\ 
+  BACHE & -0.135 & -0.115 & 0.088 &    2 \\ 
+  MONTSEC & -0.082 & -0.115 & 0.147 &    3 \\ 
+  HAMQUIST & -0.075 & -0.115 & 0.176 &    4 \\ 
+  BEAR & -0.073 & -0.115 & 0.184 &    5 \\ 
+  FBOSTON & -0.065 & -0.115 & 0.220 &    6 \\ 
+  RBRTSON & -0.011 & -0.115 & 0.459 &    7 \\ 
+  
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+
+
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=\linewidth]{figure/example-fig-1}
+\end{center}
+\caption{Example of ranking the analysts}
+\label{fig:example}
+\ An example of ranking of the analysts for the second quarter of 1999 for Amazon. Broker are ordered by their daily forecasting error.
+\end{figure}
+
+ % Descritive rankings
+ \begin{table}[htb]
+  \caption{Descriptive analysts' rankings}
+  \label{tab:rank-stat}
+  
+\ Changes in analysts' \emph{top}, \emph{middle}, \emph{bottom} and \emph{noRank} ranking categories when moving from $t-1$ (rows) to $t$ (columns). Each cell informs a percent of total that compose the ranking category at $t$. Panel A depicts the breakdown of rankings  based on the accuracy in target prices. Panel B shows the rankings that are based on the EPS forecasts.
+\begin{tabularx}{\linewidth}{r*{5}{Y}}
+    \toprule
+\multicolumn{5}{l}{\textbf{Panel A: Target Price ranking}} \\
+ & $top_{t}$ & $middle_{t}$ & $bottom_{t}$ & $noRank_{t}$ \\ 
+ $top_{t-1}$ & 14.5 & 21.6 & 20.5 & 4.9 \\ 
+  $middle_{t-1}$ & 53.6 & 43.3 & 35.9 & 13.1 \\ 
+  $bottom_{t-1}$ & 13.1 & 8.8 & 12.6 & 3.5 \\ 
+  $noRank_{t-1}$ & 18.8 & 26.3 & 31.0 & 78.4 \\ 
+  Sum & 100.0 & 100.0 & 100.0 & 100.0 \\ 
+  
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{r*{5}{Y}}
+\midrule
+   \multicolumn{5}{l}{\textbf{Panel B: EPS ranking}} \\
+ $top_{t-1}$ & 11.8 & 13.6 & 13.7 & 3.0 \\ 
+  $middle_{t-1}$ & 43.7 & 36.4 & 28.0 & 8.7 \\ 
+  $bottom_{t-1}$ & 10.1 & 6.1 & 9.6 & 2.5 \\ 
+  $noRank_{t-1}$ & 34.3 & 43.9 & 48.7 & 85.8 \\ 
+  Sum & 100.0 & 100.0 & 100.0 & 100.0 \\ 
+  
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htb]
+  \caption{Descriptive statistics of views}
+  \label{tab:view-stat}
+  \small\addtolength{\tabcolsep}{-2pt}
+  \ Descriptive statistics of views (expected returns) based on: the consensus among the analysts (panel A), target price rankings (panel B), and EPS forecasts rankings (panel C) per stock per quarter.
+\begin{tabularx}{\linewidth}{r*{4}{Y}}
+    \toprule
+%    \multicolumn{4}{l}{\textbf{Panel A: Consensus views}} \\
+Years & Observ & Mean & Median &std.dev\\
+\midrule 
+  \multicolumn{4}{l}{\textbf{Panel A: Consensus views}} \\1999 & 302 & 0.27 & 0.26 & 0.14 \\ 
+  2000 & 1 479 & 0.30 & 0.28 & 0.14 \\ 
+  2001 & 1 482 & 0.28 & 0.26 & 0.15 \\ 
+  2002 & 1 562 & 0.23 & 0.21 & 0.13 \\ 
+  2003 & 1 552 & 0.22 & 0.20 & 0.12 \\ 
+  2004 & 1 551 & 0.15 & 0.14 & 0.10 \\ 
+  2005 & 1 573 & 0.14 & 0.13 & 0.09 \\ 
+  2006 & 1 619 & 0.15 & 0.14 & 0.09 \\ 
+  2007 & 1 622 & 0.15 & 0.13 & 0.09 \\ 
+  2008 & 1 687 & 0.15 & 0.14 & 0.08 \\ 
+  2009 & 1 207 & 0.26 & 0.24 & 0.15 \\ 
+   \midrule 
+Total period & 15 636 & 0.20 & 0.17 & 0.13 \\ 
+  
+  \end{tabularx}
+
+  \begin{tabularx}{\linewidth}{r*{4}{Y}}
+    \midrule
+    \multicolumn{4}{l}{\textbf{Panel B: TP Ranking views}} \\
+ 1999 & 461 & 0.23 & 0.24 & 0.11 \\ 
+  2000 & 1 076 & 0.23 & 0.23 & 0.11 \\ 
+  2001 & 1 255 & 0.20 & 0.19 & 0.11 \\ 
+  2002 & 1 463 & 0.17 & 0.17 & 0.10 \\ 
+  2003 & 1 521 & 0.15 & 0.14 & 0.10 \\ 
+  2004 & 1 580 & 0.12 & 0.11 & 0.08 \\ 
+  2005 & 1 652 & 0.12 & 0.11 & 0.08 \\ 
+  2006 & 1 675 & 0.12 & 0.11 & 0.08 \\ 
+  2007 & 1 705 & 0.12 & 0.11 & 0.08 \\ 
+  2008 & 1 576 & 0.15 & 0.13 & 0.10 \\ 
+  2009 & 683 & 0.20 & 0.20 & 0.11 \\ 
+   \midrule 
+Total period & 14 647 & 0.15 & 0.14 & 0.10 \\ 
+  
+  \end{tabularx}
+
+  \begin{tabularx}{\linewidth}{r*{4}{Y}}
+    \midrule
+    \multicolumn{4}{l}{\textbf{Panel C: EPS Ranking views}} \\
+ 1999 & 443 & 0.12 & 0.11 & 0.10 \\ 
+  2000 & 951 & 0.14 & 0.12 & 0.11 \\ 
+  2001 & 1 151 & 0.14 & 0.12 & 0.10 \\ 
+  2002 & 1 244 & 0.14 & 0.13 & 0.09 \\ 
+  2003 & 1 336 & 0.11 & 0.10 & 0.09 \\ 
+  2004 & 1 433 & 0.09 & 0.08 & 0.07 \\ 
+  2005 & 1 515 & 0.09 & 0.08 & 0.07 \\ 
+  2006 & 1 557 & 0.09 & 0.08 & 0.07 \\ 
+  2007 & 1 569 & 0.09 & 0.09 & 0.07 \\ 
+  2008 & 1 483 & 0.12 & 0.10 & 0.09 \\ 
+  2009 & 715 & 0.14 & 0.13 & 0.10 \\ 
+   \midrule 
+Total period & 13 397 & 0.11 & 0.10 & 0.09 \\ 
+  
+\bottomrule
+  \end{tabularx}
+\end{table}
+
+
+
+
+
+
+
+\begin{table}[ht]
+  \caption{Trading strategy performance}
+  \label{tab:strategy}
+  \ Annualized cumulative statistics of trading based of rankings. Panel A presents the results from the passive strategy and is serve as the benchmark. Panel B shows the results of the trading where we, at the end of $t-1$, know the true analysts' rankings for the end of $t$. Panel C summarizes the results of the strategy in which rankings are recent and known at time $t-1$. Finally, panel D demonstrates the results of strategies for the case where we use all known rankings from the beginning of the period for up to $t-1$. TP is the strategy with rankings based on the accuracy in target prices, CONS is the strategy based on the consensus among the analysts regarding a stock's expected return. EPS is the strategy with rankings based on the accuracy of EPS forecasts. The trading period ranges from 2000Q4 until 2009Q4.
+
+\begin{tabularx}{\linewidth}{r*{5}{Y}}
+  \toprule
+  %\multicolumn{5}{l}{\textbf{Panel A: Market}} \\
+Strategy&Annualized cum. return (in \%)&Annualized std. dev&Annualized Sharpe ratio&Average num. stock&Average turnover rate \\  \multicolumn{5}{l}{\textbf{Panel A}} \\Market & 4.49 & 0.16 & 0.28 & 499 & 0.00 \\ 
+  \midrule 
+
+
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{r*{5}{Y}}
+  \multicolumn{5}{l}{\textbf{Panel B: \tr{} }} \\
+ CONS & 5.61 & 0.18 & 0.31 & 278 & 0.01 \\ 
+  TP & 8.20 & 0.18 & 0.46 & 264 & 0.02 \\ 
+  EPS & 4.93 & 0.18 & 0.27 & 237 & 0.03 \\ 
+   \midrule 
+
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{r*{5}{Y}}
+  \multicolumn{5}{l}{\textbf{Panel C: \naive{}}} \\
+ CONS & 4.36 & 0.18 & 0.24 & 278 & 0.01 \\ 
+  TP & 5.46 & 0.18 & 0.31 & 265 & 0.01 \\ 
+  EPS & 2.04 & 0.17 & 0.12 & 237 & 0.02 \\ 
+   \midrule 
+
+\end{tabularx}
+\begin{tabularx}{\linewidth}{r*{5}{Y}}
+  \multicolumn{5}{l}{\textbf{Panel D: \default{}}} \\
+ CONS & 4.40 & 0.18 & 0.24 & 294 & 0.01 \\ 
+  TP & 4.08 & 0.18 & 0.23 & 283 & 0.01 \\ 
+  EPS & 2.32 & 0.18 & 0.13 & 274 & 0.02 \\ 
+  
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=\linewidth]{figure/bl-results-fig-1}
+\end{center}
+\caption{Performance of the BL model}
+\label{fig:bl-results}
+\ Quarterly performance of the cumulative portfolio wealth for all strategies. Panel \tr{} shows the case of the known future information; \naive{} is the case of ranking information know at $t-1$, and the \default{} is the case of using all ranking information for up to $t-1$. TP is the strategy with rankings based on the accuracy in target prices, CONS is the strategy based on the consensus among the analysts regarding a stock's expected return. EPS is the strategy with rankings based on the accuracy of EPS forecasts. The trading period ranges from 2000Q4 until 2009Q4.
+\end{figure}
+
+\end{document}

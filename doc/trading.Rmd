@@ -1,0 +1,134 @@
+```{r echo=FALSE, warning=FALSE}
+rm(list=ls())
+setwd('~/Documents/Dropbox/workspace/Projects/Black-Litterman/BL-strategies/')
+library(ProjectTemplate)
+library(scales)
+load.project()
+delta<-2.5
+```
+
+``` {r echo=FALSE, cache=TRUE, warning=FALSE}
+
+#source('munge/01-data.pre.process.R')
+###subset of core stocks/broker: min. 3 broker in quarter and min. 12 quarters of coverage 
+q.data=q.data[,core.b:=.N>11,by=list(Stock,Broker)]
+core.dt <- q.data[(core.b)][,rank:=rank(score),by=list(q.id,Stock)]
+core.dt=core.dt[,clean.s:=.N>2,by=list(q.id,Stock)]
+###core rankings
+pt.new <- acast(core.dt[(clean.s)],q.id~Broker~Stock,value.var='rank')
+###Ranking: making brokers view (extended TPER for 4 quarters)
+brok.tper <- acast(unique(ext.pt,by=c('Stock','V2','Broker')),V2~Broker~Stock,value.var='b.view')
+
+###an alternaive to measure accuracy: coef. of variation. To be used when compareing with non ranking methods
+brok.cv <- acast(unique(q.data,by=c('Stock','q.id')),q.id~Stock~Broker,value.var='b.coefVar')
+
+##BL inputs for non-rank strateby:meanTper and s.coefVar
+meanTper <-acast(unique(q.data,by=c('Stock','q.id')),q.id~Stock,value.var='meanTper')
+
+###Coefficient of variation: lower values means less variable,thus, more confidence. The higher the CV, the greater the dispersion in the variable [http://www.ats.ucla.edu/stat/mult_pkg/faq/general/coefficient_of_variation.htm]
+conf.coef <- acast(unique(q.data,by=c('Stock','q.id')),q.id~Stock,value.var='s.coefVar')
+### rescale the CV to (0,1). To be consistent with the ranking model, also scale the CV so that if CV=0, don't trust and if CV=1 trust
+require(scales)
+norm.conf<- rescale(1-conf.coef[1:44,])
+
+
+#methods<-c('raw','1diff','random','roll.sd')
+#baselines<-c('true','naive','default',methods)
+#ranking <- 'pt.new'
+percentile <- c(0.01,0.99)
+trunk.meanTper <- truncate.f(meanTper[1:44,],percentile)
+all.s <- findIntersect(pt.new,brok.tper,3)
+all.b <- findIntersect(pt.new,brok.tper,2)
+
+trunk.brok.tper <- truncate.f(brok.tper[1:dim(pt.new)[1],all.b,all.s],percentile)
+
+
+
+true.Q <- buildQs(all.s,pt.new,trunk.brok.tper)
+true.conf <- true.Q
+true.conf[!is.na(true.conf)] <- 1
+
+plot.true <- ggplot(data.table(melt(true.Q,na.rm=T)),aes(x=as.Date(as.yearqtr(Var1)),y=value,group=Var1))+geom_boxplot()+theme_bw()
+plot.conf <- ggplot(data.table(melt(norm.conf,na.rm=T)),aes(x=as.Date(as.yearqtr(Var1)),y=value,group=Var1))+geom_boxplot()
+```
+``` {r}
+plot.true
+plot.conf
+```
+
+```{r samePeriod, echo=FALSE}
+bl.period <- 3:(dim(trunk.meanTper)[1])
+m.period <- ((length(market.list)-length(bl.period))+1) : (length(market.list))
+
+#opt.w<- rbindlist(script.weights.env.f('meanTper',market.list[m.period],trunk.meanTper[bl.period,],norm.conf[bl.period,],0.02,2.5))
+
+opt.w<- rbindlist(script.weights.env.f('rankTper',market.list[m.period],true.Q[bl.period,],true.conf[bl.period,],0.02,2.5))
+
+bl.results <- unique(opt.w,by='q.id')
+bl.results=bl.results[,c('cum.ret','ann.ret','ann.sd','meanViews'):=cum.ret.f(port.ret,n.views)][,ann.sr:=ann.ret/ann.sd]
+```
+# view and market in the same period: start p = 3, ann.ret=`r bl.results[1,ann.ret]`, sr=`r bl.results[1,ann.sr]`
+```{r p.samePeriod,echo=FALSE}
+plot(bl.results[,cum.ret],type='l')
+```
+
+
+```{r viewPlus, echo=FALSE}
+bl.period <- 3:(dim(trunk.meanTper)[1])
+m.period <- ((length(market.list)-length(bl.period))) : (length(market.list)-1)
+
+#opt.w<- rbindlist(script.weights.env.f('meanTper',market.list[m.period],trunk.meanTper[bl.period,],norm.conf[bl.period,],0.02,2.5))
+
+opt.w<- rbindlist(script.weights.env.f('rankTper',market.list[m.period],true.Q[bl.period,],true.conf[bl.period,],0.02,2.5))
+
+bl.results <- unique(opt.w,by='q.id')
+bl.results=bl.results[,c('cum.ret','ann.ret','ann.sd','meanViews'):=cum.ret.f(port.ret,n.views)][,ann.sr:=ann.ret/ann.sd]
+```
+# view one period ahead of market: start p = 3, ann.ret=`r bl.results[1,ann.ret]`, sr=`r bl.results[1,ann.sr]`
+```{r p.viewPlus,echo=FALSE}
+plot(bl.results[,cum.ret],type='l')
+```
+
+```{r viewMinus, echo=FALSE}
+bl.period <- 3:(dim(trunk.meanTper)[1]-1)
+m.period <- ((length(market.list)-length(bl.period))+1) : (length(market.list))
+
+#opt.w<- rbindlist(script.weights.env.f('meanTper',market.list[m.period],trunk.meanTper[bl.period,],norm.conf[bl.period,],0.02,2.5))
+
+opt.w<- rbindlist(script.weights.env.f('rankTper',market.list[m.period],true.Q[bl.period,],true.conf[bl.period,],0.02,2.5))
+
+bl.results <- unique(opt.w,by='q.id')
+bl.results=bl.results[,c('cum.ret','ann.ret','ann.sd','meanViews'):=cum.ret.f(port.ret,n.views)][,ann.sr:=ann.ret/ann.sd]
+```
+# view behind maket one period: ann.ret=`r bl.results[1,ann.ret]`, sr=`r bl.results[1,ann.sr]`
+```{r p.viewMinus,echo=FALSE}
+plot(bl.results[,cum.ret],type='l')
+```
+
+```{r ToDo,echo=FALSE}
+# bl.results[,TO:=data.table(c(NA,sapply(2:42,function(b){
+# beg <- setkey(opt.w[q.id==b,list(Stock,opt.w)],Stock)
+# end <- setkey(opt.w[q.id==b-1,list(Stock,opt.w)],Stock)
+# end[beg][,turnover.f(opt.w,opt.w.1)]})))]
+# 
+# 
+# 
+# 
+# 
+# all.s <- findIntersect(get(paste(ranking,'all.rankings',sep='.')),data,3)
+# all.b <- findIntersect(get(paste(ranking,'all.rankings',sep='.')),data,2)
+# #all.s <- intersect(intersect(intersect(dimnames(pt.all.rankings)[[3]],dimnames(eps.all.rankings)[[3]]),dimnames(data)[[3]]),dimnames(eps.all.rankings)[[3]])
+# 
+# #all.b <- intersect(intersect(intersect(dimnames(pt.all.rankings)[[2]],dimnames(eps.all.rankings)[[2]]),dimnames(data)[[2]]),dimnames(eps.all.rankings)[[2]])
+# 
+# #all.rankings <- abind(pt=pt.all.rankings[2:42,all.b,all.s,,1],eps=eps.all.rankings[,all.b,all.s,,1],along=5)
+# 
+# all.rankings <- abind(pt.new=get(paste(ranking,'all.rankings',sep='.'))[,all.b,all.s,,1],along=5)
+# 
+# accuracy <- abind(pt.new=get(paste(ranking,'accuracy',sep='.'))[,,all.s,1],along=4)
+# 
+# #accuracy <- abind(eps=eps.accuracy[,2:42,all.s,1],pt=pt.accuracy[,2:42,all.s,1],eps=eps.accuracy[,,all.s,1],along=4)
+# 
+# source('munge/bl.pre.process.R')
+# source('src/bl.process.R')
+```

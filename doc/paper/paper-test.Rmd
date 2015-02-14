@@ -1,0 +1,64 @@
+---
+title: "Paper outline"
+output:
+  pdf_document: default
+  word_document: default
+---
+## Possible title
+"Are rankings of financial analysts useful for investors?"
+
+
+### 1. Introduction:
+  + Rankings are important;
+  + Who also ranks analysts;
+  + Paper objectives:
+    + operationalize BL;
+    + ranking based strategy outperforms baselines;
+  + Paper structure;
+  
+### 2. Rankings of FA:
+  + Efficient Market Hypothesis and advice of FA;
+  + Can we make money if EMH holds?
+  + FA do have skills;
+  + Rankings of FA by StarMine:
+    + based on recommendations (target prices);
+    + based on EPS forecast accuracy (SES metrics);
+  + FA rankings signal who to follow;
+  + Our FA rankings methods:
+    + naive;
+    + default;
+    + non ranking benchmark;
+    
+### 3. Trading strategy:
+  + Why BL and not CAMP?;
+  + BL notations;
+  + BL strategy outline;
+  + Defining expected returns:
+    + rank-based;
+    + non-rank based (mean);
+  + Defining the confidence (coefficient of variation);
+  
+### 4. Data and experiment setup:
+  + Data description (sources, total observations);
+  + TPER is truncated;
+  + Descriptive stats of filtered data;
+  + How we rank analysts?
+  + How we create:
+    + naive ranking;
+    + default ranking;
+    
+### 5. Results
+  + BL strategies outperform market;
+  + _true_ of rank based outperforms non-rank;
+  + Foreknowledge of rankings leads to highest cumulative return;
+  + FA Rankings are important, goal is to forecast them correctly;
+
+### 6. Conclusion
+  + Ranking of FA are important and produce the highest possible cumulative return;
+  + BL strategy takes rankings as inputs to build views;
+  + Future research: predict rankings of FA;
+
+### References
+
+### Tables and Plots
+

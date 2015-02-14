@@ -1,0 +1,144 @@
+---
+output:
+  pdf_document:
+    fig_height: 5.5
+    fig_width: 8
+    highlight: espresso
+  html_document:
+    fig_height: 5.5
+    fig_width: 8
+  word_document: default
+---
+
+Problem of extreme values in stock prices
+=====
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+setwd('~/Dropbox/workspace/Projects/Black-Litterman/BL-strategies')
+library(reshape2)
+library(data.table)
+library(ggplot2)
+library(zoo)
+library(scales)
+source('lib/BL-functions.R')
+
+af.data.collect<- function(data.id,n)
+{
+  rbindlist(lapply(list.files('~/Dropbox/Datastream/AllStocks/it3/',pattern=paste('^',data.id,'.*.csv',sep='')),function(i){
+    id=strsplit(i,split = '\\.');
+    names.tmp <- sapply(read.csv2(paste('~/Dropbox/Datastream/AllStocks/it3/',i,sep=''),nrow=1,sep=',',na.strings='#ERROR',header=F,skip=1)
+      ,function(i){strsplit(as.character(i),split = '[[:punct:]]')[[1]][n]})
+    melt(setnames(fread(paste('~/Dropbox/Datastream/AllStocks/it3/',i,sep=''),sep=',',na.strings='',skip=2)[,V1:=as.Date(V1,format = "%m/%d/%Y")],c('Date',names.tmp[2:length(names.tmp)])),id.vars = 'Date',variable.name = 'DSCD',value.name = id[[1]][1],na.rm=T)}))
+}
+stock.ref <- setkey(unique(rbindlist(lapply(list.files('~/Dropbox/Datastream/AllStocks/names/',pattern='name.ds.*.csv'),function(i){fread(paste('~/Dropbox/Datastream/AllStocks/names/',i,sep=''),header=T,na.strings = '')})),by='DSCD')[,Stock:=WC05601],DSCD,Stock)
+
+load('data/ref.matrix.RData')
+#make DT of it
+ref.dt <- setkey(data.table(Stock=ref.matrix[,1],DSCD=rownames(ref.matrix)),DSCD)
+sp.id <- setkey(setnames(fread('data/sp.ids.new.csv',header=F),'DSCD'),DSCD)
+miss.tkt <- c('AMP','ANV','ATCH','ACS','ASND','BT','HPH','MEYR','MWI','MII','RN','UCC')
+miss.dt <- data.table(Stock=miss.tkt,DSCD=ref.dt[sp.id][which(is.na(Stock))][,DSCD])
+ref.dt <- setkey(rbind(ref.dt,miss.dt)[,Stock:=as.character(Stock)][which(duplicated(rbind(ref.dt,miss.dt)[,Stock])),Stock:=paste(Stock,'1',sep='.')],DSCD,Stock)
+full.stock.ref <- setkey(unique(merge(stock.ref,ref.dt,all=T),by=c('DSCD','Stock')),DSCD,Stock)
+s.id <- setkey(full.stock.ref[ref.dt][,list(DSCD,NAME,Stock)],DSCD)
+
+ds.af <- setkey(unique(af.data.collect('af',1),by=c('Date','DSCD'))[,':='(year=format(Date,'%Y'),af=as.numeric(af),Time=Date)][,Date:=NULL],DSCD)[s.id]
+load('doc/StockPrices/pt.prices.RData')
+```
+## New development
+
+I did another round of iteration in downloading the data from the `DataStream`. This time, I notice inconsistency from my previous downloads.
+
+My set of stocks in PriceTarget folder all labeled with their respective ticker IDs (e.g., for Apple is AAPL). However, when I downloaded the SP500 constituent list, I got odd results: the data for list was complete (i.e, there were 500 rows: each for one stock) but the ticker IDs for some stock were missing. Instead, `DataStream` output the `DSCD` - a `DataStream` unique code for a stock. My further research revealed, that when a company gets delisted from the Exchanges, its ticker can be either dropped from the `DataStream` or assigned to another stock. So, here is a problem: my PT (and EPS) files all ID'ed by the tickers but the SP500 stocks by `DSCD`. In total there were `r stock.ref[sp.id][is.na(Stock)][,list(DSCD,Stock)][,.N]` stocks with missing tickers which I had to manually fill the tickers (luckily, `DataStream` provides a complete company name):
+
+```{r,echo=FALSE,warning=FALSE,comment=""}
+stock.ref[sp.id][is.na(Stock)][,list(DSCD,NAME,Stock)][1]
+```
+
+After I created a new prices set based on `DSCD` stock identification, I followed Ana Paula's suggestion to check PTs for the adjustment factor (AF). It turns out, that stocks that got adjustment after 2009 (the latest year in my dataset), do not have their PTs adjusted. For example, in June AAPL had a 7:1 stock split (AF=`r 1/7`) and the all history of price information got adjusted by this factor. I had to do the same for price targets (notice the `old.PT` and `PT`):
+``` {r,echo=FALSE,warning=FALSE,message=FALSE,comment=""}
+pt.prices[Stock=='AAPL'][137,list(Date,old.PT,Stock,PT,priceAdj,priceClose)]
+```
+There were `r unique(ds.af[year>2010&af!=1],by='DSCD')[,.N]` stocks that had splits since 2010 and I have corrected their PT information.
+
+Here is a new set of plots that are based on the new price dataset and post 2010 PT adjustments.
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(melt(pt.prices,id.vars = 'q.id',measure.vars = c('tper','trunc.tper')),aes(x=as.Date(q.id),y=value,group=as.Date(q.id)))+geom_boxplot() + facet_wrap(~variable,scale='free_y',ncol=3)+scale_y_continuous(labels = percent)+ylab('Expected return, in percent')+theme_bw()+xlab('Quarters')+ggtitle('Brokers\'s Expected returns: full sample and truncated')
+
+ggplot(melt(pt.prices[,descriptive.f(.SD),by=q.id,.SDcols=c('tper','trunc.tper')][V1=='mean'],id.vars = c('q.id','V1')),aes(x=as.Date(q.id),y=value))+geom_bar(stat='identity')+facet_wrap(~variable,scale='free_y',ncol=3)+scale_y_continuous(labels = percent)+ylab('Average expected return, in percent')+theme_bw()+ggtitle('Average TPER per quarter')+xlab('Quarters')
+```
+
+Some descriptive statistics:
+```{r,echo=FALSE,warning=FALSE,message=FALSE,results='asis'}
+library(pastecs)
+library(xtable)
+options(xtable.comment = FALSE)
+xtable(setnames(pt.prices[,descriptive.f(.SD),.SDcols=c('tper','trunc.tper')],'V1', 'Statistics'))
+```
+As we see, the situation with `TPER` improved especially in truncated sample. We see that the average trimmed `tper` is `r pt.prices[,mean(trunc.tper,na.rm=T)]*100`\%. That is, on average, brokers expect to rise of a stock price by fifth of the current value.   
+
+The full sample continues to show some extreme values. I can continue adjusting price targets  before 2009 but I don't think it is a good idea because we don't know for sure if a stock had been already adjusted in `IBES`. I think, trimming the `tper` is the only solution to avoid the extreme values. 
+``` {r,echo=FALSE,warning=FALSE,message=FALSE,comment=""}
+head(unique(pt.prices[order(tper,decreasing=T),list(Stock,priceAdj,tper,PT,NAME)],by='Stock'))
+```
+In case of `DAL`, it seems to be that the stock got delisted but the information stayed with `$0.02` price. 
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+ggplot(pt.prices[Stock=='DAL',],aes(x=Date,y=tper))+geom_point()+geom_line()+scale_y_continuous(labels = percent)+ylab('Expected return, in percent')+theme_bw()+ggtitle('The expected return of \'DAL\'')+xlab('Quarters')
+```
+
+-------------
+
+# Previous report
+As we know, the stock prices in `DataStream` produce very extreme values for the Target Price Expected Return(TPER) when we divide an analyst target price over the stock price: $TPER = TP/P-1$
+
+``` {r, echo=FALSE, message=FALSE,warning=FALSE,cache.vars='pt.prices'} 
+#library('ProjectTemplate')
+setwd('~/Dropbox/workspace/Projects/Black-Litterman/BL-strategies')
+
+load('data/adj.prices.v5.RData')
+load('doc/StockPrices/pt.dt.old.RData')
+load('doc/StockPrices/all.prices.old.RData')
+yahoo.p <- setkey(melt(data.table(Date=index(p),coredata(p)),id.vars = 'Date',variable.name = 'Stock',value.name = 'yahoo')[,yahooPT:=yahoo[c(rep(NA,3),1:(.N-3))],by=Stock][,Stock:=as.character(Stock)],Date,Stock)[Stock=='AAPL',':='(yahoo=yahoo*7,yahooPT=yahooPT*7)]
+
+setkey(pt.dt,Date,Stock)
+setkey(all.prices[,Stock:=as.character(Stock)],Date,Stock)
+pt.prices <- na.omit(unique(pt.dt)[all.prices[yahoo.p]])[,meanPT:=mean(PT),by=list(Broker,Stock,q.id)]
+```
+
+```{r, echo=FALSE,warning=FALSE,cache.vars='analysis.p'}
+analysis.p <- pt.prices[,fix.p:=ifelse(priceAdj==0.02,yahoo,priceAdj)][,':='(tperDS=PT/pricePT-1,tperYH=PT/yahooPT-1,tperFix=PT/fix.p-1)][,':='(trunk.yh=truncate.f(tperYH,c(0.01,0.99)),trunk.ds=truncate.f(tperDS,c(0.01,0.99)),trunk.fix=truncate.f(tperFix,c(0.01,0.99))) ][,year:=format(q.id,'%Y')]
+```
+
+The following stocks have adjusted price of 2 cents which seems to be a database anomaly as I downloaded various times and got the same result:
+```{r, echo=FALSE,comment=""}
+unique(pt.prices[priceAdj==0.02],by='Stock')[,list(Date,Stock,priceAdj)]
+```
+I, then,  turn to another stock price database from `finance.yahoo.com`. Surprisingly, this source has different prices for the same stocks:
+```{r,echo=FALSE,warning=FALSE,comment=""}
+unique(pt.prices[priceAdj==0.02],by='Stock')[,list(Date,Stock,priceAdj,yahoo,meanPT)]
+```
+Notice, that average price target (`meanPT`) for the sames stock is very close to the values of the `yahoo` prices.  Giving the fact that `yahoo` seems to have a better stock prices information, I have created three stock prices sets. One is the `DataStream (DS)`, for the second, I completely substitute all prices in my analysis by the  `yahoo (YH)` prices, and third is replaced prices only for anomalous stocks with the `yahoo (Fix)` prices. Here are plots of `TPER` for each of the sets:
+```{r, echo=FALSE,warning=FALSE,cache.vars='analysis.p'}
+analysis.p <- pt.prices[,fix.p:=ifelse(priceAdj==0.02,yahoo,priceAdj)][,':='(tperDS=PT/pricePT-1,tperYH=PT/yahooPT-1,tperFix=PT/fix.p-1)][,':='(trunk.yh=truncate.f(tperYH,c(0.01,0.99)),trunk.ds=truncate.f(tperDS,c(0.01,0.99)),trunk.fix=truncate.f(tperFix,c(0.01,0.99))) ][,year:=format(q.id,'%Y')]
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+
+ggplot(melt(analysis.p,id.vars = 'q.id',measure.vars = c('tperDS','tperYH','tperFix','trunk.ds','trunk.yh','trunk.fix')),aes(x=as.Date(q.id),y=value,group=as.Date(q.id)))+geom_boxplot()+facet_wrap(~variable,scale='free_y',ncol=3)+scale_y_continuous(labels = percent)+ylab('Expected return, in percent')+theme_bw()+ggtitle('Comparison of TPER values for each of the stock prices \n for the full set (top row) and trunkated (bottom row)')+xlab('Years')
+```
+
+```{r,echo=FALSE,warning=FALSE}
+ggplot(melt(analysis.p[,lapply(.SD,mean,na.rm=T),.SDcols=c('tperDS','tperYH','tperFix','trunk.ds','trunk.yh','trunk.fix'),by=year],id.vars = 'year'),aes(x=as.Date(year,format='%Y'),y=value,color=variable))+geom_bar(stat='identity',fill='white')+facet_wrap(~variable,scale='free_y',ncol=3)+scale_y_continuous(labels = percent)+ylab('Average expected return, in percent')+theme_bw()+ggtitle('Average per year per stock TPER values \n for each of the stock prices databases \n for the full set (top row) and trunkated (bottom row)')+xlab('Years')+theme(legend.position='none')
+```
+
+Looking at average per year plot, observe that the `Fix` dataset seems cured the anomaly in the `DataStream` sets as values mostly uniformly distributed. Now we have two options whether to switch completely to the `yahoo` prices or to use `yhaoo` prices for the selected  stocks and keep all others from the `DataStream`.
+
+The table below shows some descriptive statistics for each of the resulted price sets. 
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,results='asis'}
+library(pastecs)
+library(xtable)
+options(xtable.comment = FALSE)
+xtable(analysis.p[,descriptive.f(.SD),.SDcols=c('tperDS','tperYH','tperFix','trunk.ds','trunk.yh','trunk.fix')])
+```
+

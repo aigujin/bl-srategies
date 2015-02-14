@@ -1,0 +1,100 @@
+---
+title: "Meeting report"
+author: "Artur Aiguzhinov"
+date: 'September 3rd 2014 '
+output:
+  pdf_document:
+    highlight: espresso
+    fig_caption: true
+bibliography: rank.bib
+---
+``` {r, echo=FALSE,warning=FALSE,message=FALSE,cache.vars='pt.ratio'}
+library(data.table)
+#library(knitcitations)
+#library(bibtex)
+#biblio <- read.bib('~/Dropbox/Documents/Bibliography/rank.bib')
+setwd('~/Dropbox/workspace/Projects/Black-Litterman/BL-strategies')
+load('cache/q.data.RData')
+load('eda/ds.pt.RData')
+source('lib/BL-functions.R')
+q.data <- q.data[,':='(year=format(s.Date,'%Y'),trunk.view=truncate.f(b.view,0.05))]
+
+pt.ratio <- na.omit(setkey(unique(q.data[,':='(consPT=mean(PT),mdPT=median(PT),numPT=.N),by=list(q.id,Stock)][,list(q.id,DSCD,Stock,consPT,mdPT,numPT)],by=c('q.id','Stock')),q.id,DSCD)[setkey(ds.pt,q.id,DSCD),allow.cartesian=T])[,':='(md.ratio=round(as.numeric(md.PT.DS)/mdPT,3),mn.ratio=as.numeric(mn.PT.DS)/consPT,num.ratio=as.numeric(num.PT.DS)/numPT)]
+```
+# High price targe values
+## Introduction
+The purpose of this report is to present arguments that would strengthen the hypothesis of analysts' optimism. Currently, this hypothesis is argued that there exists an inconsistency in price target database; namely, the adjusted vs. non-adjusted for stock-splits and dividends stock prices and price targets. My previous reports show that stock prices are adjusted and that price targets are mostly adjusted. In this report I show that analysts do, in fact, set a very optimistic price targets.
+
+## Background
+On my last meeting with Ana Paula, we discussed the problem of high values in price targets and, subsequently, optimistic expected returns.
+
+Since we don't have anymore an access to the detailed history of `IBES` database, I suggested to use `Datastream` as they have the consensus history of price targets. I downloaded  mean, median, and number of price targets series. At the meeting, I had only mean price target series and I could not perform a good analysis as the values were all skewed. That is why, after the meeting, I obtained median and the number of price targets.
+
+## Methodology
+If both databases (`IBES` and `Datastream`) are in-sync, then the ratio of same metric from both databases would be close or equal to 1.
+
+First step was to compare the total number of observations in `Datastream` and `IBES`. The total number of observations in `Datastream` is `r prettyNum(pt.ratio[,sum(as.numeric(num.PT.DS))],big.mark=' ') ` and in `IBES` it's `r prettyNum(q.data[,.N],big.mark=' ')`. `Datastream` has more price target reports than my database. I think it could be the fact that `Datastream` captures price target announcements with different time horizons.
+
+As suggested, I calculate the following ratio for each of the metrics: median, mean, and number of observations on a  "per stock per quarter" basis.
+
+\begin{equation}
+ratio=\frac{Datastream}{IBES}
+\end{equation}
+
+The descriptive statistics is presented in table (1). The total number of observations is `r pt.ratio[,.N,by=list(Stock,q.id)][,.N]`. Observe, that mean and median of eq. (1)  are all around 1; that is, on average, the price target reports coincide in both of the databases. Visually we can see it form  figure (1) where I plot the decreasing the median of eq. (1) with the horizontal red line corresponding to 1. We see that most of the observations lie along the red line and in those cases both databases provide a similar price target information. The extreme values on both end of the red line signify an existing misalignment and, at this point, it is difficult to investigate further which database produce such extreme values. 
+
+## On-line evidence
+It has been suggested to check if there are some evidences left on-line that show a very optimistic analyst's report. 
+
+[This announcement](http://www.cbsnews.com/news/280-price-seen-for-amazon/) tells that on April 16th, 1999 Amazon (AMZN) traded at $184 and one analyst (Jamie Kiggen) revised his target from $190 to $280, or, in TRER values, from `r round(190/184-1,3)` to `r round(280/184-1,3)`. In December of 2009, the analysts were not that optimistic about AMZN. [This link](http://www.benzinga.com/media/cnbc/73215/piper-jaffray-raises-amazon-s-amzn-price-target-to-172) tells that on December 29th Kaufman Bros. revised his price target to $155 with closing day stock price of 134.52 (TPER=`r round(155/134.52-1,3)`). We see, that analysts do, in fact, make a very optimistic price targets announcements.
+
+## State-of-the-art
+I looked at the literature on price targets and found a number of articles that have similar initial setup; namely, using price targets to calculate analysts' expected returns. One particular paper has even similar to my time periods: 1999 -- 2009 [@bradshaw2012]. Figure (2) reproduces the fragment of their sample descriptive statistics. I made a similar table with my values. I applied a 5th percentile filter on the top and the bottom of the observations.  The corresponding descriptive statistics is presented in  table (2). We see, that my sample has less observations (`r prettyNum(q.data[!is.na(trunk.view),.N],big.mark=' ')` vs. 492 647), probably, due to the less number of firms in my sample; however, the number of Brokers is quite similar.
+
+Next, I compare TPER of @bradshaw2012(fig. 3) and from my database (table (3)). Looking at the both tables, observe that values for TPER are quite similar: the average for all periods TPERs are 0.24 for 3619 firms (@bradshaw2012) and `r round(q.data[!is.na(trunk.view),mean(truncate.f(b.view,0.05),na.rm=T)],3)`  for `r q.data[!is.na(trunk.view),.N,by=Stock][,.N]` firms (my data). In addition, I looked in other papers with similar analysis and found that my numbers are quite low. For example, @zhou2013 reports for the period of 2000 -- 2009 an average TP/P of 1.96 for total of 2731 firms. 
+
+## Conclusion
+I conclude, that values of price target in majority of cases are high because the analysts believe so. Comparing my data with different source (`Datastream`) and with similar research reveal, that, on average, my data is consistent with the state-of-the-art. The trimming of data is necessary to eliminate the extreme values.
+
+
+#References
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,results='asis'}
+library(pastecs)
+library(xtable)
+options(xtable.comment = FALSE)
+print(xtable(setnames(pt.ratio[,descriptive.f(.SD),.SDcols=c('md.ratio','mn.ratio','num.ratio')],'V1','Statistics'),caption='The descriptive statistics of ratios (full sample)'),include.rownames=F)
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.cap='Decreasing ratio of median'}
+library(ggplot2)
+library(zoo)
+ggplot(pt.ratio[order(md.ratio,decreasing=T)],aes(y=md.ratio,x=index(md.ratio)))+geom_point()+geom_hline(yintercept=1,color='red')+theme_bw()+ggtitle('Decreasing median of eq.(1) (full set)')+xlab('Index')+ylab('Value')
+```
+
+![A snippet of the paper by @bradshaw2012 with their sample descriptive statistics](/Users/aiguzhinov/Dropbox/workspace/Projects/Black-Litterman/BL-strategies/reports/bradshaw01.png)
+
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE,results='asis'}
+#q.data[,descriptive.f(truncate.f(b.view,0.05))]
+#q.data[,trunk.view:=truncate.f(b.view,0.05)]
+
+stats.q.data <- rbind(setnames(cbind(q.data[!is.na(trunk.view),.N,by=list(year,Stock)][,.N,by=year],q.data[!is.na(trunk.view),.N,by=list(year,Broker)][,.N,by=year][,N],q.data[!is.na(trunk.view),.N,by=year][,N]),c('Years','Firms','Brokers','Observations')),data.table(cbind(Years='All years','Firms'=q.data[!is.na(trunk.view),.N,by=Stock][,.N],'Brokers'=q.data[!is.na(trunk.view),.N,by=Broker][,.N],'Observations'=prettyNum(q.data[!is.na(trunk.view),.N],big.mark=' '))))
+options(xtable.comment = FALSE)
+print(xtable(stats.q.data,caption='The descriptive statistics of price target sample (truncated sample)'),include.rownames=F)
+  
+#q.data[!is.na(trunk.view),mean(truncate.f(b.view,0.05),na.rm=T),by=list(year)][,round(V1,3)]
+```
+
+![A snipped of the descriptive stat of TP/P from @bradshaw2012](/Users/aiguzhinov/Dropbox/workspace/Projects/Black-Litterman/BL-strategies/reports/bradshaw02.png)
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE,results='asis'}
+#q.data[,trunk.view:=truncate.f(b.view,0.05)]
+
+stats.tper <- setnames(rbind(q.data[!is.na(trunk.view),mean(truncate.f(b.view,0.05),na.rm=T),by=list(year)],data.table(cbind(year='All',V1=q.data[!is.na(trunk.view),mean(truncate.f(b.view,0.05),na.rm=T)])))[,V1:=as.numeric(as.character(V1))],'V1','TP/P-1')
+
+options(xtable.comment = FALSE)
+print(xtable(stats.tper,digits=3,caption='The descriptive statistics of TP/P-1 (truncated sample)'),include.rownames=F)
+```
+

@@ -1,0 +1,146 @@
+\begin{thebibliography}{}
+
+\bibitem[Aiguzhinov et~al., 2010]{aiguzhinov2010}
+Aiguzhinov, A., Soares, C., and Serra, A. (2010).
+\newblock A similarity-based adaptation of naive {B}ayes for label ranking:
+  Application to the metalearning problem of algorithm recommendation.
+\newblock In {\em Discovery Science}, volume 6332 of {\em Lecture Notes in
+  Computer Science}, pages 16--26.
+
+\bibitem[Barber et~al., 2001]{barber2001}
+Barber, B., Lehavy, R., McNichols, M., and Trueman, B. (2001).
+\newblock Can investors profit from the prophets? {S}ecurity analyst
+  recommendations and stock returns.
+\newblock {\em The Journal of Finance}, 56(2):531--563.
+
+\bibitem[Black and Litterman, 1992]{black1992}
+Black, F. and Litterman, R. (1992).
+\newblock Global portfolio optimization.
+\newblock {\em Financial Analysts Journal}, 48(5):28--43.
+
+\bibitem[Bodie et~al., 2009]{bodie2009}
+Bodie, Z., Kane, A., and Marcus, A. (2009).
+\newblock {\em Investments}.
+\newblock McGraw-Hill: Singapore, 8 edition.
+
+\bibitem[Bradshaw, 2002]{bradshaw2002}
+Bradshaw, M.~T. (2002).
+\newblock The use of target prices to justify sell-side analysts' stock
+  recommendations.
+\newblock {\em Accounting Horizons}, 16(1):27--41.
+
+\bibitem[Bradshaw, 2004]{bradshaw2004}
+Bradshaw, M.~T. (2004).
+\newblock How do analysts use their earnings forecasts in generating stock
+  recommendations?
+\newblock {\em The Accounting Review}, 79(1):25--50.
+
+\bibitem[Brav and Lehavy, 2003]{brav2003}
+Brav, A. and Lehavy, R. (2003).
+\newblock An empirical analysis of analysts' target prices: Short-term
+  informativeness and long-term dynamics.
+\newblock {\em The Journal of Finance}, 58(5):1933--1968.
+
+\bibitem[Brazdil et~al., 2003]{brazdil2003}
+Brazdil, P., Soares, C., and Costa, J. (2003).
+\newblock Ranking learning algorithms: {U}sing {IBL} and meta-learning on
+  accuracy and time results.
+\newblock {\em Machine Learning}, 50(3):251--277.
+
+\bibitem[Brown, 2001]{brown2001}
+Brown, L. (2001).
+\newblock How important is past analyst earnings forecast accuracy?
+\newblock {\em Financial Analysts Journal}, 57(6):44--49.
+
+\bibitem[Clement, 1999]{clement1999}
+Clement, M. (1999).
+\newblock Analyst forecast accuracy: Do ability, resources, and portfolio
+  complexity matter?
+\newblock {\em Journal of Accounting and Economics}, 27(3):285--303.
+
+\bibitem[Da and Schaumburg, 2011]{da2011}
+Da, Z. and Schaumburg, E. (2011).
+\newblock Relative valuation and analyst target price forecasts.
+\newblock {\em Journal of Financial Markets}, 14(1):161--192.
+
+\bibitem[Da et~al., 2011]{da2011bl}
+Da, Z., Schaumburg, E., and Chen, L. (2011).
+\newblock Implementing {B}lack-{L}itterman using an equivalent formula and
+  equity analyst target prices.
+\newblock {\em Available at SSRN 2031172}.
+
+\bibitem[Desai et~al., 2000]{desai2000ass}
+Desai, H., Liang, B., and Singh, A. (2000).
+\newblock Do {A}ll-{S}tars shine? {E}valuation of analyst recommendations.
+\newblock {\em Financial Analysts Journal}, 56(3):20--29.
+
+\bibitem[Diether et~al., 2002]{diether2002}
+Diether, K., Malloy, C., and Scherbina, A. (2002).
+\newblock Differences of opinion and the cross section of stock returns.
+\newblock {\em The Journal of Finance}, 57(5):2113--2141.
+
+\bibitem[Emery and Li, 2009]{emery2009}
+Emery, D. and Li, X. (2009).
+\newblock Are the {W}all {S}treet analyst rankings popularity contests?
+\newblock {\em Journal of Financial and Quantitative Analysis}, 44(2):411.
+
+\bibitem[Ertimur et~al., 2007]{ertimur2007}
+Ertimur, Y., Sunder, J., and Sunder, S. (2007).
+\newblock Measure for measure: The relation between forecast accuracy and
+  recommendation profitability of analysts.
+\newblock {\em Journal of Accounting Research}, 45(3):567--606.
+
+\bibitem[Fama, 1970]{fama1970ecm}
+Fama, E. (1970).
+\newblock Efficient capital markets: A review of empirical work.
+\newblock {\em The Journal of Finance}, 25:383--417.
+
+\bibitem[Glushkov, 2009]{glushkov2009}
+Glushkov, D. (2009).
+\newblock Overview of {IBES} on {WRDS}: Research and data issues.
+
+\bibitem[Grossman and Stiglitz, 1980]{grossman1980iie}
+Grossman, S. and Stiglitz, J. (1980).
+\newblock On the impossibility of informationally efficient prices.
+\newblock {\em American Economic Review}, 70:393--408.
+
+\bibitem[Hassell and Jennings, 1986]{hassel1986}
+Hassell, J.~M. and Jennings, R.~H. (1986).
+\newblock Relative forecast accuracy and the timing of earnings forecast
+  announcements.
+\newblock {\em The Accounting Review}, 61(1):pp. 58--75.
+
+\bibitem[Li, 2005]{li2005persistence}
+Li, X. (2005).
+\newblock The persistence of relative performance in stock recommendations of
+  sell-side financial analysts.
+\newblock {\em Journal of accounting and economics}, 40(1):129--152.
+
+\bibitem[Mikhail et~al., 2004]{mikhail2004sae}
+Mikhail, M., Walther, B., and Willis, R. (2004).
+\newblock Do security analysts exhibit persistent differences in stock picking
+  ability?
+\newblock {\em Journal of Financial Economics}, 74(1):67--91.
+
+\bibitem[Ohlson, 1995]{ohlson1995}
+Ohlson, J. (1995).
+\newblock Earnings, book values, and dividends in equity valuation.
+\newblock {\em Contemporary accounting research}, 11(2):661--687.
+
+\bibitem[Simon and Curtis, 2011]{simon2011}
+Simon, A. and Curtis, A. (2011).
+\newblock The use of earnings forecasts in stock recommendations: Are accurate
+  analysts more consistent?
+\newblock {\em Journal of Business Finance \& Accounting}, 38(1-2):119--144.
+
+\bibitem[Womack, 1996]{womack1996}
+Womack, K. (1996).
+\newblock Do brokerage analysts' recommendations have investment value?
+\newblock {\em The Journal of Finance}, 51:137--168.
+
+\bibitem[Zhou, 2013]{zhou2013}
+Zhou, J. (2013).
+\newblock Analysts' target prices and stock recommendations.
+\newblock {\em Accounting and Finance Research}, 2(1):p1.
+
+\end{thebibliography}

@@ -1,0 +1,159 @@
+\begin{thebibliography}{29}
+\newcommand{\enquote}[1]{``#1''}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+
+\bibitem[\protect\citeauthoryear{Aiguzhinov, Soares, and Serra}{Aiguzhinov
+  et~al.}{2010}]{aiguzhinov2010}
+\textsc{Aiguzhinov, A., C.~Soares, and A.~Serra} (2010): \enquote{A
+  Similarity-Based Adaptation of Naive {B}ayes for Label Ranking: Application
+  to the Metalearning Problem of Algorithm Recommendation,} in \emph{Discovery
+  Science}, vol. 6332 of \emph{Lecture Notes in Computer Science}, 16--26.
+
+\bibitem[\protect\citeauthoryear{Barber, Lehavy, McNichols, and Trueman}{Barber
+  et~al.}{2001}]{barber2001}
+\textsc{Barber, B., R.~Lehavy, M.~McNichols, and B.~Trueman} (2001):
+  \enquote{Can investors Profit from the Prophets? {S}ecurity Analyst
+  Recommendations and Stock Returns,} \emph{The Journal of Finance}, 56,
+  531--563.
+
+\bibitem[\protect\citeauthoryear{Black and Litterman}{Black and
+  Litterman}{1992}]{black1992}
+\textsc{Black, F. and R.~Litterman} (1992): \enquote{Global portfolio
+  optimization,} \emph{Financial Analysts Journal}, 48, 28--43.
+
+\bibitem[\protect\citeauthoryear{Bonini, Zanetti, Bianchini, and Salvi}{Bonini
+  et~al.}{2010}]{bonini2010}
+\textsc{Bonini, S., L.~Zanetti, R.~Bianchini, and A.~Salvi} (2010):
+  \enquote{Target price accuracy in equity research,} \emph{Journal of Business
+  Finance \& Accounting}, 37, 1177--1217.
+
+\bibitem[\protect\citeauthoryear{Bradshaw}{Bradshaw}{2002}]{bradshaw2002}
+\textsc{Bradshaw, M.~T.} (2002): \enquote{The use of target prices to justify
+  sell-side analysts' stock recommendations,} \emph{Accounting Horizons}, 16,
+  27--41.
+
+\bibitem[\protect\citeauthoryear{Bradshaw}{Bradshaw}{2004}]{bradshaw2004}
+---\hspace{-.1pt}---\hspace{-.1pt}--- (2004): \enquote{How do analysts use
+  their earnings forecasts in generating stock recommendations?} \emph{The
+  Accounting Review}, 79, 25--50.
+
+\bibitem[\protect\citeauthoryear{Brav and Lehavy}{Brav and
+  Lehavy}{2003}]{brav2003}
+\textsc{Brav, A. and R.~Lehavy} (2003): \enquote{An Empirical Analysis of
+  Analysts' Target Prices: Short-term Informativeness and Long-term Dynamics,}
+  \emph{The Journal of Finance}, 58, 1933--1968.
+
+\bibitem[\protect\citeauthoryear{Brazdil, Soares, and Costa}{Brazdil
+  et~al.}{2003}]{brazdil2003}
+\textsc{Brazdil, P., C.~Soares, and J.~Costa} (2003): \enquote{Ranking Learning
+  Algorithms: {U}sing {IBL} and Meta-Learning on Accuracy and Time Results,}
+  \emph{Machine Learning}, 50, 251--277.
+
+\bibitem[\protect\citeauthoryear{Brown}{Brown}{2001}]{brown2001}
+\textsc{Brown, L.} (2001): \enquote{How Important is Past Analyst Earnings
+  Forecast Accuracy?} \emph{Financial Analysts Journal}, 57, 44--49.
+
+\bibitem[\protect\citeauthoryear{Clement}{Clement}{1999}]{clement1999}
+\textsc{Clement, M.} (1999): \enquote{Analyst forecast accuracy: Do ability,
+  resources, and portfolio complexity matter?} \emph{Journal of Accounting and
+  Economics}, 27, 285--303.
+
+\bibitem[\protect\citeauthoryear{Cowles}{Cowles}{1933}]{cowles1933csm}
+\textsc{Cowles, A.} (1933): \enquote{Can stock market forecasters forecast,}
+  \emph{Econometrica}, 1, 309--324.
+
+\bibitem[\protect\citeauthoryear{Da and Schaumburg}{Da and
+  Schaumburg}{2011}]{da2011}
+\textsc{Da, Z. and E.~Schaumburg} (2011): \enquote{Relative valuation and
+  analyst target price forecasts,} \emph{Journal of Financial Markets}, 14,
+  161--192.
+
+\bibitem[\protect\citeauthoryear{Da, Schaumburg, and Chen}{Da
+  et~al.}{2011}]{da2011bl}
+\textsc{Da, Z., E.~Schaumburg, and L.~Chen} (2011): \enquote{Implementing
+  {B}lack-{L}itterman Using an Equivalent Formula and Equity Analyst Target
+  Prices,} \emph{Available at SSRN 2031172}.
+
+\bibitem[\protect\citeauthoryear{Desai, Liang, and Singh}{Desai
+  et~al.}{2000}]{desai2000ass}
+\textsc{Desai, H., B.~Liang, and A.~Singh} (2000): \enquote{Do {A}ll-{S}tars
+  Shine? {E}valuation of Analyst Recommendations,} \emph{Financial Analysts
+  Journal}, 56, 20--29.
+
+\bibitem[\protect\citeauthoryear{Diether, Malloy, and Scherbina}{Diether
+  et~al.}{2002}]{diether2002}
+\textsc{Diether, K., C.~Malloy, and A.~Scherbina} (2002): \enquote{Differences
+  of opinion and the cross section of stock returns,} \emph{The Journal of
+  Finance}, 57, 2113--2141.
+
+\bibitem[\protect\citeauthoryear{Emery and Li}{Emery and Li}{2009}]{emery2009}
+\textsc{Emery, D. and X.~Li} (2009): \enquote{Are the {W}all {S}treet Analyst
+  Rankings Popularity Contests?} \emph{Journal of Financial and Quantitative
+  Analysis}, 44, 411.
+
+\bibitem[\protect\citeauthoryear{Ertimur, Sunder, and Sunder}{Ertimur
+  et~al.}{2007}]{ertimur2007}
+\textsc{Ertimur, Y., J.~Sunder, and S.~Sunder} (2007): \enquote{Measure for
+  Measure: The Relation between Forecast Accuracy and Recommendation
+  Profitability of Analysts,} \emph{Journal of Accounting Research}, 45,
+  567--606.
+
+\bibitem[\protect\citeauthoryear{Fama}{Fama}{1970}]{fama1970ecm}
+\textsc{Fama, E.} (1970): \enquote{Efficient Capital Markets: A Review of
+  Empirical Work,} \emph{The Journal of Finance}, 25, 383--417.
+
+\bibitem[\protect\citeauthoryear{Glushkov}{Glushkov}{2009}]{glushkov2009}
+\textsc{Glushkov, D.} (2009): \enquote{Overview of {IBES} on {WRDS}: Research
+  and Data Issues,} .
+
+\bibitem[\protect\citeauthoryear{Grossman and Stiglitz}{Grossman and
+  Stiglitz}{1980}]{grossman1980iie}
+\textsc{Grossman, S. and J.~Stiglitz} (1980): \enquote{On the Impossibility of
+  Informationally Efficient Prices,} \emph{American Economic Review}, 70,
+  393--408.
+
+\bibitem[\protect\citeauthoryear{Hilary and Hsu}{Hilary and
+  Hsu}{2013}]{hilary2013}
+\textsc{Hilary, G. and C.~Hsu} (2013): \enquote{Analyst forecast consistency,}
+  \emph{The Journal of Finance}, 68, 271--297.
+
+\bibitem[\protect\citeauthoryear{Li}{Li}{2005}]{li2005persistence}
+\textsc{Li, X.} (2005): \enquote{The persistence of relative performance in
+  stock recommendations of sell-side financial analysts,} \emph{Journal of
+  Accounting and Economics}, 40, 129--152.
+
+\bibitem[\protect\citeauthoryear{Mikhail, Walther, and Willis}{Mikhail
+  et~al.}{2004}]{mikhail2004sae}
+\textsc{Mikhail, M., B.~Walther, and R.~Willis} (2004): \enquote{Do security
+  analysts exhibit persistent differences in stock picking ability?}
+  \emph{Journal of Financial Economics}, 74, 67--91.
+
+\bibitem[\protect\citeauthoryear{O'Brien}{O'Brien}{1990}]{obrien1990}
+\textsc{O'Brien, P.} (1990): \enquote{Forecast accuracy of individual analysts
+  in nine industries,} \emph{Journal of Accounting Research}.
+
+\bibitem[\protect\citeauthoryear{Ohlson}{Ohlson}{1995}]{ohlson1995}
+\textsc{Ohlson, J.} (1995): \enquote{Earnings, Book Values, and Dividends in
+  Equity Valuation,} \emph{Contemporary Accounting Research}, 11, 661--687.
+
+\bibitem[\protect\citeauthoryear{Ohlson and Juettner-Nauroth}{Ohlson and
+  Juettner-Nauroth}{2005}]{ohlson2005}
+\textsc{Ohlson, J.~A. and B.~E. Juettner-Nauroth} (2005): \enquote{Expected EPS
+  and EPS growth as determinantsof value,} \emph{Review of Accounting Studies},
+  10, 349--365.
+
+\bibitem[\protect\citeauthoryear{Simon and Curtis}{Simon and
+  Curtis}{2011}]{simon2011}
+\textsc{Simon, A. and A.~Curtis} (2011): \enquote{The use of earnings forecasts
+  in stock recommendations: Are accurate analysts more consistent?}
+  \emph{Journal of Business Finance \& Accounting}, 38, 119--144.
+
+\bibitem[\protect\citeauthoryear{Womack}{Womack}{1996}]{womack1996}
+\textsc{Womack, K.} (1996): \enquote{Do Brokerage Analysts' Recommendations
+  Have Investment Value?} \emph{The Journal of Finance}, 51, 137--168.
+
+\bibitem[\protect\citeauthoryear{Zhou}{Zhou}{2013}]{zhou2013}
+\textsc{Zhou, J.} (2013): \enquote{Analysts' Target Prices and Stock
+  Recommendations,} \emph{Accounting and Finance Research}, 2, p1.
+
+\end{thebibliography}
