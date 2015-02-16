@@ -118,6 +118,8 @@ final.bl$Method <- factor(final.bl$Method,levels=unique(final.bl$Method)[c(3,2,1
 final.bl$Views <- factor(final.bl$Views,levels=unique(final.bl$Views)[c(4,1,2,3)])
 cache('final.bl')
 #require("knitr")
-#knit('doc/paper/paper-knitr-APS.Rnw',output = 'doc/paper/')
-colourCount = length(unique(final.bl$Views))
-getPalette = colorRampPalette(RColorBrewer::brewer.pal(colourCount, "Set1"))
+setwd('~/Dropbox/workspace/Projects/BL-strategies/doc/paper/')
+knit2pdf('paper-knitr-APS.Rnw',quiet=T)
+
+#colourCount = length(unique(final.bl$Views))
+#getPalette = colorRampPalette(RColorBrewer::brewer.pal(colourCount, "Set1"))
