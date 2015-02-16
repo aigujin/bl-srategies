@@ -1,35 +1,16 @@
-rm(list=ls())
-setwd('~/Dropbox/workspace/Projects/Black-Litterman/BL-strategies/')
 
-library(ProjectTemplate)
-load.project()
-#source('lib/BL-functions.APS.R')
-source('lib/BL-functions.R')
-#source('lib/ranking.scripts.APS.R')
-#brok.tper <- acast(unique(q.data,by=c('Broker','q.id','Stock'),fromLast = T),q.id~Broker~Stock,value.var='b.view')
 
 stocks <- sort(unique(unlist(lapply(market.list,function(m){m$stock.names}))))
 quarters <- setnames(unique(market.set[,.(Quarters)]),'q.id')[,q.id:=as.yearqtr(q.id)]
 
-core.dt <- setkey(na.omit(setkey(na.omit(q.data),q.id)[setkey(quarters,q.id)])[,core.b:=.N>=12,by=list(Stock,Broker)][(core.b)][,true:=rank(score),by=list(q.id,Stock)][,core.s:=.N>=3,by=list(q.id,Stock)][(core.s)],Stock)[stocks]
-
-ranked.pt.dt <- core.dt[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock),.SDcols=c('q.id','Broker','Stock','true')][,.(q.id,Broker,Stock,true)]
-cache('ranked.pt.dt')
-
-percentile <- 0.05
-
-pt.trunk.brok.tper <- setkey(core.dt[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock),.SDcols=c('q.id','Broker','Stock','b.view')][,.(q.id,Broker,Stock,b.view)][,true:=truncate.f(b.view,percentile)],q.id,Stock,Broker)
-
-pt.exp.tmp <- pt.trunk.brok.tper[,naive:=c(NA,head(true,-1)),by=.(Broker,Stock)][,default:=rollapplyr(true,seq_len(length(true)),mean,na.rm=T),by=.(Broker,Stock)]
-
-pt.exp.ret <- setkey(melt(pt.exp.tmp,id.vars = c('q.id','Stock','Broker'),measure.vars = c('true','naive','default'),value.name = 'exp.ret',variable.name = 'Method'),q.id,Stock,Broker,Method)
+core.dt <- setkey(q.data[,core.b:=.N>=12,by=list(Stock,Broker)][(core.b)][,true:=rank(score),by=list(q.id,Stock)][,core.s:=.N>=3,by=list(q.id,Stock)][(core.s)][,core.q:=length(unique(q.id))>=8,by=.(Stock)][(core.q)],Stock)[stocks]
 
 
+pt.exp.ret <- setkey(melt(core.dt[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock),.SDcols=c('q.id','Broker','Stock','b.view')][,.(q.id,Broker,Stock,b.view)][,true:=truncate.f(b.view,percentile)][,naive:=c(NA,head(true,-1)),by=.(Broker,Stock)][,default:=rollapplyr(true,seq_len(length(true)),mean,na.rm=T),by=.(Broker,Stock)],id.vars = c('q.id','Stock','Broker'),measure.vars = c('true','naive','default'),value.name = 'exp.ret',variable.name = 'Method'),q.id,Stock,Broker,Method)
 
 
-pt.new.tmp <- ranked.pt.dt[,naive:=c(NA,head(true,-1)),by=.(Broker,Stock)][,mean.rank:=rollapplyr(true,seq_len(length(true)),mean,na.rm=T),by=.(Broker,Stock)][,default:=rank(mean.rank,na.last = 'keep'),by=.(q.id,Stock)]
+pt.new <- setkey(melt(core.dt[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock),.SDcols=c('q.id','Broker','Stock','true')][,.(q.id,Broker,Stock,true)][,naive:=c(NA,head(true,-1)),by=.(Broker,Stock)][,mean.rank:=rollapplyr(true,seq_len(length(true)),mean,na.rm=T),by=.(Broker,Stock)][,default:=rank(mean.rank,na.last = 'keep'),by=.(q.id,Stock)],id.vars = c('q.id','Stock','Broker'),measure.vars = c('true','naive','default'),value.name = 'rank',variable.name = 'Method'),q.id,Stock,Broker,Method)
 
-pt.new <- setkey(melt(pt.new.tmp,id.vars = c('q.id','Stock','Broker'),measure.vars = c('true','naive','default'),value.name = 'rank',variable.name = 'Method'),q.id,Stock,Broker,Method)
 
 
 pt.set <- pt.new[pt.exp.ret]
@@ -38,7 +19,8 @@ pt.ret <- pt.set[,rank.exp.ret.f(rank,exp.ret),by=.(q.id,Stock,Method)][V1!=0,][
 
 #ggplot(pt.ret,aes(x=as.Date(q.id),y=V1,group=as.Date(q.id)))+geom_boxplot()+facet_grid(Method~.,scales='free_x')+theme_bw()
 
-pt.list.rank <- dlply(unique(pt.ret,by=c('q.id','Stock','Method')),'Method',acast,q.id~Stock,value.var='V1')
+pt.list.rank <- acast(unique(pt.ret,by=c('q.id','Stock','Method')),q.id~Stock~Method,value.var='V1')
+
 pt.rank.views <- setnames(pt.ret[,year:=format(as.yearqtr(q.id),'%Y')],'V1','View')
 #cache('pt.rank.views')
 ###add NA before and after
@@ -50,50 +32,51 @@ cache('pt.rank.views')
 
 ###EPS case
 load('~/Dropbox/workspace/Projects/EPS/cache/complete.dt.RData')
-eps.dt <- unique(setkey(na.omit(setkey(complete.dt[,':='(true=rank,q.id=calQ)],Stock)[stocks]),q.id)[quarters],by=c('q.id','Broker','Stock'))
 
-ranked.eps.dt <- eps.dt[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock),.SDcols=c('q.id','Broker','Stock','true')][,.(q.id,Broker,Stock,true)]
-load('cache/ranked.pt.dt.RData')
-ranked.eps.dt <- setkey(ranked.pt.dt,q.id,Broker,Stock)[ranked.eps.dt][,true:=NULL][,true:=i.true][,i.true:=NULL]
+eps.dt <- setkey(melt(unique(setkey(na.omit(setkey(complete.dt[,':='(true=rank,q.id=fis.q)],Stock)[stocks]),q.id)[quarters],by=c('q.id','Broker','Stock'))[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock),.SDcols=c('q.id','Broker','Stock','true')][,.(q.id,Broker,Stock,true)][,naive:=c(NA,head(true,-1)),by=.(Broker,Stock)][,mean.rank:=rollapplyr(true,seq_len(length(true)),mean,na.rm=T),by=.(Broker,Stock)][,default:=rank(mean.rank,na.last = 'keep'),by=.(q.id,Stock)],id.vars = c('q.id','Stock','Broker'),measure.vars = c('true','naive','default'),value.name = 'rank',variable.name = 'Method'),q.id,Stock,Broker,Method)
 
-cache('ranked.eps.dt')
+#load('cache/ranked.pt.dt.RData')
+#ranked.eps.dt <- setkey(ranked.pt.dt,q.id,Broker,Stock)[ranked.eps.dt][,true:=NULL][,true:=i.true][,i.true:=NULL]
 
-eps.new.tmp <- ranked.eps.dt[,naive:=c(NA,head(true,-1)),by=.(Broker,Stock)][,mean.rank:=rollapplyr(true,seq_len(length(true)),mean,na.rm=T),by=.(Broker,Stock)][,default:=rank(mean.rank,na.last = 'keep'),by=.(q.id,Stock)]
+#cache('ranked.eps.dt')
 
-eps.new <- setkey(melt(eps.new.tmp,id.vars = c('q.id','Stock','Broker'),measure.vars = c('true','naive','default'),value.name = 'rank',variable.name = 'Method'),q.id,Stock,Broker,Method)
 
-eps.set <- eps.new[pt.exp.ret]
+eps.set <- eps.dt[pt.exp.ret]
 
 
 eps.exp.ret <- eps.set[,rank.exp.ret.f(rank,exp.ret),by=.(q.id,Stock,Method)][V1!=0,][q.id!='1999 Q2',]
 
+eps.list.rank <- acast(unique(eps.exp.ret,by=c('q.id','Stock','Method')),q.id~Stock~Method,value.var='V1')
+
+
 eps.rank.views <- setnames(eps.exp.ret[,year:=format(as.yearqtr(q.id),'%Y')],'V1','View')
+
 cache('eps.rank.views')
 
-eps.list.rank <- dlply(unique(eps.exp.ret,by=c('q.id','Stock','Method')),'Method',acast,q.id~Stock,value.var='View')
 
 
-meanTper <- na.omit(melt(unique(pt.trunk.brok.tper[,true:=median(true,na.rm=T),by=list(q.id,Stock)],by=c('q.id','Stock'))[,.(q.id,Stock,true)][,':='(naive=c(NA,head(true,-1)),default=rollapplyr(true,seq_len(length(true)),mean,na.rm=T)),by=Stock],id.vars = c('q.id','Stock'),measure.vars = c('true','naive','default'),variable.name = 'Method')[q.id!='1999 Q2',])
+meanTper <- na.omit(melt(unique(core.dt[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock),.SDcols=c('q.id','Broker','Stock','b.view')][,.(q.id,Broker,Stock,b.view)][,true:=truncate.f(b.view,percentile)][,true:=median(true,na.rm=T),by=list(q.id,Stock)],by=c('q.id','Stock'))[,.(q.id,Stock,true)][,':='(naive=c(NA,head(true,-1)),default=rollapplyr(true,seq_len(length(true)),mean,na.rm=T)),by=Stock],id.vars = c('q.id','Stock'),measure.vars = c('true','naive','default'),variable.name = 'Method')[q.id!='1999 Q2',])
+
+#meanTper <- pt.exp.ret[,median(exp.ret,na.rm=T),by=.(q.id,Stock,Method)]
+
 
 nr.views <- setnames(meanTper[,year:=format(as.yearqtr(q.id),'%Y')],'value','View')
 cache('nr.views')
 
-cons.list.rank <- dlply(unique(meanTper,by=c('q.id','Stock','Method')),'Method',acast,q.id~Stock,value.var='View')
+cons.list.rank <- acast(unique(meanTper,by=c('q.id','Stock','Method')),q.id~Stock~Method,value.var='View')
 
 require(scales)
-#conf.coef <- acast(unique(core.dt,by=c('q.id','Stock'),fromLast = T),q.id~Stock,value.var='s.coefVar')
 
-conf.dt.tmp <- unique(core.dt,by=c('q.id','Stock'),fromLast = T)[,.(q.id,Stock,s.coefVar)][,true:=0]
 
-#conf.dt <- melt(conf.dt.tmp[,naive:=rollapplyr(s.coefVar,4,mean,na.rm=T,fill=NA,partial=T),by=Stock][,default:=naive],id.vars = c('q.id','Stock'),measure.vars = c('true','naive','default'))[q.id!='1999 Q2',]
+conf.dt <- melt(unique(core.dt,by=c('q.id','Stock'),fromLast = T)[,.(q.id,Stock,s.coefVar)][,true:=0][,naive:=c(NA,head(s.coefVar,-1)),by=Stock][,default:=rollapplyr(s.coefVar,seq_len(length(s.coefVar)),mean,na.rm=T,partial=T),by=Stock],id.vars = c('q.id','Stock'),measure.vars = c('true','naive','default'))[q.id!='1999 Q2',]
 
-conf.dt <- melt(conf.dt.tmp[,naive:=c(NA,head(s.coefVar,-1)),by=Stock][,default:=rollapplyr(naive,seq_len(length(naive)),mean,na.rm=T,partial=T),by=Stock],id.vars = c('q.id','Stock'),measure.vars = c('true','naive','default'))[q.id!='1999 Q2',]
+#conf.dt <- melt(conf.dt[,naive:=c(NA,head(s.coefVar,-1)),by=Stock][,default:=rollapplyr(naive,seq_len(length(naive)),mean,na.rm=T,partial=T),by=Stock],id.vars = c('q.id','Stock'),measure.vars = c('true','naive','default'))[q.id!='1999 Q2',]
 
 
 conf.coef <- acast(conf.dt,q.id~Stock~variable,value.var='value')
 
-eps.stocks <- intersect(colnames(eps.list.rank[[1]]),dimnames(conf.coef)[[2]])
-
+eps.stocks <- intersect(dimnames(eps.list.rank)[[2]],dimnames(conf.coef)[[2]])
+#pt.stocks <- intersect(dimnames(pt.list.rank)[[2]],dimnames(conf.coef)[[2]])
 
 ##BL inputs for non-rank strategy:meanTper and s.coefVar
 #cons.rankings <- pt.baseline.rankings[3:42,pt.all.b,pt.all.s,]
