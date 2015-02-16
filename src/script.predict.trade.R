@@ -15,7 +15,7 @@ system.time(source('src/paper.trading.APS.true.R'))
 ### State var. data: ~118 sec
 system.time(source('munge/02-state-variables.R'))
 ### Analysts ranking data: ~ 280 sec
-#system.time(source('munge/03-analysts.process.R'))
+system.time(source('munge/03-analysts.process.R'))
 ### Predicting ~ 347 sec
 system.time(source('src/predicting.R'))
 
