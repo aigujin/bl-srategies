@@ -8,6 +8,10 @@ delta<-1L;tau=1/50;baselines <- c('true','naive','default');methods<-c('raw','1d
 require(labelRank)
 ### market data: ~ 113 sec (mcapply: ~ 52 sec)
 system.time(source('munge/01-data.q.ret.R'))
+
+### data for first paper
+system.time(source('src/paper.trading.APS.true.R'))
+
 ### State var. data: ~118 sec
 system.time(source('munge/02-state-variables.R'))
 ### Analysts ranking data: ~ 280 sec

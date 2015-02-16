@@ -260,3 +260,93 @@ mean.pt.dt[order(pt.ratio,decreasing=T)]
 #
 # new.p[Stock=='AAPL',':='(Price=Price*7,new.dsPT=new.dsPT*7)]
 
+###EDA of trading stratgies
+###
+
+ggplot(final.bl,aes(x=as.Date(Quarters),y=cum.ret,group=Views,color=Views))+geom_line(size=0.5)+facet_wrap(~ Method,scale='free')+ylab('Portfolio wealth (initial=$100)')+xlab('Quarters')+ggtitle('Portfolio performance with $100 initial investment')+theme_bw(base_family='Avenir')+theme(plot.title = element_text(colour = "Blue"),legend.position='top')+scale_color_manual(values=getPalette(colourCount))+guides(color=guide_legend(nrow=1))+geom_hline(yintercept=100)
+
+
+
+ggplot(final.bl,aes(x=as.Date(Quarters),y=port.ret,group=Views,color=Views))+geom_line(size=0.5)+facet_wrap(~ Method,scale='free_x')+ylab('Portfolio wealth (initial=$100)')+xlab('Quarters')+ggtitle('Portfolio performance with $100 initial investment')+theme_bw(base_family='Avenir')+theme(plot.title = element_text(colour = "Blue"),legend.position='top')+scale_color_manual(values=getPalette(colourCount))+guides(color=guide_legend(nrow=1))
+
+
+
+final.bl[,chart.CumReturns(xts(port.ret,order.by=as.Date(Quarters))),by=.(Method,Aggregation,Views)]
+
+test <- acast(final.bl,Quarters~Method~Views,value.var = 'port.ret')
+
+require(Quandl)
+requre(quantmod)
+Quandl.auth("X5ws5JEoYdP6VFefbPmQ")
+prices = getSymbols("^GSPC", from = "1999-01-01", to = "2009-12-31")
+tbil <- unique(data.table(Quandl('FRED/DTB3',start_date = '1999-01-01',end_date = '2009-12-31',sort='asc'))[,Quarters:=as.yearqtr(Date)][,rf:=mean(Value)/100/4,by=Quarters],by='Quarters')[3:44,.(Quarters,rf)]
+sp.ind <- (quarterlyReturn(get(prices)[,6]))[3:44,]-tbil[,rf]
+
+
+test.xts <- cbind(xts(test[,'true',],order.by=as.Date(as.yearqtr(dimnames(test)[[1]]))),coredata(sp.ind))
+
+chart.CumReturns(test.xts,wealth.index = T,legend.loc = "topleft")
+table.AnnualizedReturns(test.xts)
+InformationRatio(test.xts[,c(1:3)],test.xts[,3])
+table.CAPM(test.xts[,c(1:3)],test.xts[,4])
+chart.RollingPerformance(test.xts,width = 12,legend.loc = "topleft")
+chart.RiskReturnScatter(test.xts,add.sharpe = NA, scale = 4)
+chart.Drawdown(test.xts, main = "Drawdowns")
+#+geom_hline(yintercept=100)
+###Plot of num. views
+### Check the CONS for number of stocks. APS: number of stocks shoud be the same across all information sets. Fixed number of stocks  in each quarter for each view (CONS, TP, EPS)
+
+ggplot(unique(opt.w,by=c('n.views','Quarters','Method','Views')),aes(x=as.Date(as.yearqtr(Quarters)),y=n.views,color=Method,group=Method))+geom_line()+facet_grid(Views~.,scale='free_x')+theme_bw()+geom_point()
+
+#+scale_x_date(breaks='year',labels=date_format('%Y'))
+
+
+ggplot(unique(melt(final.bl[,list(Views,Method,ann.ret,ann.sd,ann.sr)],id.vars=c('Method','Views'))),aes(x=Views,y=value))+geom_bar(aes(fill=Views),stat='identity',alpha=0.7)+facet_grid(variable~Method,scale='free_y')+theme_bw(base_family='Avenir')+ggtitle('Annualized portfolio measures (return, st.dev, and the Sharpe ratio) \n conditional on confidence aggregation')+theme(plot.title = element_text(colour = "Blue"),legend.position='top',axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())+scale_y_continuous(labels=percent)+ylab('Percent')+geom_text(aes(label=round(value,3)*100),angle=90,size=3,hjust=1.2)+scale_fill_manual(values=getPalette(colourCount))#+guides(fill=guide_legend(nrow=1))
+
+
+periods.id <- c(paste(gsub('[[:space:]]','',rollapplyr(as.character(quarters[m.period,q.id]),20,first,by=4)),gsub('[[:space:]]','',rollapplyr(as.character(quarters[m.period,q.id]),20,last,by=4)),sep='/'),'All period')
+
+periods <- rbind(final.bl[,data.table(rollapplyr(port.ret,20,roll.ret.f,by=4,partial=F)),by=.(Views,Method)][,strat:='yes'],final.bl[,data.table(rollapplyr(ns.port.ret,20,roll.ret.f,by=4,partial=F)),by=.(Views,Method)][,strat:='no'],final.bl[,data.table(roll.ret.f(port.ret)),by=.(Views,Method)][,strat:='yes'],final.bl[,data.table(roll.ret.f(ns.port.ret)),by=.(Views,Method)][,strat:='no'])[,period:=periods.id,by=.(Views,Method,strat)][,sr:=ann.ret/ann.sd]
+
+
+periods.array <- acast(melt(periods,id.vars = c('Views','Method','period','strat')),period~Views~Method~strat~variable,value.var = 'value')
+
+ggplot(periods,aes(x=Views,y=ann.ret,fill=Views))+geom_bar(stat='identity',position='dodge') +facet_grid(Method~strat~period,scale='free_y')+theme_bw(base_family='Avenir')+theme(plot.title = element_text(colour = "Blue"),legend.position='top')+scale_color_manual(values=getPalette(colourCount))+guides(color=guide_legend(nrow=1))+geom_text(aes(label=round(ann.ret,2)),angle=90,size=3,hjust=1.2)
+
+ggplot(periods,aes(x=period,y=ann.ret,color=Views,group=Views))+geom_line() +facet_wrap(~ Method,scale='free_x')+theme_bw(base_family='Avenir')+theme(plot.title = element_text(colour = "Blue"),legend.position='top')+scale_color_manual(values=getPalette(colourCount))+guides(color=guide_legend(nrow=1))
+
+
+
+ggplot(unique(melt(final.bl[,list(Views,Method,meanViews,Ave.TO)],id.vars=c('Method','Views'))),aes(x=Views,y=value,fill=Views))+theme_bw(base_family='Avenir')+geom_bar(stat='identity')+facet_grid(variable~Method,scale='free_y')+ggtitle('Trading statistics conditional confidence aggregation \n (averages of number of views and turnover ratio)')+theme(legend.position='none',axis.title.x=element_blank(),plot.title = element_text(colour = "Blue"),axis.title.y=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())+scale_fill_manual(values=getPalette(colourCount))+guides(fill=guide_legend(nrow=1))
+#+geom_text(aes(label=round(value,2)),angle=90,size=3,hjust=1.2)
+
+#require(gridExtra)
+#cairo_pdf("graphs/bl.results.pdf", family="Avenir",h = 11.7, w = 8.3)
+#grid.arrange(p.cum.ret,p.ann.ret,p.TO)
+#dev.off()
+
+##Looks like these are the dates for SP500 from=1998-10-01 to 2009-09-30; shoud be from 1999-01-01 to 2009-12-31
+#prices = getSymbols("^GSPC", from = "1999-01-01", to = "2009-12-31")
+
+#prices = getSymbols("SPY", from = "1999-01-01", to = "2009-12-31")
+
+#rf = getSymbols("DTB3",src='FRED')
+
+
+#market.spy <- na.omit(setnames(setkey(data.table(Quarters=index(quarterlyReturn(get(prices)[,6])),coredata(quarterlyReturn(get(prices)[,6])))[,Quarters:=as.yearqtr(Quarters)],Quarters)[risk.free],2,'sp.ret')[,port.ret:=sp.ret-rf][,Views:='SPY'])
+
+market.spy<- setnames(data.table(Quarters=as.yearqtr(index(quarterlyReturn(get(prices)[,6]))),coredata(quarterlyReturn(get(prices)[,6]))),2,'ind.ret')[,Views:='Market'][,n.views:=500][,q.id:=.I][,.(Quarters,Views,ind.ret,n.views,q.id)]
+
+market.sp <- unique(market.set[,sp.ret:=sum(mw*ex.ret),by=Quarters][,Quarters:=as.yearqtr(Quarters)][,list(Quarters,sp.ret)])[,n.views:=500]
+
+m.all <- melt(setkey(market.spy,Quarters)[market.sp],id.vars = c('Quarters'),measure.vars = c('ind.ret','sp.ret'))
+ggplot(m.all,aes(x=as.Date(Quarters),y=value,color=variable))+geom_line()+theme_bw()
+
+
+chart.CumReturns(cbind(sp.ind,market.port.ret[,port.ret],unique(final.bl[Method=='true'&Views=='TP'&Aggregation=='ma'][,port.ret]),unique(final.bl[Method=='true'&Views=='CONS'&Aggregation=='ma'][,port.ret]),unique(final.bl[Method=='true'&Views=='EPS'&Aggregation=='ma'][,port.ret])))
+
+StdDev.annualized(cbind(sp.ind,market.port.ret[,port.ret],unique(final.bl[Method=='true'&Views=='TP'&Aggregation=='ma'][,port.ret]),unique(final.bl[Method=='true'&Views=='CONS'&Aggregation=='ma'][,port.ret]),unique(final.bl[Method=='true'&Views=='EPS'&Aggregation=='ma'][,port.ret])))
+StdDev.annualized(cbind(sp.ind,market.port.ret[,port.ret],unique(final.bl[Method=='naive'&Views=='TP'&Aggregation=='ma'][,port.ret]),unique(final.bl[Method=='naive'&Views=='CONS'&Aggregation=='ma'][,port.ret]),unique(final.bl[Method=='naive'&Views=='EPS'&Aggregation=='ma'][,port.ret])))
+StdDev.annualized(cbind(sp.ind,market.port.ret[,port.ret],unique(final.bl[Method=='default'&Views=='TP'&Aggregation=='ma'][,port.ret]),unique(final.bl[Method=='default'&Views=='CONS'&Aggregation=='ma'][,port.ret]),unique(final.bl[Method=='default'&Views=='EPS'&Aggregation=='ma'][,port.ret])))
+
+

@@ -67,7 +67,7 @@ opts_chunk$set(concordance=TRUE)
 
 <<load.data,echo=F,warning=FALSE,message=FALSE>>=
 strategies <- c('true','recent','all-time')
-setwd('~/Dropbox/workspace/Projects/Black-Litterman/BL-strategies')
+setwd('~/Dropbox/workspace/Projects/BL-strategies')
 library(reshape2)
 library(descr)
 library(data.table)
