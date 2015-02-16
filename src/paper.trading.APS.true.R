@@ -8,8 +8,12 @@ core.dt <- setkey(q.data[,core.b:=.N>=12,by=list(Stock,Broker)][(core.b)][,true:
 
 pt.exp.ret <- setkey(melt(core.dt[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock),.SDcols=c('q.id','Broker','Stock','b.view')][,.(q.id,Broker,Stock,b.view)][,true:=truncate.f(b.view,percentile)][,naive:=c(NA,head(true,-1)),by=.(Broker,Stock)][,default:=rollapplyr(naive,seq_len(length(naive)),mean,na.rm=T),by=.(Broker,Stock)],id.vars = c('q.id','Stock','Broker'),measure.vars = c('true','naive','default'),value.name = 'exp.ret',variable.name = 'Method'),q.id,Stock,Broker,Method)
 
+### Need ranked dt for contigency analysis
+ranked.pt.dt <- core.dt[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock),.SDcols=c('q.id','Broker','Stock','true')][,.(q.id,Broker,Stock,true)]
 
-pt.new <- setkey(melt(core.dt[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock),.SDcols=c('q.id','Broker','Stock','true')][,.(q.id,Broker,Stock,true)][,naive:=c(NA,head(true,-1)),by=.(Broker,Stock)][,mean.rank:=rollapplyr(naive,seq_len(length(naive)),mean,na.rm=T),by=.(Broker,Stock)][,default:=rank(mean.rank,na.last = 'keep'),by=.(q.id,Stock)],id.vars = c('q.id','Stock','Broker'),measure.vars = c('true','naive','default'),value.name = 'rank',variable.name = 'Method'),q.id,Stock,Broker,Method)
+cache('ranked.pt.dt')
+
+pt.new <- setkey(melt(ranked.pt.dt[,naive:=c(NA,head(true,-1)),by=.(Broker,Stock)][,mean.rank:=rollapplyr(naive,seq_len(length(naive)),mean,na.rm=T),by=.(Broker,Stock)][,default:=rank(mean.rank,na.last = 'keep'),by=.(q.id,Stock)],id.vars = c('q.id','Stock','Broker'),measure.vars = c('true','naive','default'),value.name = 'rank',variable.name = 'Method'),q.id,Stock,Broker,Method)
 
 
 
@@ -33,7 +37,11 @@ cache('pt.rank.views')
 ###EPS case
 load('~/Dropbox/workspace/Projects/EPS/cache/complete.dt.RData')
 
-eps.dt <- setkey(melt(unique(setkey(na.omit(setkey(complete.dt[,':='(true=rank,q.id=fis.q)],Stock)[stocks]),q.id)[quarters],by=c('q.id','Broker','Stock'))[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock),.SDcols=c('q.id','Broker','Stock','true')][,.(q.id,Broker,Stock,true)][,naive:=c(NA,head(true,-1)),by=.(Broker,Stock)][,mean.rank:=rollapplyr(naive,seq_len(length(naive)),mean,na.rm=T),by=.(Broker,Stock)][,default:=rank(mean.rank,na.last = 'keep'),by=.(q.id,Stock)],id.vars = c('q.id','Stock','Broker'),measure.vars = c('true','naive','default'),value.name = 'rank',variable.name = 'Method'),q.id,Stock,Broker,Method)
+ranked.eps.dt <- unique(setkey(na.omit(setkey(complete.dt[,':='(true=rank,q.id=fis.q)],Stock)[stocks]),q.id)[quarters],by=c('q.id','Broker','Stock'))[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock),.SDcols=c('q.id','Broker','Stock','true')][,.(q.id,Broker,Stock,true)]
+
+cache('ranked.eps.dt')
+
+eps.dt <- setkey(melt(ranked.eps.dt[,naive:=c(NA,head(true,-1)),by=.(Broker,Stock)][,mean.rank:=rollapplyr(naive,seq_len(length(naive)),mean,na.rm=T),by=.(Broker,Stock)][,default:=rank(mean.rank,na.last = 'keep'),by=.(q.id,Stock)],id.vars = c('q.id','Stock','Broker'),measure.vars = c('true','naive','default'),value.name = 'rank',variable.name = 'Method'),q.id,Stock,Broker,Method)
 
 #load('cache/ranked.pt.dt.RData')
 #ranked.eps.dt <- setkey(ranked.pt.dt,q.id,Broker,Stock)[ranked.eps.dt][,true:=NULL][,true:=i.true][,i.true:=NULL]

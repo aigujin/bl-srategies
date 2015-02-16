@@ -1,4 +1,53 @@
-\documentclass{article}
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
 \usepackage{fancyhdr}
 \usepackage{time}
 \usepackage{authblk}
@@ -55,27 +104,13 @@
 \setlength{\headheight}{2\baselineskip}
 \renewcommand{\headrulewidth}{0pt}
 %-------------------------------------------------------------------------
-
-
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 
 
 
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in readChar(con, 5L, useBytes = TRUE): cannot open the connection}}
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in readChar(con, 5L, useBytes = TRUE): cannot open the connection}}
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in na.omit(dt): object 'ranked.pt.dt' not found}}
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in readChar(con, 5L, useBytes = TRUE): cannot open the connection}}
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in na.omit(dt): object 'ranked.eps.dt' not found}}\end{kframe}
-\end{knitrout}
 
 \title{Are rankings of financial analysts useful to investors?}
  \author[1,2]{ Artur Aiguzhinov (\href{mailto:artur.aiguzhinov@inescporto.pt}{artur.aiguzhinov@inescporto.pt})}
@@ -141,7 +176,7 @@ The goal of our study is to evaluate if and how rankings  add value to investors
 
 We compare the performance of the strategies based upon two types of rankings (target price and EPS forecast accuracy). By doing this, we address the ongoing debate in the literature on whether analysts, when issue the target price reports, rely on simple growth-based models or use more complex models (such as the residual income model of \cite{ohlson1995}). For example, \cite{bradshaw2004} suggests that analysts' EPS forecasts are consistent with their price targets and that analysts use growth models based on EPS forecasts to estimate stocks target prices. Differently, \cite{simon2011} argue that the most accurate analysts rely on more complex models in setting their price targets. 
 
-A further major development in the theoretical accounting literature on equity valuation models is the abnormal earnings growth (AEG) model of \cite{ohlson2005}, which relates share price to the level of expected earnings per share\footnote{In words, abnormal growth in EPS is assumed to be the difference between expected EPS for the period less last period<U+2019>s EPS invested at the cost of equity.}. In short, this model justifies a price earnings ratio for companies where next period<U+2019>s earnings are expected to grow over and above the normal rate.
+A further major development in the theoretical accounting literature on equity valuation models is the abnormal earnings growth (AEG) model of \cite{ohlson2005}, which relates share price to the level of expected earnings per share\footnote{In words, abnormal growth in EPS is assumed to be the difference between expected EPS for the period less last period’s EPS invested at the cost of equity.}. In short, this model justifies a price earnings ratio for companies where next period’s earnings are expected to grow over and above the normal rate.
 
 
 
@@ -397,7 +432,7 @@ As in case of the \tr{}, there is a risk-adjusted dominance of the \textit{TP} s
 
 The case of the \default{} (panel D table \ref{tab:strategy}), demonstrates the that \textit{TP} strategy is the only active strategy that yields positive annualized cumulative return (\ensuremath{-0.01}\%) whereas both  \textit{CONS} and \textit{EPS} show negative returns (\ensuremath{-0.07}\% and 0.44\% respectively). The panel C of table \ref{tab:substrategy} show that the Sharpe Ratio of \textit{TP} strategy was lower then that of \textit{EPS} strategy for only first 2 periods (2000Q1/2004Q4 and 2001Q1/2005Q4).
 
-The feasible information sets demonstrate interesting results. It seems to be the case that the information about stock<U+2019>s expected return based on rankings create more value than the same information but based on analysts<U+2019> consensus. Thus, rankings do identify the best analysts and this findings supports the argument of \cite{desai2000ass}. Thus, rankings are useful for investors.
+The feasible information sets demonstrate interesting results. It seems to be the case that the information about stock’s expected return based on rankings create more value than the same information but based on analysts’ consensus. Thus, rankings do identify the best analysts and this findings supports the argument of \cite{desai2000ass}. Thus, rankings are useful for investors.
 
 
 
@@ -517,38 +552,364 @@ MONTSEC & -0.120 & 0.027 &    1 \\
 
 
 
+ % Descritive rankings
+ \begin{table}[hp]
+  \caption{Analysts' accuracy consistency}
+  \label{tab:rank-stat}
+  
+\ This contingency table shows changes in analysts'  \textit{top}, \textit{middle}, \textit{bottom} ranking bins. Panel A (Panel B) depicts the dynamics of the analysts' ranks  based on the accuracy in target prices (EPS forecasts).
+\begin{tabularx}{\linewidth}{r*{6}{Y}}
+    \toprule
+\multirow{10}{*}{$t$}&\textbf{Panel A: TP}&\multicolumn{4}{c}{$t+1$} \\
+&&$top$&$middle$&$bottom$&Sum\\
+
+ &$top$ & 68.1 & 21.5 & 10.5 & 100.2 \\ 
+  &$middle$ & 29.9 & 49.0 & 21.1 & 100.1 \\ 
+  &$bottom$ & 14.0 & 16.4 & 69.6 & 100.0 \\ 
+    &&\multicolumn{4}{c}{$t+4$}\\ 
+&$top$ & 46.7 & 27.4 & 25.9 & 100.0 \\ 
+  &$middle$ & 41.0 & 28.6 & 30.4 & 100.0 \\ 
+  &$bottom$ & 33.6 & 26.6 & 39.7 & 100.0 \\ 
+  
+\end{tabularx}
+\begin{tabularx}{\linewidth}{r*{6}{Y}}
+\midrule
+\multirow{11}{*}{$t$}&\textbf{Panel B: EPS}&\multicolumn{4}{c}{$t+1$} \\
+&&$top$&$middle$&$bottom$&Sum\\
+ &$top$ & 48.0 & 25.7 & 28.3 & 101.9 \\ 
+  &$middle$ & 47.1 & 26.5 & 27.1 & 100.7 \\ 
+  &$bottom$ & 44.9 & 26.1 & 29.7 & 100.8 \\ 
+    &&\multicolumn{4}{c}{$t+4$}\\ 
+&$top$ & 47.7 & 28.1 & 26.3 & 102.1 \\ 
+  &$middle$ & 42.3 & 30.0 & 29.6 & 101.8 \\ 
+  &$bottom$ & 44.0 & 26.2 & 31.6 & 101.7 \\ 
+  
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[hp]
+  \caption{Descriptive statistics of views: \tr{} (\ref{q:true})}
+  \label{tab:view-stat}
+  \small\addtolength{\tabcolsep}{-2pt}
+  
+\ This table shows the descriptive (per stock per quarter) statistics of views (expected returns) based on the consensus (median) among the analysts (panel A); target price rankings (panel B); and EPS forecasts rankings (panel C).
+  
+\begin{tabularx}{\linewidth}{r*{5}{Y}}
+    \toprule
+Year &Stocks& Mean & Median &Std.dev\\
+\midrule
+  \multicolumn{5}{c}{\textbf{Panel A: Consensus views (\ref{consq})}} \\ \midrule 
+1999 & 219 & 0.28 & 0.27 & 0.12 \\ 
+  2000 & 295 & 0.28 & 0.27 & 0.12 \\ 
+  2001 & 341 & 0.25 & 0.24 & 0.13 \\ 
+  2002 & 374 & 0.22 & 0.20 & 0.12 \\ 
+  2003 & 390 & 0.20 & 0.18 & 0.12 \\ 
+  2004 & 399 & 0.15 & 0.14 & 0.09 \\ 
+  2005 & 414 & 0.14 & 0.14 & 0.10 \\ 
+  2006 & 421 & 0.15 & 0.14 & 0.10 \\ 
+  2007 & 426 & 0.14 & 0.13 & 0.09 \\ 
+  2008 & 420 & 0.16 & 0.15 & 0.10 \\ 
+  2009 & 365 & 0.22 & 0.20 & 0.13 \\ 
+  Total & 442 & 0.19 & 0.17 & 0.12 \\ 
+  
+  \midrule
+  \end{tabularx}
+
+  \begin{tabularx}{\linewidth}{r*{5}{Y}}
+  \midrule
+  \multicolumn{5}{c}{\textbf{Panel B: TP ranking views (\ref{rankq})}} \\ \midrule 
+1999 & 219 & 0.24 & 0.24 & 0.10 \\ 
+  2000 & 295 & 0.24 & 0.23 & 0.10 \\ 
+  2001 & 341 & 0.21 & 0.21 & 0.10 \\ 
+  2002 & 374 & 0.18 & 0.17 & 0.10 \\ 
+  2003 & 390 & 0.16 & 0.15 & 0.09 \\ 
+  2004 & 399 & 0.13 & 0.12 & 0.08 \\ 
+  2005 & 414 & 0.12 & 0.12 & 0.08 \\ 
+  2006 & 421 & 0.13 & 0.12 & 0.08 \\ 
+  2007 & 426 & 0.12 & 0.12 & 0.08 \\ 
+  2008 & 420 & 0.13 & 0.12 & 0.09 \\ 
+  2009 & 365 & 0.18 & 0.17 & 0.10 \\ 
+  Total & 442 & 0.16 & 0.14 & 0.10 \\ 
+   \midrule 
+
+  \end{tabularx}
+
+  \begin{tabularx}{\linewidth}{r*{5}{Y}}
+  \midrule
+  \multicolumn{5}{c}{\textbf{Panel C: EPS ranking views (\ref{rankq})}} \\ \midrule 
+1999 & 144 & 0.17 & 0.14 & 0.12 \\ 
+  2000 & 211 & 0.19 & 0.17 & 0.12 \\ 
+  2001 & 257 & 0.18 & 0.17 & 0.11 \\ 
+  2002 & 299 & 0.18 & 0.16 & 0.11 \\ 
+  2003 & 311 & 0.16 & 0.15 & 0.10 \\ 
+  2004 & 331 & 0.13 & 0.12 & 0.08 \\ 
+  2005 & 343 & 0.13 & 0.12 & 0.09 \\ 
+  2006 & 344 & 0.13 & 0.11 & 0.09 \\ 
+  2007 & 357 & 0.12 & 0.11 & 0.09 \\ 
+  2008 & 339 & 0.14 & 0.13 & 0.10 \\ 
+  2009 & 300 & 0.18 & 0.17 & 0.12 \\ 
+  Total & 376 & 0.15 & 0.13 & 0.10 \\ 
+  
+\bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{table}[hp]
+  \caption{Descriptive statistics of views: \naive{} (\ref{q:naive})}
+  \label{tab:view-stat-naive}
+  \small\addtolength{\tabcolsep}{-2pt}
+  
+\ This table shows descriptive statistics of views (expected returns) based on: the consensus among the analysts (panel A), target price rankings (panel B), and EPS forecasts rankings (panel C) per stock per quarter.
+  
+\begin{tabularx}{\linewidth}{r*{5}{Y}}
+    \toprule
+Year &Stocks& Mean & Median &Std.dev\\
+\midrule
+  \multicolumn{5}{c}{\textbf{Panel A: Consensus views (\ref{consq})}} \\ \midrule 
+1999 &  73 & 0.27 & 0.26 & 0.13 \\ 
+  2000 & 257 & 0.28 & 0.27 & 0.12 \\ 
+  2001 & 310 & 0.26 & 0.25 & 0.13 \\ 
+  2002 & 362 & 0.22 & 0.20 & 0.13 \\ 
+  2003 & 374 & 0.21 & 0.20 & 0.12 \\ 
+  2004 & 385 & 0.15 & 0.14 & 0.10 \\ 
+  2005 & 401 & 0.14 & 0.14 & 0.09 \\ 
+  2006 & 415 & 0.15 & 0.14 & 0.10 \\ 
+  2007 & 421 & 0.14 & 0.13 & 0.10 \\ 
+  2008 & 422 & 0.14 & 0.14 & 0.09 \\ 
+  2009 & 405 & 0.23 & 0.21 & 0.14 \\ 
+  Total & 442 & 0.19 & 0.17 & 0.12 \\ 
+  
+  \midrule
+  \end{tabularx}
+
+  \begin{tabularx}{\linewidth}{r*{5}{Y}}
+  \midrule
+  \multicolumn{5}{c}{\textbf{Panel B: TP ranking views (\ref{rankq})}} \\ \midrule 
+1999 &  73 & 0.24 & 0.23 & 0.11 \\ 
+  2000 & 257 & 0.24 & 0.24 & 0.10 \\ 
+  2001 & 310 & 0.22 & 0.22 & 0.10 \\ 
+  2002 & 362 & 0.19 & 0.17 & 0.10 \\ 
+  2003 & 374 & 0.17 & 0.17 & 0.09 \\ 
+  2004 & 385 & 0.13 & 0.12 & 0.08 \\ 
+  2005 & 401 & 0.12 & 0.11 & 0.08 \\ 
+  2006 & 415 & 0.13 & 0.12 & 0.08 \\ 
+  2007 & 421 & 0.12 & 0.12 & 0.08 \\ 
+  2008 & 422 & 0.12 & 0.11 & 0.08 \\ 
+  2009 & 405 & 0.19 & 0.18 & 0.11 \\ 
+  Total & 442 & 0.16 & 0.14 & 0.10 \\ 
+   \midrule 
+
+  \end{tabularx}
+
+  \begin{tabularx}{\linewidth}{r*{5}{Y}}
+  \midrule
+  \multicolumn{5}{c}{\textbf{Panel C: EPS ranking views (\ref{rankq})}} \\ \midrule 
+1999 &  44 & 0.12 & 0.12 & 0.10 \\ 
+  2000 & 185 & 0.18 & 0.16 & 0.12 \\ 
+  2001 & 247 & 0.18 & 0.17 & 0.11 \\ 
+  2002 & 288 & 0.18 & 0.16 & 0.11 \\ 
+  2003 & 307 & 0.18 & 0.17 & 0.11 \\ 
+  2004 & 318 & 0.13 & 0.12 & 0.09 \\ 
+  2005 & 337 & 0.13 & 0.12 & 0.09 \\ 
+  2006 & 343 & 0.13 & 0.12 & 0.09 \\ 
+  2007 & 352 & 0.12 & 0.11 & 0.09 \\ 
+  2008 & 349 & 0.13 & 0.12 & 0.09 \\ 
+  2009 & 321 & 0.19 & 0.17 & 0.12 \\ 
+  Total & 376 & 0.15 & 0.13 & 0.10 \\ 
+  
+\bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{table}[hp]
+  \caption{Descriptive statistics of views: \default{} (\ref{q:default})}
+  \label{tab:view-stat-default}
+  \small\addtolength{\tabcolsep}{-2pt}
+  
+\ This table shows descriptive statistics of views (expected returns) based on: the consensus among the analysts (panel A), target price rankings (panel B), and EPS forecasts rankings (panel C) per stock per quarter.
+  
+\begin{tabularx}{\linewidth}{r*{5}{Y}}
+    \toprule
+Year &Stocks& Mean & Median &Std.dev\\
+\midrule
+  \multicolumn{5}{c}{\textbf{Panel A: Consensus views (\ref{consq})}} \\ \midrule 
+1999 &  73 & 0.27 & 0.26 & 0.13 \\ 
+  2000 & 257 & 0.28 & 0.27 & 0.12 \\ 
+  2001 & 314 & 0.27 & 0.26 & 0.11 \\ 
+  2002 & 368 & 0.25 & 0.24 & 0.11 \\ 
+  2003 & 383 & 0.24 & 0.23 & 0.10 \\ 
+  2004 & 396 & 0.22 & 0.22 & 0.10 \\ 
+  2005 & 414 & 0.21 & 0.20 & 0.09 \\ 
+  2006 & 429 & 0.20 & 0.19 & 0.09 \\ 
+  2007 & 438 & 0.19 & 0.18 & 0.09 \\ 
+  2008 & 440 & 0.18 & 0.18 & 0.08 \\ 
+  2009 & 442 & 0.19 & 0.18 & 0.08 \\ 
+  Total & 442 & 0.22 & 0.20 & 0.10 \\ 
+  
+  \midrule
+  \end{tabularx}
+
+  \begin{tabularx}{\linewidth}{r*{5}{Y}}
+  \midrule
+  \multicolumn{5}{c}{\textbf{Panel B: TP ranking views (\ref{rankq})}} \\ \midrule 
+1999 &  73 & 0.24 & 0.23 & 0.11 \\ 
+  2000 & 257 & 0.24 & 0.24 & 0.10 \\ 
+  2001 & 314 & 0.24 & 0.23 & 0.09 \\ 
+  2002 & 368 & 0.22 & 0.21 & 0.09 \\ 
+  2003 & 383 & 0.21 & 0.20 & 0.09 \\ 
+  2004 & 396 & 0.19 & 0.19 & 0.08 \\ 
+  2005 & 414 & 0.17 & 0.17 & 0.08 \\ 
+  2006 & 429 & 0.17 & 0.16 & 0.08 \\ 
+  2007 & 438 & 0.16 & 0.16 & 0.07 \\ 
+  2008 & 440 & 0.16 & 0.15 & 0.07 \\ 
+  2009 & 442 & 0.16 & 0.16 & 0.07 \\ 
+  Total & 442 & 0.19 & 0.18 & 0.09 \\ 
+   \midrule 
+
+  \end{tabularx}
+
+  \begin{tabularx}{\linewidth}{r*{5}{Y}}
+  \midrule
+  \multicolumn{5}{c}{\textbf{Panel C: EPS ranking views (\ref{rankq})}} \\ \midrule 
+1999 &  54 & 0.12 & 0.11 & 0.09 \\ 
+  2000 & 205 & 0.18 & 0.15 & 0.12 \\ 
+  2001 & 264 & 0.20 & 0.19 & 0.11 \\ 
+  2002 & 308 & 0.22 & 0.21 & 0.10 \\ 
+  2003 & 326 & 0.22 & 0.21 & 0.09 \\ 
+  2004 & 339 & 0.21 & 0.20 & 0.08 \\ 
+  2005 & 357 & 0.19 & 0.19 & 0.08 \\ 
+  2006 & 365 & 0.19 & 0.18 & 0.08 \\ 
+  2007 & 371 & 0.18 & 0.18 & 0.08 \\ 
+  2008 & 375 & 0.18 & 0.18 & 0.07 \\ 
+  2009 & 378 & 0.18 & 0.18 & 0.07 \\ 
+  Total & 378 & 0.19 & 0.19 & 0.09 \\ 
+  
+\bottomrule
+  \end{tabularx}
+\end{table}
 
 
 
 
 
 
+\begin{table}[hp]
+  \caption{Trading strategy performance}
+  \label{tab:strategy}
+  \ This table shows the performance statistics of the different trading strategies. Panel A presents the results for the passive strategy. Panels B,C, and D show the results for the perfect foresight scenario (\tr{}), and, respectively, the scenarios for which we use the most recent ranking (\naive{}); and  all the ranking history of analysts to weight the TP/EPS estimates (\default{}). Within each panel, we show the strategy results of three views regarding expected return: \textit{CONS} uses the median of the analysts estimates; \textit{TP} is based upon TP accuracy ranking; and \textit{EPS} is based upon the EPS accuracy ranking weighted average. The trading period spreads from 2000Q1 until 2009Q4.
+
+\begin{tabularx}{\linewidth}{r*{5}{Y}}
+  \toprule
+  %\multicolumn{5}{l}{\textbf{Panel A: Market}} \\
+Strategy&Annualized cum. return (in \%)&Annualized Std. dev (in \%)&Sharpe ratio&Average num. stock&Average turnover rate \\  \multicolumn{5}{l}{\textbf{Panel A}} \\ 
+\textit{Market} & -3.032 & 16.654 & -0.182 &  499 & 0.053 \\ 
+  \midrule 
+
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{r*{5}{Y}}
+  \multicolumn{5}{l}{\textbf{Panel B: \tr{} }} \\
+ \textit{CONS} & 1.893 & 15.147 & 0.125 &  291 & 0.291 \\ 
+  \textit{TP} & 5.116 & 14.593 & 0.351 &  291 & 0.314 \\ 
+  \textit{EPS} & 1.860 & 15.172 & 0.123 &  209 & 0.503 \\ 
+   \midrule 
+
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{r*{5}{Y}}
+  \multicolumn{5}{l}{\textbf{Panel C: \naive{}}} \\
+ \textit{CONS} & 0.126 & 15.947 & 0.008 &  284 & 0.256 \\ 
+  \textit{TP} & 0.281 & 15.661 & 0.018 &  284 & 0.264 \\ 
+  \textit{EPS} & -0.318 & 16.094 & -0.020 &  206 & 0.409 \\ 
+   \midrule 
+
+\end{tabularx}
+\begin{tabularx}{\linewidth}{r*{5}{Y}}
+  \multicolumn{5}{l}{\textbf{Panel D: \default{}}} \\
+ \textit{CONS} & -0.069 & 15.817 & -0.004 &  290 & 0.188 \\ 
+  \textit{TP} & -0.005 & 15.633 & -0.000 &  290 & 0.192 \\ 
+  \textit{EPS} & 0.441 & 15.673 & 0.028 &  250 & 0.198 \\ 
+  
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+\begin{table}[hp]
+  \caption{Trading strategy performance: Sharpe ratio}
+  \label{tab:substrategy}
+  \ This table presents the Sharpe ratio of each of the trading strategies: the passive (\textit{Market}) and the active (consensus and smart estimates) calculated for different holding periods. Panel A represents the perfect foresight information set; panels B and C show, respectively, the recent and the all history analysts' performance. 
+\begin{tabularx}{\linewidth}{r*{5}{Y}}
+\toprule
+  %\multicolumn{5}{l}{\textbf{Panel A: Market}} \\
+Period&\textit{Market}&\textit{CONS}&\textit{TP}&\textit{EPS} \\  \multicolumn{5}{l}{\textbf{Panel A: \tr{}}} \\
+2000Q1/2004Q4 & -0.201 & 0.287 & 0.447 & 0.232 \\ 
+  2001Q1/2005Q4 & -0.093 & 0.261 & 0.477 & 0.311 \\ 
+  2002Q1/2006Q4 & 0.196 & 0.485 & 0.794 & 0.540 \\ 
+  2003Q1/2007Q4 & 0.925 & 1.201 & 1.844 & 1.299 \\ 
+  2004Q1/2008Q4 & -0.435 & -0.233 & 0.136 & -0.173 \\ 
+  2005Q1/2009Q4 & -0.158 & -0.042 & 0.242 & 0.011 \\ 
+  All period & -0.182 & 0.125 & 0.351 & 0.123 \\ 
+  
+\midrule
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{r*{5}{Y}}
+  \multicolumn{5}{l}{\textbf{Panel B: \naive{}}} \\
+2000Q1/2004Q4 & -0.201 & 0.168 & 0.169 & 0.072 \\ 
+  2001Q1/2005Q4 & -0.093 & 0.171 & 0.215 & 0.167 \\ 
+  2002Q1/2006Q4 & 0.196 & 0.448 & 0.492 & 0.453 \\ 
+  2003Q1/2007Q4 & 0.925 & 1.105 & 1.246 & 1.152 \\ 
+  2004Q1/2008Q4 & -0.435 & -0.344 & -0.306 & -0.332 \\ 
+  2005Q1/2009Q4 & -0.158 & -0.146 & -0.126 & -0.106 \\ 
+  All period & -0.182 & 0.008 & 0.018 & -0.020 \\ 
+  
+\midrule
+\end{tabularx}
+
+\begin{tabularx}{\linewidth}{r*{5}{Y}}
+  \multicolumn{5}{l}{\textbf{Panel C: \default{}}} \\
+2000Q1/2004Q4 & -0.201 & 0.247 & 0.233 & 0.276 \\ 
+  2001Q1/2005Q4 & -0.093 & 0.230 & 0.252 & 0.283 \\ 
+  2002Q1/2006Q4 & 0.196 & 0.430 & 0.469 & 0.490 \\ 
+  2003Q1/2007Q4 & 0.925 & 0.876 & 0.962 & 0.970 \\ 
+  2004Q1/2008Q4 & -0.435 & -0.439 & -0.415 & -0.403 \\ 
+  2005Q1/2009Q4 & -0.158 & -0.235 & -0.210 & -0.193 \\ 
+  All period & -0.182 & -0.004 & -0.000 & 0.028 \\ 
+  
+\bottomrule
+\end{tabularx}
+\end{table}
 
 
 
+\begin{figure}[hp]
+\begin{center}
+\includegraphics[width=\linewidth]{figure/Black-litterman}
+\end{center}
+\caption{Trading strategy timeline}
+\label{fig:bl}
+\ Black-Litterman model inputs are at the beginning of $t$ we apply the BL model and form the active portfolio. At the end of $t$, we evaluate performance.
+\end{figure}
 
 
+\begin{figure}[hp]
+\begin{center}
+\includegraphics[width=\linewidth]{figure/example-fig-1}
+\end{center}
+\caption{Daily stock price Amazon and brokers target prices}
+\label{fig:example}
+\ Target price and actual prices for Amazon  the second quarter of 1999.
+\end{figure}
 
+\begin{figure}[hp]
+\begin{center}
+\includegraphics[width=\linewidth]{figure/bl-results-fig-1}
+\end{center}
+\caption{Performance of the BL model}
+\label{fig:bl-results}
+\ Quarterly performance of the cumulative portfolio wealth for all strategies. Panel \tr{} shows the case of the known future information; \naive{} is the case of ranking information know at $t-1$, and the \default{} is the case of using all ranking information for up to $t-1$. \textit{TP} is the strategy with rankings based on the accuracy in target prices, \textit{CONS} is the strategy based on the consensus among the analysts regarding a stock's expected return. \textit{EPS} is the strategy with rankings based on the accuracy of EPS forecasts. The trading period ranges from 2000Q1 until 2009Q4
+\end{figure}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+\end{document}

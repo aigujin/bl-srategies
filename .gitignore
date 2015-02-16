@@ -5,6 +5,7 @@ data/
 cache/
 eda/
 ## Core latex/pdflatex auxiliary files:
+*.tex
 *.aux
 *.lof
 *.log
@@ -12,6 +13,7 @@ eda/
 *.fls
 *.out
 *.toc
+*.gz
 ## Intermediate documents:
 *.dvi
 *-converted-to.*
