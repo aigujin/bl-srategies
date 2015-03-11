@@ -14,6 +14,7 @@ eda/
 *.out
 *.toc
 *.gz
+*.blg
 ## Intermediate documents:
 *.dvi
 *-converted-to.*
