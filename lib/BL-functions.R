@@ -371,7 +371,7 @@ opt.w.f <- function(views,conf,tau){
                 #list.conf <- alply(conf[,,,agg],2,.dims=T)
                 rbindlist(mclapply(dimnames(views)[[3]],function(type){
                         rbindlist(non.rank.script.weights.env.f(type,market.list[m.period],views[bl.period,,type],conf[bl.period,,type],tau))
-                },mc.cores=4)
+                },mc.cores=cores)
                 )
                 #}))
 }

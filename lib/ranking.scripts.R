@@ -196,7 +196,7 @@ predict.ranking.script.f <- function(methods, stock.names, stock,  tr, r.paramet
       #analyst.prediction.f(tr[, , s], mod.vvs[,,meth], n)
       #roll.analyst.prediction.f(tr[, , s], mod.vvs[,,meth], n,x)
     }), along = 3)
-  },mc.cores=4), along = 4, new.names = list(dimnames(tr)[[2]],NULL, methods,stock.names))
+  },mc.cores=cores), along = 4, new.names = list(dimnames(tr)[[2]],NULL, methods,stock.names))
 }
 
 roll.ranking.f <- function(methods, stock.names, stock,  tr, r.parameters) {
@@ -212,7 +212,7 @@ roll.ranking.f <- function(methods, stock.names, stock,  tr, r.parameters) {
                 abind(lapply(methods , function(meth) {
                         roll.analyst.prediction.f(tr[, , s], mod.vvs[,,meth], n,x)
                 }), along = 3)
-        },mc.cores=4), along = 4, new.names = list(dimnames(tr)[[2]],NULL, methods,stock.names))
+        },mc.cores=cores), along = 4, new.names = list(dimnames(tr)[[2]],NULL, methods,stock.names))
 }
 ### Good results script
 # predict.ranking.script.f <- function(methods, stock.names, stock, tr, r.parameters) {
@@ -231,7 +231,7 @@ roll.ranking.f <- function(methods, stock.names, stock,  tr, r.parameters) {
 #
 #                         rankings.time.corrected.gw.cont(tr[, , s], mod.vvs, n)
 #                 }), along = 3)
-#         },mc.cores=4), along = 4, new.names = list(dimnames(tr)[[2]],NULL, dimnames(tr)[[3]], methods))
+#         },mc.cores=cores), along = 4, new.names = list(dimnames(tr)[[2]],NULL, dimnames(tr)[[3]], methods))
 # }
 
 analyst.prediction.f <- function(rank,features,n){
@@ -284,7 +284,7 @@ roll.baselines.f <- function(y,x){
                 default <- apply(apply(y[train, drop = F, , ], c(2,3), mean, na.rm = T),2,rank,na.last = "keep")
                 true <- y[pred.t[t],,]
                 abind(true,naive,default,along=3)
-        },mc.cores=4),along=4)
+        },mc.cores=cores),along=4)
 }
 
 

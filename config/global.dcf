@@ -3,8 +3,8 @@ cache_loading: TRUE
 recursive_loading: FALSE
 munging: FALSE
 logging: FALSE
-load_libraries: TRUE
-libraries: reshape2, plyr, ggplot2, stringr, xts,
+load_libraries: FALSE
+libraries: reshape2, plyr, stringr, xts,
       parallel, PerformanceAnalytics, MASS,
       data.table, ProjectTemplate, abind,scales
 as_factors: TRUE
