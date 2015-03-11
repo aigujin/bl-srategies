@@ -3,7 +3,7 @@ setwd('~/Dropbox/workspace/Projects/BL-strategies/')
 
 library(ProjectTemplate)
 load.project()
-delta<-1L;tau=1/50;baselines <- c('true','naive','default');confid.id <- c('cons','last','ma');percentile <- 0.05
+delta<-1L;tau=1/50;baselines <- c('true','naive','default');confid.id <- c('cons','last','ma');percentile <- 0.05; cores=4L
 ##rolling rankings: 20 qtrs - no winning; 16 qtrs - win roll.sd (last); 12
 
 ### market data: ~ 113 sec (mcapply: ~ 52 sec)
@@ -15,7 +15,7 @@ system.time(source('src/paper.trading.APS.true.R'))
 ### State var. data: ~118 sec
 #system.time(source('munge/02-state-variables.R'))
 ### Analysts ranking data: ~ 280 sec
-system.time(source('munge/03-analysts.process.R'))
+#system.time(source('munge/03-analysts.process.R'))
 ### Predicting ~ 347 sec
 #system.time(source('src/predicting.R'))
 

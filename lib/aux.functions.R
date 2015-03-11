@@ -110,7 +110,7 @@ data.collect<- function(data.id,n)
                 id=strsplit(i,split = '\\.');
                 names.tmp <- sapply(read.csv2(paste('~/Dropbox/Datastream/AllStocks/it3/',i,sep=''),nrow=1,sep=',',na.strings='#ERROR',header=F,skip=1)
                                     ,function(i){strsplit(as.character(i),split = '[[:punct:]]')[[1]][n]})
-                melt(setnames(fread(paste('~/Dropbox/Datastream/AllStocks/it3/',i,sep=''),sep=',',na.strings='')[,V1:=as.Date(V1,format = "%m/%d/%Y")],c('Date',names.tmp[2:length(names.tmp)])),id.vars = 'Date',variable.name = 'DSCD',value.name = id[[1]][1],na.rm=T)},mc.cores=4))
+                melt(setnames(fread(paste('~/Dropbox/Datastream/AllStocks/it3/',i,sep=''),sep=',',na.strings='')[,V1:=as.Date(V1,format = "%m/%d/%Y")],c('Date',names.tmp[2:length(names.tmp)])),id.vars = 'Date',variable.name = 'DSCD',value.name = id[[1]][1],na.rm=T)},mc.cores=cores))
 }
 
 af.data.collect<- function(data.id,n)
@@ -119,7 +119,7 @@ af.data.collect<- function(data.id,n)
                 id=strsplit(i,split = '\\.');
                 names.tmp <- sapply(read.csv2(paste('~/Dropbox/Datastream/AllStocks/it3/',i,sep=''),nrow=1,sep=',',na.strings='#ERROR',header=F,skip=1)
                                     ,function(i){strsplit(as.character(i),split = '[[:punct:]]')[[1]][n]})
-                melt(setnames(fread(paste('~/Dropbox/Datastream/AllStocks/it3/',i,sep=''),sep=',',na.strings='',skip=2)[,V1:=as.Date(V1,format = "%m/%d/%Y")],c('Date',names.tmp[2:length(names.tmp)])),id.vars = 'Date',variable.name = 'DSCD',value.name = id[[1]][1],na.rm=T)},mc.cores=4))
+                melt(setnames(fread(paste('~/Dropbox/Datastream/AllStocks/it3/',i,sep=''),sep=',',na.strings='',skip=2)[,V1:=as.Date(V1,format = "%m/%d/%Y")],c('Date',names.tmp[2:length(names.tmp)])),id.vars = 'Date',variable.name = 'DSCD',value.name = id[[1]][1],na.rm=T)},mc.cores=cores))
 }
 
 total.accruals<-function(cur.assets,cash,cur.liab,debt,tax,depr,tot.assets)

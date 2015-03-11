@@ -147,13 +147,13 @@ market.list<-mclapply(1:44,function(i)
         #delta <- as.numeric((crossprod(w.mkt.i,m.ret)-rf)/var.market)
         impl.sp.ret<-round(delta*crossprod(sigma,w.mkt.i),4)
         list(sigma=sigma,impl.ret=impl.sp.ret,rf=rf,stock.names=dimnames(sigma)[[1]],ex.ret=unique(all.set.i,by=c('Stock'))[,ex.ret],Quarters=unique(all.set.i[,Quarters]))
-},mc.cores=4)
+},mc.cores=cores)
 
 
 setkey(sp.set.tkt,q.id,DSCD,Stock)
 setkey(q.ret.rf,q.id,DSCD,Stock)
 market.set <- unique(na.omit(sp.set.tkt[q.ret.rf]),by=c('q.id','Stock'))
 
-#cache('market.list')
-#cache('market.set')
+cache('market.list')
+cache('market.set')
 rm('stock.ref','ref.matrix','sp.id','miss.tkt','miss.dt','ref.dt','full.stock.ref','s.id','all.prices','q.ret.sp','d.ret.sp','tbil.data','q.rf','q.ret.rf','s.ex.ret','quarters','sp.set.tkt')
