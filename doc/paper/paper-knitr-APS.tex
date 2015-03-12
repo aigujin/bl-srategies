@@ -68,6 +68,7 @@
 \usepackage{tabularx}
 \usepackage{booktabs}
 \usepackage{multirow}
+\usepackage{adjustbox}
 %\onehalfspacing
 \doublespace
 \usepackage[longnamesfirst]{natbib}
@@ -403,7 +404,7 @@ Panel A show the statistics for the consensus expectations as defined in eq. (\r
 
 Overall compared to the consensus the ranked weighted expected returns (smart estimates) are less optimistic. The \default{} information set shows higher values of expected returns.
 
-Table \ref{tab:stocks} shows the number of active stocks for each of the trading strategies (\textit{CONS},\textit{TP},\textit{EPS}) conditional on considered information sets.
+Table \ref{tab:stocks} shows the number of active stocks for each of the trading strategies (\textit{CONS}, \textit{TP}, and \textit{EPS}) conditional on considered information sets.
 %obtained from the rankings based on the target price accuracy. We observe a reduction in average per stock expected return with the mean of  round(rank.views.full.period['true','mean'],3)*100\%. The case of rankings based on EPS forecasts (panel C) shows even more moderate average stock expected return of  round(pt.eps.rank.views.full.period['true','mean'],3)*100\%. Overall, compared to the consensus, both ranking-based methods exhibit less optimistic expected returns and are pretty close to the historical averages.
 
 
@@ -486,19 +487,19 @@ Year & Min& Mean & Median &Max& Std.dev\\
 \multicolumn{6}{c}{\textbf{Panel A: TP}} \\
 \midrule
 %Year & Min& Mean & Median &Max& Std.dev\\
- 1999 & 3.00 & 4.25 & 4 &  10 & 1.59 \\ 
-  2000 & 3.00 & 4.76 & 4 &  14 & 1.88 \\ 
-  2001 & 3.00 & 5.25 & 5 &  15 & 2.32 \\ 
-  2002 & 3.00 & 6.04 & 5 &  19 & 2.95 \\ 
-  2003 & 3.00 & 6.67 & 6 &  21 & 3.43 \\ 
-  2004 & 3.00 & 7.12 & 6 &  21 & 3.62 \\ 
-  2005 & 3.00 & 7.35 & 7 &  21 & 3.59 \\ 
-  2006 & 3.00 & 7.41 & 7 &  20 & 3.42 \\ 
-  2007 & 3.00 & 7.05 & 6 &  20 & 3.33 \\ 
-  2008 & 3.00 & 6.37 & 6 &  18 & 2.88 \\ 
-  2009 & 3.00 & 5.15 & 5 &  18 & 2.19 \\ 
+ 1999 &    3 & 4.246 & 4 &   10 & 1.588 \\ 
+  2000 &    3 & 4.756 & 4 &   14 & 1.878 \\ 
+  2001 &    3 & 5.248 & 5 &   15 & 2.323 \\ 
+  2002 &    3 & 6.043 & 5 &   19 & 2.948 \\ 
+  2003 &    3 & 6.667 & 6 &   21 & 3.427 \\ 
+  2004 &    3 & 7.120 & 6 &   21 & 3.617 \\ 
+  2005 &    3 & 7.348 & 7 &   21 & 3.592 \\ 
+  2006 &    3 & 7.408 & 7 &   20 & 3.417 \\ 
+  2007 &    3 & 7.050 & 6 &   20 & 3.334 \\ 
+  2008 &    3 & 6.370 & 6 &   18 & 2.884 \\ 
+  2009 &    3 & 5.152 & 5 &   18 & 2.191 \\ 
    \midrule 
-Total & 3.00 & 6.42 & 6 &  21 & 3.21 \\ 
+Total &    3 & 6.421 & 6 &   21 & 3.210 \\ 
   
 \end{tabularx}
 
@@ -506,19 +507,19 @@ Total & 3.00 & 6.42 & 6 &  21 & 3.21 \\
 \midrule
 \multicolumn{6}{c}{\textbf{Panel B: EPS}} \\
 \midrule
- 1999 & 3.00 & 5.73 & 5 &  17 & 3.01 \\ 
-  2000 & 3.00 & 5.43 & 5 &  17 & 2.77 \\ 
-  2001 & 3.00 & 6.02 & 5 &  18 & 2.97 \\ 
-  2002 & 3.00 & 6.34 & 5 &  21 & 3.26 \\ 
-  2003 & 3.00 & 6.52 & 6 &  24 & 3.43 \\ 
-  2004 & 3.00 & 6.95 & 6 &  22 & 3.75 \\ 
-  2005 & 3.00 & 7.21 & 6 &  24 & 3.77 \\ 
-  2006 & 3.00 & 7.49 & 7 &  26 & 3.84 \\ 
-  2007 & 3.00 & 7.13 & 6 &  21 & 3.53 \\ 
-  2008 & 3.00 & 6.38 & 6 &  22 & 3.06 \\ 
-  2009 & 3.00 & 5.81 & 5 &  20 & 2.78 \\ 
+ 1999 &    3 & 5.728 & 5 &   17 & 3.007 \\ 
+  2000 &    3 & 5.433 & 5 &   17 & 2.774 \\ 
+  2001 &    3 & 6.020 & 5 &   18 & 2.972 \\ 
+  2002 &    3 & 6.338 & 5 &   21 & 3.264 \\ 
+  2003 &    3 & 6.523 & 6 &   24 & 3.430 \\ 
+  2004 &    3 & 6.947 & 6 &   22 & 3.749 \\ 
+  2005 &    3 & 7.205 & 6 &   24 & 3.774 \\ 
+  2006 &    3 & 7.494 & 7 &   26 & 3.843 \\ 
+  2007 &    3 & 7.134 & 6 &   21 & 3.532 \\ 
+  2008 &    3 & 6.378 & 6 &   22 & 3.062 \\ 
+  2009 &    3 & 5.811 & 5 &   20 & 2.783 \\ 
    \midrule 
-Total & 3.00 & 6.58 & 6 &  26 & 3.43 \\ 
+Total &    3 & 6.582 & 6 &   26 & 3.426 \\ 
   
 \bottomrule
 \end{tabularx}
@@ -605,7 +606,7 @@ MONTSEC & -0.120 & 0.027 &    1 \\
   
 \begin{tabularx}{\linewidth}{r*{4}{Y}}
 \toprule
-Secnario& Mean (in \%) & Median (in \%) &Std.dev\\
+& Mean (in \%) & Median (in \%) &Std.dev\\
 \midrule
   \multicolumn{4}{l}{\textbf{Panel A: Consensus}} \\ 
  \midrule 
@@ -641,8 +642,7 @@ Secnario& Mean (in \%) & Median (in \%) &Std.dev\\
 \ This table shows number of active stocks in each of the trading strategies conditional on different information sets: \tr{} (panel A), \naive{} (panel B) and \default{} (panel C). 
 \begin{tabularx}{\linewidth}{r*{4}{Y}}
 \toprule
-Year& $CONS$& $PT$ &$EPS$\\
-\midrule
+Year& \textit{CONS}& \textit{TP} & \textit{EPS}\\
   \multicolumn{4}{l}{\textbf{Panel A: \tr{}}} \\ 
  \midrule 
 1999 &  219 &  219 &  144 \\ 
@@ -826,7 +826,7 @@ Total &  442 &  442 &  378 \\
 \begin{table}[hp]
   \caption{Trading strategies performance: entire period}
   \label{tab:strategy}
-  \ This table shows the performance statistics of the different trading strategies. Panel A presents the results for the passive strategy. Panels B,C, and D show the results for the perfect foresight scenario (\tr{}), and, respectively, the scenarios for which we use the most recent  (\naive{}); and  all ranking history of analysts (\default{}) to weight the TP/EPS estimates . Within each panel, we show the strategy results of three views regarding expected return: \textit{CONS} uses the median of the analysts estimates; \textit{TP} is based upon TP accuracy ranking; and \textit{EPS} is based upon  EPS accuracy ranking. The trading period goes from 2000Q1 until 2009Q4.
+  \ This table shows the performance statistics of the different trading strategies. Panel A presents the results for the passive strategy. Panels B,C, and D show the results for the perfect foresight scenario (\tr{}), and, respectively, the scenarios for which we use the most recent  (\naive{}) and  all ranking history of analysts (\default{}) to weight the TP/EPS estimates . Within each panel, we show the strategy results of three views regarding expected return: \textit{CONS} uses the median of the analysts estimates; \textit{TP} is based upon TP accuracy ranking; and \textit{EPS} is based upon  EPS accuracy ranking. The trading period goes from 2000Q1 until 2009Q4.
 
 \begin{tabularx}{\linewidth}{r*{5}{Y}}
   \toprule
@@ -868,47 +868,59 @@ Strategy&Annualized return (in \%)&Annualized Std. dev (in \%)&Sharpe ratio&Aver
 \begin{table}[hp]
   \caption{Trading strategies performance: sub-periods}
   \label{tab:substrategy}
-  \ This table presents the Sharpe ratio of each of the trading strategies: the passive (\textit{Market}) and the active (consensus and smart estimates) calculated for different holding periods. Panel A represents the perfect foresight information set; panels B and C show, respectively, the results of the strategies using the most recent and all history analysts' performance. 
-\begin{tabularx}{\linewidth}{r*{5}{Y}}
+  \ This table presents the annualized return (in \%) and the Sharpe ratio of each of the trading strategies: the passive (\textit{Market}) and the active (consensus and smart estimates) calculated for different holding periods. Panel A represents the perfect foresight information set; panels B and C show, respectively, the results of the strategies using the most recent and all history analysts' performance. 
+
+\resizebox{\textwidth}{!}{%
+%\begin{tabularx}{\linewidth}{r*{9}{Y}}
+\begin{tabular}{rrrrrrrrr}
 \toprule
-  %\multicolumn{5}{l}{\textbf{Panel A: Market}} \\
-Period&\textit{Market}&\textit{CONS}&\textit{TP}&\textit{EPS} \\  \multicolumn{5}{l}{\textbf{Panel A: \tr{}}} \\
-2000Q1/2004Q4 & -0.201 & 0.287 & 0.447 & 0.232 \\ 
-  2001Q1/2005Q4 & -0.093 & 0.261 & 0.477 & 0.311 \\ 
-  2002Q1/2006Q4 & 0.196 & 0.485 & 0.794 & 0.540 \\ 
-  2003Q1/2007Q4 & 0.925 & 1.201 & 1.844 & 1.299 \\ 
-  2004Q1/2008Q4 & -0.435 & -0.233 & 0.136 & -0.173 \\ 
-  2005Q1/2009Q4 & -0.158 & -0.042 & 0.242 & 0.011 \\ 
-  All period & -0.182 & 0.125 & 0.351 & 0.123 \\ 
+Period&\multicolumn{2}{c}{\textit{Market}}&\multicolumn{2}{c}{\textit{CONS}}&\multicolumn{2}{c}{\textit{TP}}&\multicolumn{2}{c}{\textit{EPS}} \\
+
+& Ann.ret&SR& Ann.ret&SR& Ann.ret&SR& Ann.ret&SR\\
+
+  \multicolumn{9}{l}{\textbf{Panel A: \tr{}}} \\
+2000Q1/2004Q4 & -3.401 & -0.201 & 4.476 & 0.287 & 6.780 & 0.447 & 3.577 & 0.232 \\ 
+  2001Q1/2005Q4 & -1.539 & -0.093 & 3.948 & 0.261 & 6.937 & 0.477 & 4.558 & 0.311 \\ 
+  2002Q1/2006Q4 & 2.567 & 0.196 & 6.201 & 0.485 & 9.785 & 0.794 & 6.455 & 0.540 \\ 
+  2003Q1/2007Q4 & 7.919 & 0.925 & 10.432 & 1.201 & 14.850 & 1.844 & 10.713 & 1.299 \\ 
+  2004Q1/2008Q4 & -5.667 & -0.435 & -2.931 & -0.233 & 1.676 & 0.136 & -2.132 & -0.173 \\ 
+  2005Q1/2009Q4 & -2.662 & -0.158 & -0.627 & -0.042 & 3.477 & 0.242 & 0.171 & 0.011 \\ 
+   \midrule 
+All period & -3.032 & -0.182 & 1.893 & 0.125 & 5.116 & 0.351 & 1.860 & 0.123 \\ 
   
 \midrule
-\end{tabularx}
+\end{tabular}}
 
-\begin{tabularx}{\linewidth}{r*{5}{Y}}
-  \multicolumn{5}{l}{\textbf{Panel B: \naive{}}} \\
-2000Q1/2004Q4 & -0.201 & 0.168 & 0.169 & 0.072 \\ 
-  2001Q1/2005Q4 & -0.093 & 0.171 & 0.215 & 0.167 \\ 
-  2002Q1/2006Q4 & 0.196 & 0.448 & 0.492 & 0.453 \\ 
-  2003Q1/2007Q4 & 0.925 & 1.105 & 1.246 & 1.152 \\ 
-  2004Q1/2008Q4 & -0.435 & -0.344 & -0.306 & -0.332 \\ 
-  2005Q1/2009Q4 & -0.158 & -0.146 & -0.126 & -0.106 \\ 
-  All period & -0.182 & 0.008 & 0.018 & -0.020 \\ 
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{rrrrrrrrr}
+%\begin{tabularx}{\linewidth}{r*{9}{Y}}
+  \multicolumn{9}{l}{\textbf{Panel B: \naive{}}} \\
+2000Q1/2004Q4 & -3.401 & -0.201 & 2.689 & 0.168 & 2.635 & 0.169 & 1.145 & 0.072 \\ 
+  2001Q1/2005Q4 & -1.539 & -0.093 & 2.686 & 0.171 & 3.280 & 0.215 & 2.599 & 0.167 \\ 
+  2002Q1/2006Q4 & 2.567 & 0.196 & 5.740 & 0.448 & 6.088 & 0.492 & 5.465 & 0.453 \\ 
+  2003Q1/2007Q4 & 7.919 & 0.925 & 9.542 & 1.105 & 10.065 & 1.246 & 9.312 & 1.152 \\ 
+  2004Q1/2008Q4 & -5.667 & -0.435 & -4.718 & -0.344 & -4.155 & -0.306 & -4.546 & -0.332 \\ 
+  2005Q1/2009Q4 & -2.662 & -0.158 & -2.373 & -0.146 & -2.019 & -0.126 & -1.759 & -0.106 \\ 
+   \midrule 
+All period & -3.032 & -0.182 & 0.126 & 0.008 & 0.281 & 0.018 & -0.318 & -0.020 \\ 
   
 \midrule
-\end{tabularx}
-
-\begin{tabularx}{\linewidth}{r*{5}{Y}}
+\end{tabular}}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{rrrrrrrrr}
+%\begin{tabularx}{\linewidth}{r*{9}{Y}}
   \multicolumn{5}{l}{\textbf{Panel C: \default{}}} \\
-2000Q1/2004Q4 & -0.201 & 0.247 & 0.233 & 0.276 \\ 
-  2001Q1/2005Q4 & -0.093 & 0.230 & 0.252 & 0.283 \\ 
-  2002Q1/2006Q4 & 0.196 & 0.430 & 0.469 & 0.490 \\ 
-  2003Q1/2007Q4 & 0.925 & 0.876 & 0.962 & 0.970 \\ 
-  2004Q1/2008Q4 & -0.435 & -0.439 & -0.415 & -0.403 \\ 
-  2005Q1/2009Q4 & -0.158 & -0.235 & -0.210 & -0.193 \\ 
-  All period & -0.182 & -0.004 & -0.000 & 0.028 \\ 
+2000Q1/2004Q4 & -3.401 & -0.201 & 3.836 & 0.247 & 3.537 & 0.233 & 4.177 & 0.276 \\ 
+  2001Q1/2005Q4 & -1.539 & -0.093 & 3.516 & 0.230 & 3.738 & 0.252 & 4.232 & 0.283 \\ 
+  2002Q1/2006Q4 & 2.567 & 0.196 & 5.565 & 0.430 & 5.863 & 0.469 & 5.969 & 0.490 \\ 
+  2003Q1/2007Q4 & 7.919 & 0.925 & 8.238 & 0.876 & 8.554 & 0.962 & 8.572 & 0.970 \\ 
+  2004Q1/2008Q4 & -5.667 & -0.435 & -6.058 & -0.439 & -5.690 & -0.415 & -5.561 & -0.403 \\ 
+  2005Q1/2009Q4 & -2.662 & -0.158 & -3.827 & -0.235 & -3.427 & -0.210 & -3.161 & -0.193 \\ 
+   \midrule 
+All period & -3.032 & -0.182 & -0.069 & -0.004 & -0.005 & -0.000 & 0.441 & 0.028 \\ 
   
 \bottomrule
-\end{tabularx}
+\end{tabular}}
 \end{table}
 
 
@@ -927,7 +939,7 @@ Period&\textit{Market}&\textit{CONS}&\textit{TP}&\textit{EPS} \\  \multicolumn{5
 \begin{center}
 \includegraphics[width=\linewidth]{figure/example-fig-1}
 \end{center}
-\caption{Daily stock price Amazon and brokers target prices}
+\caption{Amazon daily stock price and brokers target prices}
 \label{fig:example}
 \ Target price and actual prices for Amazon  the second quarter of 1999.
 \end{figure}
