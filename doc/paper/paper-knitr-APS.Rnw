@@ -411,7 +411,7 @@ We consider  three terciles (\textit{top}, \textit{medium}, \textit{bottom}). In
 Beforehand, we convert the rankings into scores as follows:
 \begin{equation}
 \label{eq:score}
-score_{j,i}=\frac{rank_{j,i}}{\max{rank_s}}
+score_{j,i}=\frac{rank_{j,i}}{\max{rank_i}}
 \end{equation}
 
 To get the cross-sectional values of scores across different stocks, we take the average of $score_{j,i}$
