@@ -11,7 +11,7 @@ system.time(source('munge/01-data.q.ret.R'))
 
 ### data for first paper
 system.time(source('src/paper.trading.APS.true.R'))
-
+require(ggplot2)
 colourCount = length(unique(final.bl$Views))
 getPalette = colorRampPalette(RColorBrewer::brewer.pal(colourCount, "Set1"))
 ggplot(final.bl,aes(x=as.Date(Quarters),y=cum.ret,group=Views,color=Views))+geom_line(size=0.5)+ylab('Portfolio wealth (initial=$100)')+xlab('Quarters')+ggtitle('Portfolio performance with $100 initial investment')+theme_bw(base_family='Avenir')+theme(plot.title = element_text(colour = "Blue"),legend.position='top')+scale_color_manual(values=getPalette(colourCount))+guides(color=guide_legend(nrow=1L))+geom_hline(yintercept=100L)+facet_grid(~Method,scale='free_x')
@@ -22,4 +22,10 @@ require("knitr")
 setwd('~/Dropbox/workspace/Projects/BL-strategies/doc/paper/')
 knit2pdf('paper-knitr-APS.Rnw',quiet=T)
 setwd('~/Dropbox/workspace/Projects/BL-strategies/')
+
+
+ggplot(unique(final.bl[Views!='Market'],by=c('Quarters','n.views','Method','Views')),aes(x=as.Date(Quarters),y=n.views,group=Method,color=Method))+geom_point()+geom_line()+facet_grid(Views~.,scale='free_x')+theme_bw()
+
+
+
 

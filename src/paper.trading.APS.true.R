@@ -1,9 +1,15 @@
 
 
-stocks <- sort(unique(unlist(lapply(market.list,function(m){m$stock.names}))))
+m.stocks <- sort(unique(unlist(lapply(market.list,function(m){m$stock.names}))))
+
+load('~/Dropbox/workspace/Projects/EPS/cache/complete.dt.RData')
+
 quarters <- setnames(unique(market.set[,.(Quarters)]),'q.id')[,q.id:=as.yearqtr(q.id)]
 
+stocks <- sort(intersect(intersect(m.stocks,q.data$Stock),complete.dt$Stock))
+
 core.dt <- setkey(q.data[,core.b:=.N>=12,by=list(Stock,Broker)][(core.b)][,true:=rank(score),by=list(q.id,Stock)][,core.s:=.N>=3,by=list(q.id,Stock)][(core.s)][,core.q:=length(unique(q.id))>=8,by=.(Stock)][(core.q)],Stock)[stocks]
+
 
 
 pt.exp.ret <- setkey(melt(core.dt[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock),.SDcols=c('q.id','Broker','Stock','b.view')][,.(q.id,Broker,Stock,b.view)][,true:=truncate.f(b.view,percentile)][,naive:=c(NA,head(true,-1)),by=.(Broker,Stock)][,default:=rollapplyr(naive,seq_len(length(naive)),mean,na.rm=T),by=.(Broker,Stock)],id.vars = c('q.id','Stock','Broker'),measure.vars = c('true','naive','default'),value.name = 'exp.ret',variable.name = 'Method'),q.id,Stock,Broker,Method)
@@ -35,7 +41,7 @@ pt.rank.views <- setnames(pt.ret[,year:=format(as.yearqtr(q.id),'%Y')],'V1','Vie
 cache('pt.rank.views')
 
 ###EPS case
-load('~/Dropbox/workspace/Projects/EPS/cache/complete.dt.RData')
+
 
 ranked.eps.dt <- unique(setkey(na.omit(setkey(complete.dt[,':='(true=rank,q.id=fis.q)],Stock)[stocks]),q.id)[quarters],by=c('q.id','Broker','Stock'))[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock),.SDcols=c('q.id','Broker','Stock','true')][,.(q.id,Broker,Stock,true)]
 
@@ -84,7 +90,7 @@ conf.dt <- melt(unique(core.dt,by=c('q.id','Stock'),fromLast = T)[,.(q.id,Stock,
 conf.coef <- acast(conf.dt,q.id~Stock~variable,value.var='value')
 
 eps.stocks <- intersect(dimnames(eps.list.rank)[[2]],dimnames(conf.coef)[[2]])
-#pt.stocks <- intersect(dimnames(pt.list.rank)[[2]],dimnames(conf.coef)[[2]])
+same.stocks <- intersect(intersect(dimnames(pt.list.rank)[[2]],dimnames(conf.coef)[[2]]),dimnames(eps.list.rank)[[2]])
 
 ##BL inputs for non-rank strategy:meanTper and s.coefVar
 #cons.rankings <- pt.baseline.rankings[3:42,pt.all.b,pt.all.s,]
@@ -104,9 +110,9 @@ tau=1/50
 
 #source('lib/BL-functions.R')
 
-pt.opt.w <- opt.w.f(pt.list.rank,conf.coef,tau)[,Views:='TP']
-cons.opt.w <- opt.w.f(cons.list.rank,conf.coef,tau)[,Views:='CONS']
-eps.opt.w <- opt.w.f(eps.list.rank,conf.coef[,eps.stocks,],tau)[,Views:='EPS']
+pt.opt.w <- opt.w.f(pt.list.rank,conf.coef[,same.stocks,],tau)[,Views:='TP']
+cons.opt.w <- opt.w.f(cons.list.rank,conf.coef[,same.stocks,],tau)[,Views:='CONS']
+eps.opt.w <- opt.w.f(eps.list.rank,conf.coef[,same.stocks,],tau)[,Views:='EPS']
 
 
 opt.w <- rbind(pt.opt.w,cons.opt.w,eps.opt.w)

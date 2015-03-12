@@ -374,9 +374,9 @@ where $k$ is number of stocks followed by a particular analyst $j$.
 Table (\ref{tab:rank-stat}) shows a contingency analysis of the ranks. 
 %Chi square statistics include/ expected frequiency test
 %Journ. of Fin economics 
-Panel A shows the dynamics of each tercile for rankings based on target price  accuracy. We observe that analysts exhibit strong ranking consistency as, on average, they stay at the same tercile after one quarter. Of the top (bottom) most accurate (inaccurate) analysts in the previous quarter 67.593\% (69.401\%) remain in that same tercile after one quarter. After one year the corresponding figures are lower respectively 46.424\% and 40.681\% for the top and bottom terciles. 
+Panel A shows the dynamics of each tercile for rankings based on target price  accuracy. We observe that analysts exhibit strong ranking consistency as, on average, they stay at the same tercile after one quarter. Of the top (bottom) most accurate (inaccurate) analysts in the previous quarter 67.769\% (69.548\%) remain in that same tercile after one quarter. After one year the corresponding figures are lower respectively 46.199\% and 41.09\% for the top and bottom terciles. 
 
-In the case of EPS ranking  (panel B) 48.402\% and  28.63\% ( 46.687\% and  32.253\%) of the analysts  remained in the top and bottom terciles after one quarter (year)  respectively.
+In the case of EPS ranking  (panel B) 48.417\% and  28.496\% ( 46.844\% and  32.399\%) of the analysts  remained in the top and bottom terciles after one quarter (year)  respectively.
 
 These results are consistent with the recent findings of \cite{hilary2013} on analyst forecast consistency. 
 
@@ -400,7 +400,7 @@ The expected returns  are computed comparing TP estimates with actual prices. To
 \cite{bradshaw2002} reports analyst average expected returns for the period of 2000--2009 and 206 brokers of 24\%. \cite{da2011} report an average expected return of 40\% for the period of 1996--2004. \cite{zhou2013} finds an average expected return of 96\% for the sample period of 2000--2009. These figures suggest that analysts are overly optimistic.
 %these values from the historical perspective, i.e., how the values of expected stock returns go inline with historical stock returns. \cite{bodie2009} show that arithimatic average rate of return for the U.S. large stocks (S\&P 500) for the period of 1926--2005 is 10.17\% and the average rate of excess return is 8.39\% with the risk premium estimated 6--8\%. While it is not the best idea to extrapolate the historical values, still, we can say that the expected stocks return should be around 14--16\%. Clearly, the values presented in the literature shows that analysts are very optimistic in issuing target price reports.
 
-Panel A show the statistics for the consensus expectations as defined in eq. (\ref{consq}). The average consensus among the analysts on stock expected returns in the  \tr{}, \naive{} and \default{} information sets are, respectively, 18.577\%, 18.615\%, and 21.729\% respectively. Panel B of the table shows the TP accuracy weighted average expected returns (15.719\%, 15.738\%, and 18.836\%). Panel C shows the EPS based weighted expected returns averages (14.893\%, 14.895\%, and 19.394\%). 
+Panel A show the statistics for the consensus expectations as defined in eq. (\ref{consq}). The average consensus among the analysts on stock expected returns in the  \tr{}, \naive{} and \default{} information sets are, respectively, 18.944\%, 18.99\%, and 22.207\% respectively. Panel B of the table shows the TP accuracy weighted average expected returns (16.068\%, 16.095\%, and 19.343\%). Panel C shows the EPS based weighted expected returns averages (14.964\%, 14.967\%, and 19.511\%). 
 
 Overall compared to the consensus the ranked weighted expected returns (smart estimates) are less optimistic. The \default{} information set shows higher values of expected returns.
 
@@ -422,21 +422,21 @@ The passive strategy generates an annualized cumulative return of \ensuremath{-3
 
 \subsection{Perfect foresight strategy}
 \label{sec:perfect}
-Panel B presents the results for the case of the \tr{} information set. The annualized cumulative returns for each of the active strategies (\textit{CONS}, \textit{TP}, and \textit{EPS}) are, respectively, 1.893\%, 5.116\%, 1.86\%. All the strategies outperform the passive benchmark (\ensuremath{-3.032}\%). The results show, as expected, that  we would better off if we knew in advance who the top analysts in terms of TP accuracy would be. In any case, the results suggest that the advice of analysts, as a group, is valuable. 
+Panel B presents the results for the case of the \tr{} information set. The annualized cumulative returns for each of the active strategies (\textit{CONS}, \textit{TP}, and \textit{EPS}) are, respectively, 2.247\%, 5.4\%, 1.957\%. All the strategies outperform the passive benchmark (\ensuremath{-3.032}\%). The results show, as expected, that  we would better off if we knew in advance who the top analysts in terms of TP accuracy would be. In any case, the results suggest that the advice of analysts, as a group, is valuable. 
 %Yet, the top analyst  
 
 %The result confirms that these strategies set an upper bound for the cumulative return yield. It follows, that we setup a boundary for the results of the feasible strategies: the upper bound is the perfect foresight strategy and the lower bound is the market benchmark.
 
-The \textit{TP} ranking strategy dominates also when we look at the risk-adjusted returns. The Sharpe Ratio is 0.351 against 0.125, 0.123, and \ensuremath{-0.182}, respectively for the \textit{CONS}, the \textit{EPS}, and the \textit{Market} strategies. In addition, the \textit{TP} strategy dominates  the others if we consider the smaller trading periods (5 years). Table \ref{tab:substrategy} shows the Sharpe Ratio for six 5-year holding periods. The \textit{TP} strategy wins over the others in every period as expected.
+The \textit{TP} ranking strategy dominates also when we look at the risk-adjusted returns. The Sharpe Ratio is 0.371 against 0.149, 0.129, and \ensuremath{-0.182}, respectively for the \textit{CONS}, the \textit{EPS}, and the \textit{Market} strategies. In addition, the \textit{TP} strategy dominates  the others if we consider the smaller trading periods (5 years). Table \ref{tab:substrategy} shows the Sharpe Ratio for six 5-year holding periods. The \textit{TP} strategy wins over the others in every period as expected.
 
 While this is an hypothetical setting, given that it is not possible to know in advance which analyst will rank first, it suggests that if we can predict the rankings with some accuracy this will be a useful investment trading tool. One of the possibilities is using methods developed in the Machine Learning literature (e.g., \cite{aiguzhinov2010,brazdil2003}), where this type of problem (referred as a label ranking problem) has been broadly studied. For example, \cite{aiguzhinov2010} propose a label ranking algorithm using Bayesian approach to predict the rankings.
 
 
 
 \subsection{Feasible strategies}
-Panel C of table (\ref{tab:strategy}) shows the performance of the different smart strategies in the \naive{} information set. As it was the  case of the \tr{} information set, all the active strategies outperform the \textit{Market} (\ensuremath{-3.032}\%)  and show positive cumulative annualized returns of 0.281\%,  0.126\%, \ensuremath{-0.318}\% respectively for the \textit{TP}, the \textit{CONS}, and the \textit{EPS} strategies. Similarly, the \textit{TP} strategy dominates when we consider the risk-adjusted returns. The Sharpe Ratio for this strategy is 0.018 which is higher than that Sharpe Ratios of the \textit{CONS} and  the \textit{EPS} strategies  (0.008 and \ensuremath{-0.02} respectively). The results in panel B of table \ref{tab:substrategy} show as well that this strategy outperform the others for all of 5 trading sub-periods. 
+Panel C of table (\ref{tab:strategy}) shows the performance of the different smart strategies in the \naive{} information set. As it was the  case of the \tr{} information set, all the active strategies outperform the \textit{Market} (\ensuremath{-3.032}\%)  and show positive cumulative annualized returns of 0.622\%,  0.449\%, \ensuremath{-0.361}\% respectively for the \textit{TP}, the \textit{CONS}, and the \textit{EPS} strategies. Similarly, the \textit{TP} strategy dominates when we consider the risk-adjusted returns. The Sharpe Ratio for this strategy is 0.04 which is higher than that Sharpe Ratios of the \textit{CONS} and  the \textit{EPS} strategies  (0.028 and \ensuremath{-0.022} respectively). The results in panel B of table \ref{tab:substrategy} show as well that this strategy outperform the others for all of 5 trading sub-periods. 
 
-Panel D of table \ref{tab:strategy} confirm the outperformance of the \textit{TP} smart strategy: this is the the only active strategy that yields positive annualized cumulative return (\ensuremath{-0.005}\%) whereas both  the \textit{CONS} and the \textit{EPS} show negative returns (\ensuremath{-0.069}\% and 0.441\% respectively). The panel C of table \ref{tab:substrategy} shows that the Sharpe Ratio of the \textit{TP} strategy is lower then that of the \textit{EPS} strategy in only first two sub-periods (2000Q1/2004Q4 and 2001Q1/2005Q4).
+Panel D of table \ref{tab:strategy} confirm the outperformance of the \textit{TP} smart strategy: this is the the only active strategy that yields positive annualized cumulative return (0.441\%) whereas both  the \textit{CONS} and the \textit{EPS} show negative returns (0.413\% and 0.441\% respectively). The panel C of table \ref{tab:substrategy} shows that the Sharpe Ratio of the \textit{TP} strategy is lower then that of the \textit{EPS} strategy in only first two sub-periods (2000Q1/2004Q4 and 2001Q1/2005Q4).
 
 
 Figure \ref{fig:bl-results} shows the graphical representation of the cumulative portfolio wealth for  the passive and smart strategies in all the information sets. The $y$-axis is the monetary value of wealth and $x$-axis is the time starting at January of 2000 and ending at December of 2009. Figures show that strategies under the \tr{} panel outperform the \emph{Market} and that final value  of the portfolio of the TP strategy considerably outruns the other alternative strategies.
@@ -574,13 +574,13 @@ MONTSEC & -0.120 & 0.027 &    1 \\
 \multirow{10}{*}{$t$}&\textbf{Panel A: TP}&\multicolumn{4}{c}{$t+1$} \\
 &&$top$&$middle$&$bottom$&Sum\\
 
- &$top$ & 67.6 & 22.2 & 10.3 & 100.0 \\ 
-  &$middle$ & 30.7 & 47.6 & 21.7 & 100.0 \\ 
-  &$bottom$ & 13.6 & 17.0 & 69.4 & 100.0 \\ 
+ &$top$ & 67.8 & 22.0 & 10.2 & 100.0 \\ 
+  &$middle$ & 29.9 & 48.2 & 22.0 & 100.0 \\ 
+  &$bottom$ & 13.4 & 17.1 & 69.5 & 100.0 \\ 
     &&\multicolumn{4}{c}{$t+4$}\\ 
-&$top$ & 46.4 & 27.7 & 25.9 & 100.0 \\ 
-  &$middle$ & 39.1 & 29.1 & 31.8 & 100.0 \\ 
-  &$bottom$ & 32.7 & 26.7 & 40.7 & 100.0 \\ 
+&$top$ & 46.2 & 28.0 & 25.8 & 100.0 \\ 
+  &$middle$ & 39.2 & 29.2 & 31.7 & 100.0 \\ 
+  &$bottom$ & 32.1 & 26.8 & 41.1 & 100.0 \\ 
   
 \end{tabularx}
 \begin{tabularx}{\linewidth}{r*{6}{Y}}
@@ -588,12 +588,12 @@ MONTSEC & -0.120 & 0.027 &    1 \\
 \multirow{11}{*}{$t$}&\textbf{Panel B: EPS}&\multicolumn{4}{c}{$t+1$} \\
 &&$top$&$middle$&$bottom$&Sum\\
  &$top$ & 48.4 & 26.1 & 26.0 & 100.5 \\ 
-  &$middle$ & 48.1 & 26.3 & 25.9 & 100.4 \\ 
-  &$bottom$ & 46.5 & 25.7 & 28.6 & 100.8 \\ 
+  &$middle$ & 48.2 & 26.2 & 25.8 & 100.2 \\ 
+  &$bottom$ & 46.3 & 25.9 & 28.5 & 100.6 \\ 
     &&\multicolumn{4}{c}{$t+4$}\\ 
-&$top$ & 46.7 & 28.4 & 26.1 & 101.1 \\ 
-  &$middle$ & 45.4 & 27.1 & 28.1 & 100.6 \\ 
-  &$bottom$ & 42.8 & 27.7 & 32.3 & 102.7 \\ 
+&$top$ & 46.8 & 28.3 & 26.0 & 101.2 \\ 
+  &$middle$ & 45.5 & 27.0 & 28.1 & 100.6 \\ 
+  &$bottom$ & 42.7 & 27.6 & 32.4 & 102.7 \\ 
   
 \bottomrule
 \end{tabularx}
@@ -610,9 +610,9 @@ MONTSEC & -0.120 & 0.027 &    1 \\
 \midrule
   \multicolumn{4}{l}{\textbf{Panel A: Consensus}} \\ 
  \midrule 
-\tr{} & 18.577 & 16.861 & 0.119 \\ 
-  \naive{} & 18.615 & 16.866 & 0.120 \\ 
-  \default{} & 21.729 & 20.478 & 0.102 \\ 
+\tr{} & 18.944 & 17.156 & 0.119 \\ 
+  \naive{} & 18.990 & 17.173 & 0.119 \\ 
+  \default{} & 22.207 & 20.707 & 0.101 \\ 
   
 \end{tabularx}
 
@@ -620,17 +620,17 @@ MONTSEC & -0.120 & 0.027 &    1 \\
   \midrule
   \multicolumn{4}{l}{\textbf{Panel B: TP}} \\ 
  \midrule 
-\tr{} & 14.893 & 13.407 & 0.102 \\ 
-  \naive{} & 14.895 & 13.393 & 0.103 \\ 
-  \default{} & 19.394 & 18.602 & 0.088 \\ 
+\tr{} & 14.964 & 13.449 & 0.103 \\ 
+  \naive{} & 14.967 & 13.432 & 0.103 \\ 
+  \default{} & 19.511 & 18.756 & 0.089 \\ 
   
   \end{tabularx}
   \begin{tabularx}{\linewidth}{r*{4}{Y}}
   \multicolumn{4}{l}{\textbf{Panel C: EPS}} \\ 
  \midrule 
-\tr{} & 15.719 & 14.303 & 0.098 \\ 
-  \naive{} & 15.738 & 14.304 & 0.098 \\ 
-  \default{} & 18.836 & 17.795 & 0.086 \\ 
+\tr{} & 16.068 & 14.522 & 0.098 \\ 
+  \naive{} & 16.095 & 14.525 & 0.098 \\ 
+  \default{} & 19.343 & 18.179 & 0.084 \\ 
   
 \bottomrule
 \end{tabularx}
@@ -645,55 +645,55 @@ MONTSEC & -0.120 & 0.027 &    1 \\
 Year& \textit{CONS}& \textit{TP} & \textit{EPS}\\
   \multicolumn{4}{l}{\textbf{Panel A: \tr{}}} \\ 
  \midrule 
-1999 &  219 &  219 &  144 \\ 
-  2000 &  295 &  295 &  211 \\ 
-  2001 &  341 &  341 &  257 \\ 
-  2002 &  374 &  374 &  299 \\ 
-  2003 &  390 &  390 &  311 \\ 
-  2004 &  399 &  399 &  331 \\ 
-  2005 &  414 &  414 &  343 \\ 
-  2006 &  421 &  421 &  344 \\ 
-  2007 &  426 &  426 &  357 \\ 
-  2008 &  420 &  420 &  339 \\ 
-  2009 &  365 &  365 &  300 \\ 
+1999 &  202 &  202 &  145 \\ 
+  2000 &  269 &  269 &  211 \\ 
+  2001 &  306 &  306 &  257 \\ 
+  2002 &  333 &  333 &  299 \\ 
+  2003 &  346 &  346 &  311 \\ 
+  2004 &  351 &  351 &  331 \\ 
+  2005 &  359 &  359 &  343 \\ 
+  2006 &  361 &  361 &  344 \\ 
+  2007 &  365 &  365 &  357 \\ 
+  2008 &  361 &  361 &  339 \\ 
+  2009 &  323 &  323 &  300 \\ 
    \midrule 
-Total &  442 &  442 &  376 \\ 
+Total &  379 &  379 &  376 \\ 
   
 \end{tabularx}
 \begin{tabularx}{\linewidth}{r*{4}{Y}}
   \multicolumn{4}{l}{\textbf{Panel B: \naive{}}} \\ 
  \midrule 
-1999 &   73 &   73 &   44 \\ 
-  2000 &  257 &  257 &  185 \\ 
-  2001 &  310 &  310 &  247 \\ 
-  2002 &  362 &  362 &  288 \\ 
-  2003 &  374 &  374 &  307 \\ 
-  2004 &  385 &  385 &  318 \\ 
-  2005 &  401 &  401 &  337 \\ 
-  2006 &  415 &  415 &  343 \\ 
-  2007 &  421 &  421 &  352 \\ 
-  2008 &  422 &  422 &  349 \\ 
-  2009 &  405 &  405 &  321 \\ 
+1999 &   69 &   69 &   44 \\ 
+  2000 &  235 &  235 &  186 \\ 
+  2001 &  281 &  281 &  247 \\ 
+  2002 &  323 &  323 &  288 \\ 
+  2003 &  334 &  334 &  307 \\ 
+  2004 &  341 &  341 &  318 \\ 
+  2005 &  352 &  352 &  337 \\ 
+  2006 &  359 &  359 &  343 \\ 
+  2007 &  362 &  362 &  352 \\ 
+  2008 &  361 &  361 &  349 \\ 
+  2009 &  351 &  351 &  321 \\ 
    \midrule 
-Total &  442 &  442 &  376 \\ 
+Total &  379 &  379 &  376 \\ 
   
 \end{tabularx}
 \begin{tabularx}{\linewidth}{r*{4}{Y}}
   \multicolumn{4}{l}{\textbf{Panel C: \default{}}} \\ 
  \midrule 
-1999 &   73 &   73 &   54 \\ 
-  2000 &  257 &  257 &  205 \\ 
-  2001 &  314 &  314 &  264 \\ 
-  2002 &  368 &  368 &  308 \\ 
-  2003 &  383 &  383 &  326 \\ 
-  2004 &  396 &  396 &  339 \\ 
-  2005 &  414 &  414 &  357 \\ 
-  2006 &  429 &  429 &  365 \\ 
-  2007 &  438 &  438 &  371 \\ 
-  2008 &  440 &  440 &  375 \\ 
-  2009 &  442 &  442 &  378 \\ 
+1999 &   69 &   69 &   54 \\ 
+  2000 &  235 &  235 &  205 \\ 
+  2001 &  284 &  284 &  264 \\ 
+  2002 &  327 &  327 &  308 \\ 
+  2003 &  341 &  341 &  326 \\ 
+  2004 &  350 &  350 &  339 \\ 
+  2005 &  364 &  364 &  357 \\ 
+  2006 &  371 &  371 &  365 \\ 
+  2007 &  375 &  375 &  371 \\ 
+  2008 &  377 &  377 &  375 \\ 
+  2009 &  379 &  379 &  378 \\ 
    \midrule 
-Total &  442 &  442 &  378 \\ 
+Total &  379 &  379 &  378 \\ 
   
 \bottomrule
 \end{tabularx}
@@ -839,26 +839,26 @@ Strategy&Annualized return (in \%)&Annualized Std. dev (in \%)&Sharpe ratio&Aver
 
 \begin{tabularx}{\linewidth}{r*{5}{Y}}
   \multicolumn{5}{l}{\textbf{Panel B: \tr{} }} \\
- \textit{CONS} & 1.893 & 15.147 & 0.125 &  291 & 0.291 \\ 
-  \textit{TP} & 5.116 & 14.593 & 0.351 &  291 & 0.314 \\ 
-  \textit{EPS} & 1.860 & 15.172 & 0.123 &  209 & 0.503 \\ 
+ \textit{CONS} & 2.247 & 15.032 & 0.149 &  257 & 0.277 \\ 
+  \textit{TP} & 5.400 & 14.552 & 0.371 &  257 & 0.298 \\ 
+  \textit{EPS} & 1.957 & 15.145 & 0.129 &  209 & 0.501 \\ 
    \midrule 
 
 \end{tabularx}
 
 \begin{tabularx}{\linewidth}{r*{5}{Y}}
   \multicolumn{5}{l}{\textbf{Panel C: \naive{}}} \\
- \textit{CONS} & 0.126 & 15.947 & 0.008 &  284 & 0.256 \\ 
-  \textit{TP} & 0.281 & 15.661 & 0.018 &  284 & 0.264 \\ 
-  \textit{EPS} & -0.318 & 16.094 & -0.020 &  206 & 0.409 \\ 
+ \textit{CONS} & 0.449 & 15.993 & 0.028 &  252 & 0.250 \\ 
+  \textit{TP} & 0.622 & 15.682 & 0.040 &  252 & 0.256 \\ 
+  \textit{EPS} & -0.361 & 16.100 & -0.022 &  206 & 0.408 \\ 
    \midrule 
 
 \end{tabularx}
 \begin{tabularx}{\linewidth}{r*{5}{Y}}
   \multicolumn{5}{l}{\textbf{Panel D: \default{}}} \\
- \textit{CONS} & -0.069 & 15.817 & -0.004 &  290 & 0.188 \\ 
-  \textit{TP} & -0.005 & 15.633 & -0.000 &  290 & 0.192 \\ 
-  \textit{EPS} & 0.441 & 15.673 & 0.028 &  250 & 0.198 \\ 
+ \textit{CONS} & 0.413 & 15.873 & 0.026 &  257 & 0.185 \\ 
+  \textit{TP} & 0.441 & 15.658 & 0.028 &  257 & 0.189 \\ 
+  \textit{EPS} & 0.441 & 15.702 & 0.028 &  250 & 0.198 \\ 
   
 \bottomrule
 \end{tabularx}
@@ -879,14 +879,14 @@ Period&\multicolumn{2}{c}{\textit{Market}}&\multicolumn{2}{c}{\textit{CONS}}&\mu
 & Ann.ret&SR& Ann.ret&SR& Ann.ret&SR& Ann.ret&SR\\
 
   \multicolumn{9}{l}{\textbf{Panel A: \tr{}}} \\
-2000Q1/2004Q4 & -3.401 & -0.201 & 4.476 & 0.287 & 6.780 & 0.447 & 3.577 & 0.232 \\ 
-  2001Q1/2005Q4 & -1.539 & -0.093 & 3.948 & 0.261 & 6.937 & 0.477 & 4.558 & 0.311 \\ 
-  2002Q1/2006Q4 & 2.567 & 0.196 & 6.201 & 0.485 & 9.785 & 0.794 & 6.455 & 0.540 \\ 
-  2003Q1/2007Q4 & 7.919 & 0.925 & 10.432 & 1.201 & 14.850 & 1.844 & 10.713 & 1.299 \\ 
-  2004Q1/2008Q4 & -5.667 & -0.435 & -2.931 & -0.233 & 1.676 & 0.136 & -2.132 & -0.173 \\ 
-  2005Q1/2009Q4 & -2.662 & -0.158 & -0.627 & -0.042 & 3.477 & 0.242 & 0.171 & 0.011 \\ 
+2000Q1/2004Q4 & -3.401 & -0.201 & 5.269 & 0.343 & 7.564 & 0.509 & 3.757 & 0.245 \\ 
+  2001Q1/2005Q4 & -1.539 & -0.093 & 4.232 & 0.280 & 7.159 & 0.496 & 4.859 & 0.335 \\ 
+  2002Q1/2006Q4 & 2.567 & 0.196 & 6.230 & 0.504 & 9.682 & 0.816 & 6.428 & 0.537 \\ 
+  2003Q1/2007Q4 & 7.919 & 0.925 & 10.092 & 1.180 & 14.339 & 1.817 & 10.708 & 1.296 \\ 
+  2004Q1/2008Q4 & -5.667 & -0.435 & -3.059 & -0.245 & 1.285 & 0.103 & -2.163 & -0.174 \\ 
+  2005Q1/2009Q4 & -2.662 & -0.158 & -0.689 & -0.046 & 3.279 & 0.225 & 0.187 & 0.012 \\ 
    \midrule 
-All period & -3.032 & -0.182 & 1.893 & 0.125 & 5.116 & 0.351 & 1.860 & 0.123 \\ 
+All period & -3.032 & -0.182 & 2.247 & 0.149 & 5.400 & 0.371 & 1.957 & 0.129 \\ 
   
 \midrule
 \end{tabular}}
@@ -895,14 +895,14 @@ All period & -3.032 & -0.182 & 1.893 & 0.125 & 5.116 & 0.351 & 1.860 & 0.123 \\
 \begin{tabular}{rrrrrrrrr}
 %\begin{tabularx}{\linewidth}{r*{9}{Y}}
   \multicolumn{9}{l}{\textbf{Panel B: \naive{}}} \\
-2000Q1/2004Q4 & -3.401 & -0.201 & 2.689 & 0.168 & 2.635 & 0.169 & 1.145 & 0.072 \\ 
-  2001Q1/2005Q4 & -1.539 & -0.093 & 2.686 & 0.171 & 3.280 & 0.215 & 2.599 & 0.167 \\ 
-  2002Q1/2006Q4 & 2.567 & 0.196 & 5.740 & 0.448 & 6.088 & 0.492 & 5.465 & 0.453 \\ 
-  2003Q1/2007Q4 & 7.919 & 0.925 & 9.542 & 1.105 & 10.065 & 1.246 & 9.312 & 1.152 \\ 
-  2004Q1/2008Q4 & -5.667 & -0.435 & -4.718 & -0.344 & -4.155 & -0.306 & -4.546 & -0.332 \\ 
-  2005Q1/2009Q4 & -2.662 & -0.158 & -2.373 & -0.146 & -2.019 & -0.126 & -1.759 & -0.106 \\ 
+2000Q1/2004Q4 & -3.401 & -0.201 & 3.401 & 0.215 & 3.345 & 0.217 & 1.045 & 0.066 \\ 
+  2001Q1/2005Q4 & -1.539 & -0.093 & 2.840 & 0.180 & 3.538 & 0.232 & 2.537 & 0.163 \\ 
+  2002Q1/2006Q4 & 2.567 & 0.196 & 5.837 & 0.468 & 6.229 & 0.517 & 5.415 & 0.448 \\ 
+  2003Q1/2007Q4 & 7.919 & 0.925 & 9.410 & 1.098 & 9.965 & 1.242 & 9.298 & 1.149 \\ 
+  2004Q1/2008Q4 & -5.667 & -0.435 & -4.826 & -0.349 & -4.254 & -0.311 & -4.551 & -0.333 \\ 
+  2005Q1/2009Q4 & -2.662 & -0.158 & -2.419 & -0.147 & -2.029 & -0.125 & -1.748 & -0.105 \\ 
    \midrule 
-All period & -3.032 & -0.182 & 0.126 & 0.008 & 0.281 & 0.018 & -0.318 & -0.020 \\ 
+All period & -3.032 & -0.182 & 0.449 & 0.028 & 0.622 & 0.040 & -0.361 & -0.022 \\ 
   
 \midrule
 \end{tabular}}
@@ -910,14 +910,14 @@ All period & -3.032 & -0.182 & 0.126 & 0.008 & 0.281 & 0.018 & -0.318 & -0.020 \
 \begin{tabular}{rrrrrrrrr}
 %\begin{tabularx}{\linewidth}{r*{9}{Y}}
   \multicolumn{5}{l}{\textbf{Panel C: \default{}}} \\
-2000Q1/2004Q4 & -3.401 & -0.201 & 3.836 & 0.247 & 3.537 & 0.233 & 4.177 & 0.276 \\ 
-  2001Q1/2005Q4 & -1.539 & -0.093 & 3.516 & 0.230 & 3.738 & 0.252 & 4.232 & 0.283 \\ 
-  2002Q1/2006Q4 & 2.567 & 0.196 & 5.565 & 0.430 & 5.863 & 0.469 & 5.969 & 0.490 \\ 
-  2003Q1/2007Q4 & 7.919 & 0.925 & 8.238 & 0.876 & 8.554 & 0.962 & 8.572 & 0.970 \\ 
-  2004Q1/2008Q4 & -5.667 & -0.435 & -6.058 & -0.439 & -5.690 & -0.415 & -5.561 & -0.403 \\ 
-  2005Q1/2009Q4 & -2.662 & -0.158 & -3.827 & -0.235 & -3.427 & -0.210 & -3.161 & -0.193 \\ 
+2000Q1/2004Q4 & -3.401 & -0.201 & 4.702 & 0.305 & 4.367 & 0.291 & 4.204 & 0.277 \\ 
+  2001Q1/2005Q4 & -1.539 & -0.093 & 3.873 & 0.253 & 4.112 & 0.278 & 4.294 & 0.286 \\ 
+  2002Q1/2006Q4 & 2.567 & 0.196 & 5.774 & 0.455 & 6.045 & 0.494 & 5.997 & 0.491 \\ 
+  2003Q1/2007Q4 & 7.919 & 0.925 & 8.344 & 0.881 & 8.584 & 0.964 & 8.604 & 0.972 \\ 
+  2004Q1/2008Q4 & -5.667 & -0.435 & -6.018 & -0.432 & -5.686 & -0.412 & -5.537 & -0.402 \\ 
+  2005Q1/2009Q4 & -2.662 & -0.158 & -3.700 & -0.225 & -3.337 & -0.203 & -3.186 & -0.194 \\ 
    \midrule 
-All period & -3.032 & -0.182 & -0.069 & -0.004 & -0.005 & -0.000 & 0.441 & 0.028 \\ 
+All period & -3.032 & -0.182 & 0.413 & 0.026 & 0.441 & 0.028 & 0.441 & 0.028 \\ 
   
 \bottomrule
 \end{tabular}}
