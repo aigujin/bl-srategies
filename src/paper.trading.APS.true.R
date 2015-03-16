@@ -1,12 +1,14 @@
 
 
-m.stocks <- sort(unique(unlist(lapply(market.list,function(m){m$stock.names}))))
+stocks.m <- sort(unique(unlist(lapply(market.list,function(m){m$stock.names}))))
 
 load('~/Dropbox/workspace/Projects/EPS/cache/complete.dt.RData')
 
 quarters <- setnames(unique(market.set[,.(Quarters)]),'q.id')[,q.id:=as.yearqtr(q.id)]
 
-stocks <- sort(intersect(intersect(m.stocks,q.data$Stock),complete.dt$Stock))
+stocks <- sort(intersect(intersect(stocks.m,setkey(q.data,q.id)[quarters]$Stock),setkey(complete.dt,q.id)[quarters]$Stock))
+
+
 
 core.dt <- setkey(q.data[,core.b:=.N>=12,by=list(Stock,Broker)][(core.b)][,true:=rank(score),by=list(q.id,Stock)][,core.s:=.N>=3,by=list(q.id,Stock)][(core.s)][,core.q:=length(unique(q.id))>=8,by=.(Stock)][(core.q)],Stock)[stocks]
 
@@ -90,7 +92,8 @@ conf.dt <- melt(unique(core.dt,by=c('q.id','Stock'),fromLast = T)[,.(q.id,Stock,
 conf.coef <- acast(conf.dt,q.id~Stock~variable,value.var='value')
 
 eps.stocks <- intersect(dimnames(eps.list.rank)[[2]],dimnames(conf.coef)[[2]])
-same.stocks <- intersect(intersect(dimnames(pt.list.rank)[[2]],dimnames(conf.coef)[[2]]),dimnames(eps.list.rank)[[2]])
+
+#same.stocks <- intersect(intersect(dimnames(pt.list.rank)[[2]],dimnames(conf.coef)[[2]]),dimnames(eps.list.rank)[[2]])
 
 ##BL inputs for non-rank strategy:meanTper and s.coefVar
 #cons.rankings <- pt.baseline.rankings[3:42,pt.all.b,pt.all.s,]
@@ -110,9 +113,9 @@ tau=1/50
 
 #source('lib/BL-functions.R')
 
-pt.opt.w <- opt.w.f(pt.list.rank,conf.coef[,same.stocks,],tau)[,Views:='TP']
-cons.opt.w <- opt.w.f(cons.list.rank,conf.coef[,same.stocks,],tau)[,Views:='CONS']
-eps.opt.w <- opt.w.f(eps.list.rank,conf.coef[,same.stocks,],tau)[,Views:='EPS']
+pt.opt.w <- opt.w.f(pt.list.rank,conf.coef,tau)[,Views:='TP']
+cons.opt.w <- opt.w.f(cons.list.rank,conf.coef,tau)[,Views:='CONS']
+eps.opt.w <- opt.w.f(eps.list.rank,conf.coef[,eps.stocks,],tau)[,Views:='EPS']
 
 
 opt.w <- rbind(pt.opt.w,cons.opt.w,eps.opt.w)
