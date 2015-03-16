@@ -369,9 +369,9 @@ opt.w.f <- function(views,conf,tau){
         
         #rbindlist(lapply(agg.names,function(agg){
                 #list.conf <- alply(conf[,,,agg],2,.dims=T)
-                rbindlist(mclapply(dimnames(views)[[3]],function(type){
+                rbindlist(lapply(dimnames(views)[[3]],function(type){
                         rbindlist(non.rank.script.weights.env.f(type,market.list[m.period],views[bl.period,,type],conf[bl.period,,type],tau))
-                },mc.cores=cores)
+                })
                 )
                 #}))
 }
@@ -434,38 +434,32 @@ cum.ret.f <- function(Return,n.views,in.value=100){
 
 bl.results.f <- function(opt.w)
 {
-bl.results <- unique(opt.w,by=c('q.id','Method','Views'))[,list(Quarters=as.yearqtr(Quarters),Views,Method,port.ret,ns.port.ret,ann.port.ret,n.views,q.id)]
-#risk.free <- setkey(rbindlist(lapply(seq_along(market.list),function(q){data.table(Quarters=as.yearqtr(market.list[[q]]$Quarters),rf=market.list[[q]]$rf)}))[m.period,],Quarters)
-##Looks like these are the dates for SP500 from=1998-10-01 to 2009-09-30; shoud be from 1999-01-01 to 2009-12-31
-#require(quantmod)
-#prices = getSymbols("^GSPC", from = "1999-01-01", to = "2009-12-31")
-
-#prices = getSymbols("SPY", from = "1999-01-01", to = "2009-12-31")
-#prices = getSymbols("^GSPC", from = "1999-01-01", to = "2009-12-31")
-#market.port.ret<- setnames(setkey(data.table(Quarters=index(quarterlyReturn(get(prices)[,6])),port.ret=coredata(quarterlyReturn(get(prices)[,6])))[,Quarters:=as.yearqtr(Quarters)],Quarters)[risk.free],2,'sp.ret')[,port.ret:=sp.ret-rf][,Views:='Market'][,n.views:=500][,ann.port.ret:=(1+port.ret)^(1/4)-1][,q.id:=.I][,.(Quarters,Views,port.ret,ann.port.ret,n.views,q.id)]
+bl.results <- unique(opt.w,by=c('q.id','Method','Views','type'))[,list(Quarters=as.yearqtr(Quarters),Views,Method,port.ret,ns.port.ret,ann.port.ret,n.views,q.id,type)]
 
 setkey(market.set,q.id)
-market.set <- market.set[,':='(Views='Market',n.views=.N),by=q.id]
+#market.set <- market.set[,':='(Views='Market',n.views=.N),by=q.id]
 market.port.ret <- unique(market.set[,':='(port.ret=sum(mw*ex.ret),Views='Market',n.views=.N),by=q.id][,ann.port.ret:=(1+port.ret)^(1/4)-1][,ns.port.ret:=port.ret])[m.period[1]:44,list(Quarters=as.yearqtr(Quarters),Views,port.ret,ns.port.ret,ann.port.ret,n.views)][,q.id:=.I]
 
 
 #market.data <- rbind(market.port.ret.spy,market.port.ret)
 
-bl.results <- rbind(bl.results,bl.results[,as.list(market.port.ret),by=list(Method)],use.names=T)
+bl.results <- rbind(bl.results,bl.results[,as.list(market.port.ret),by=list(Method,type)],use.names=T)
 
-bl.results[,c('cum.ret','ann.ret','ann.sd','meanViews'):=cum.ret.f(port.ret,n.views,100),by=list(Method,Views)][,ann.sr:=ann.ret/ann.sd]
-setkey(bl.results,Method,Views)
+bl.results[,c('cum.ret','ann.ret','ann.sd','meanViews'):=cum.ret.f(port.ret,n.views,100),by=list(Method,Views,type)][,ann.sr:=ann.ret/ann.sd]
+
+setkey(bl.results,Method,Views,type)
 to.bl <- rbindlist(lapply(2:length(bl.period),function(b){
-  beg <- setkey(opt.w[q.id==b,list(Stock,opt.w),by=list(Method,Views)],Stock,Method,Views)
-  end <- setkey(opt.w[q.id==b-1,list(Stock,opt.w),by=list(Method,Views)],Stock,Method,Views)
-  end[beg][,turnover.f(opt.w,i.opt.w),by=list(Method,Views)]
-  }))[,Ave.TO:=mean(V1),by=list(Method,Views)]
+  beg <- setkey(opt.w[q.id==b,list(Stock,opt.w,type),by=list(Method,Views,type)],Stock,Method,Views,type)
+  end <- setkey(opt.w[q.id==b-1,list(Stock,opt.w,type),by=list(Method,Views,type)],Stock,Method,Views,type)
+  end[beg][,turnover.f(opt.w,i.opt.w),by=list(Method,Views,type)]
+  }))[,Ave.TO:=mean(V1),by=list(Method,Views,type)]
 
 to.market <- rbindlist(lapply(2:length(m.period),function(b){
 beg <- setkey(market.set[,q.num:=.GRP,by=q.id][q.num==m.period[b],list(Views,Stock,mw)],Stock,Views)
 end <- setkey(market.set[,q.num:=.GRP,by=q.id][q.num==m.period[b-1],list(Views,Stock,mw)],Stock,Views)
 end[beg,allow.cartesian=T][,turnover.f(mw,i.mw),by=Views]}))[,Ave.TO:=mean(V1),by=list(Views)]
-setkey(bl.results,Views,Method)[setkey(rbind(to.bl[,list(Views,Method,Ave.TO)],to.bl[,as.list(unique(to.market,by='Ave.TO')[,list(Views,Method,Ave.TO)])],use.names=T),Views,Method),allow.cartesian=T]
+
+setkey(bl.results,Views,Method,type)[setkey(rbind(to.bl[,list(Views,Method,Ave.TO,type)],to.bl[,as.list(unique(to.market,by='Ave.TO')[,list(Views,Method,Ave.TO,type)])],use.names=T),Views,Method,type),allow.cartesian=T]
 }
 
 

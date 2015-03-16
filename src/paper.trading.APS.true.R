@@ -117,18 +117,18 @@ tau=1/50
 
 #source('lib/BL-functions.R')
 
-opt.w <- rbindlist(lapply(c('same','all'),function(t)
+opt.w <- rbindlist(mclapply(c('same','all'),function(t)
 {
+rbind(
+        opt.w.f(pt.list.rank[[t]],conf.coef[[t]],tau)[,Views:='TP'],
+        opt.w.f(cons.list.rank[[t]],conf.coef[[t]],tau)[,Views:='CONS'],
+        opt.w.f(eps.list.rank[[t]],conf.coef[[t]][,eps.stocks,],tau)[,Views:='EPS'])[,type:=t]
+},mc.cores=cores))
 
-rbind(opt.w.f(pt.list.rank[[t]],conf.coef[[t]],tau)[,Views:='TP'],opt.w.f(cons.list.rank[[t]],conf.coef[[t]],tau)[,Views:='CONS'],opt.w.f(eps.list.rank[[t]],conf.coef[[t]][,eps.stocks,],tau)[,Views:='EPS'])[,type:=t]
-}))
-
-
-opt.w <- rbind(pt.opt.w,cons.opt.w,eps.opt.w)
 cache('opt.w')
 
 
-final.bl <- setkey(unique(bl.results.f(opt.w),by=c('Method','q.id','Views')),Method)
+final.bl <- setkey(unique(bl.results.f(opt.w),by=c('Method','q.id','Views','type')),Method,type)
 final.bl$Method <- factor(final.bl$Method,levels=unique(final.bl$Method)[c(3,2,1)])
 final.bl$Views <- factor(final.bl$Views,levels=unique(final.bl$Views)[c(4,1,2,3)])
 cache('final.bl')
