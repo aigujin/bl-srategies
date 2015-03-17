@@ -128,16 +128,16 @@ brok.full.stat.pt <- rbind(setkey(na.omit(core.dt)[,.N,by=.(Stock,q.id,year)][,l
 
 #Views stat
 
-stat.nr <- rbind(na.omit(nr.views)[,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(year,Method)],setnames(cbind('Total',na.omit(nr.views)[,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(Method)]),1,'year'))[,Strategy:='CONS']
+stat.nr <- rbind(na.omit(nr.views)[,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(year,Method,type)],setnames(cbind('Total',na.omit(nr.views)[,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(Method,type)]),1,'year'))[,Strategy:='CONS']
 
-stat.pt.view <- rbind(pt.rank.views[View!=0,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(year,Method)],setnames(cbind('Total',pt.rank.views[View!=0,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(Method)]),1,'year'))[,Strategy:='PT']
+stat.pt.view <- rbind(pt.rank.views[View!=0,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(year,Method,type)],setnames(cbind('Total',pt.rank.views[View!=0,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(Method,type)]),1,'year'))[,Strategy:='PT']
 
-stat.eps.view <- rbind(eps.rank.views[View!=0,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(year,Method)],setnames(cbind('Total',eps.rank.views[View!=0,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(Method)]),1,'year'))[,Strategy:='EPS']
+stat.eps.view <- rbind(eps.rank.views[View!=0,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(year,Method,type)],setnames(cbind('Total',eps.rank.views[View!=0,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(Method,type)]),1,'year'))[,Strategy:='EPS']
 
 stat.full <- rbind(stat.nr,stat.pt.view,stat.eps.view)
 
-test <- melt(stat.full,id.vars = c('year','Method','Strategy'))
-test.a <- acast(test,year~Method~Strategy~variable,value.var = 'value')
+test <- melt(stat.full,id.vars = c('year','Method','Strategy','type'))
+test.a <- acast(test,year~Method~Strategy~variable~type,value.var = 'value')
 
 
 brok.full.stat.eps <- rbind(setkey(na.omit(complete.dt)[,.N,by=.(Stock,q.id,year)][,list(min=min(N),mean=mean(N),median=as.character(median(N)),max=max(N),st.dev=sd(N)),by=year],year),setnames(cbind('Total',na.omit(complete.dt)[,.N,by=.(Stock,q.id,year)][,list(min=min(N),mean=mean(N),median=as.character(median(N)),max=max(N),st.dev=sd(N))]),1,'year'))
@@ -149,15 +149,15 @@ final.bl <- final.bl[,Method:=ifelse(Method=='true',strategies[1],ifelse(Method=
 final.bl$Method <- factor(final.bl$Method,levels=strategies)
 final.bl$Views <- factor(final.bl$Views,levels=c('CONS','TP','EPS','Market'))
 final.bl <- final.bl[,ann.ret:=ann.ret*100][,ann.st:=ann.sd*100]
-bl.results <- acast(unique(melt(data = final.bl,id.vars = c('Method','Views'),measure.vars  = c('ann.ret','ann.st','ann.sr','meanViews','Ave.TO')),by=c('Method','variable','Views')),Views~Method~variable,value.var = 'value')
+bl.results <- acast(unique(melt(data = final.bl,id.vars = c('Method','Views','type'),measure.vars  = c('ann.ret','ann.st','ann.sr','meanViews','Ave.TO')),by=c('Method','variable','Views','type')),Views~Method~variable~type,value.var = 'value')
 
 quarters <- unique(final.bl[,Quarters])
 periods.id <- c(paste(gsub('[[:space:]]','',rollapplyr(as.character(quarters),20,first,by=4)),gsub('[[:space:]]','',rollapplyr(as.character(quarters),20,last,by=4)),sep='/'),'All period')
 
-periods <- rbind(final.bl[,data.table(rollapplyr(port.ret,20,roll.ret.f,by=4,partial=F)),by=.(Views,Method)][,strat:='yes'],final.bl[,data.table(rollapplyr(ns.port.ret,20,roll.ret.f,by=4,partial=F)),by=.(Views,Method)][,strat:='no'],final.bl[,data.table(roll.ret.f(port.ret)),by=.(Views,Method)][,strat:='yes'],final.bl[,data.table(roll.ret.f(ns.port.ret)),by=.(Views,Method)][,strat:='no'])[,period:=periods.id,by=.(Views,Method,strat)][,sr:=ann.ret/ann.sd]
+periods <- rbind(final.bl[,data.table(rollapplyr(port.ret,20,roll.ret.f,by=4,partial=F)),by=.(Views,Method,type)][,strat:='yes'],final.bl[,data.table(rollapplyr(ns.port.ret,20,roll.ret.f,by=4,partial=F)),by=.(Views,Method,type)][,strat:='no'],final.bl[,data.table(roll.ret.f(port.ret)),by=.(Views,Method,type)][,strat:='yes'],final.bl[,data.table(roll.ret.f(ns.port.ret)),by=.(Views,Method,type)][,strat:='no'])[,period:=periods.id,by=.(Views,Method,strat,type)][,sr:=ann.ret/ann.sd]
 
 
-periods.array <- acast(melt(periods,id.vars = c('Views','Method','period','strat')),period~Views~Method~strat~variable,value.var = 'value')
+periods.array <- acast(melt(periods,id.vars = c('Views','Method','period','strat','type')),period~Views~Method~strat~variable~type,value.var = 'value')
 
 start.year <- format(as.Date(final.bl[,head(Quarters,1)]),'%Y')
 end.year <- format(as.Date(final.bl[,tail(Quarters,1)]),'%Y')

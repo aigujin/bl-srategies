@@ -96,12 +96,12 @@ summary.mean.stat <- function(dt,value){
 cont.tab.f <- function(dt,t,n.b)
 {
         
-        rank.split <- na.omit(dt)[,valid.b:=.N>n.b,by=.(q.id,Stock)][(valid.b)][,valid:=.N>4,by=.(Broker,Stock)][(valid)][,next.per:=terciles.rank.f(true,n),by=list(q.id,Stock)][,next.q:=c(rep(NA,t),as.numeric(diff(q.id,t))==t/4),by=.(Broker,Stock)][,cur.per:=c(rep(NA,t),head(next.per,-t)),by=list(Broker,Stock)][,cur.per:=ifelse(is.na(cur.per),NA,ifelse(next.q==TRUE,cur.per,NA))]
+        rank.split <- na.omit(dt)[,valid.b:=.N>n.b,by=.(q.id,Stock)][(valid.b)][,valid:=.N>4,by=.(Broker,Stock,type)][(valid)][,next.per:=terciles.rank.f(true,n),by=list(q.id,Stock,type)][,next.q:=c(rep(NA,t),as.numeric(diff(q.id,t))==t/4),by=.(Broker,Stock,type)][,cur.per:=c(rep(NA,t),head(next.per,-t)),by=list(Broker,Stock,type)][,cur.per:=ifelse(is.na(cur.per),NA,ifelse(next.q==TRUE,cur.per,NA))]
         
         require(descr)
-        pt.cont.dt <- na.omit(rank.split)[,valid.s:=.N>n,by=.(Stock)][(valid.s)][,as.data.table(crosstab(cur.per,next.per,prop.r=T,prop.c=F,prop.t=F,prop.chisq = F,plot=F,missing.include=F,chisq=F)[2]),by=Stock][,value:=letters[1:9],by=Stock][,mean(prop.row),by=value]
+        pt.cont.dt <- na.omit(rank.split)[,valid.s:=.N>n,by=.(Stock)][(valid.s)][,as.data.table(crosstab(cur.per,next.per,prop.r=T,prop.c=F,prop.t=F,prop.chisq = F,plot=F,missing.include=F,chisq=F)[2]),by=.(Stock,type)][,value:=letters[1:9],by=.(Stock,type)][,mean(prop.row),by=.(value,type)]
         
-        matrix(pt.cont.dt[,V1],nrow=3,ncol=3)[c(3,2,1),c(3,2,1)]
+        ddply(pt.cont.dt,'type',function(x){matrix(x[,3],nrow=3,ncol=3)[c(3,2,1),c(3,2,1)]})
 }
 
 data.collect<- function(data.id,n)
