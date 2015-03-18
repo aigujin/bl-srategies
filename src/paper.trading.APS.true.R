@@ -75,7 +75,10 @@ cache('eps.rank.views')
 
 
 
-meanTper <- na.omit(melt(unique(core.dt[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock,type),.SDcols=c('q.id','Broker','Stock','b.view','type')][,.(q.id,Broker,Stock,b.view,type)][,true:=truncate.f(b.view,percentile),by=type][,true:=median(true,na.rm=T),by=list(q.id,Stock,type)],by=c('q.id','Stock','type'))[,.(q.id,Stock,true,type)][,naive:=c(NA,head(true,-1)),by=.(Stock,type)][,default:=rollapplyr(naive,seq_len(length(naive)),mean,na.rm=T),by=.(Stock,type)],id.vars = c('q.id','Stock','type'),measure.vars = c('true','naive','default'),variable.name = 'Method')[q.id!='1999 Q2',])
+meanTper <- na.omit(melt(unique(core.dt[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock,type),.SDcols=c('q.id','Broker','Stock','b.view','type')][,.(q.id,Broker,Stock,b.view,type)][,true:=truncate.f(b.view,percentile),by=type][,true:=median(true,na.rm=T),by=list(q.id,Stock,type)],by=c('q.id','Stock','type'))[,.(q.id,Stock,true,type)][,naive:=c(NA,head(true,-1)),by=.(Stock,type)][,default:=rollapplyr(naive,seq_len(length(naive)),median,na.rm=T),by=.(Stock,type)],id.vars = c('q.id','Stock','type'),measure.vars = c('true','naive','default'),variable.name = 'Method')[q.id!='1999 Q2',])
+
+#meanTper <- na.omit(melt(unique(core.dt[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock,type),.SDcols=c('q.id','Broker','Stock','b.view','type')][,.(q.id,Broker,Stock,b.view,type)][,true:=truncate.f(b.view,percentile),by=type][,true:=median(true,na.rm=T),by=list(q.id,Stock,type)],by=c('q.id','Stock','type'))[,.(q.id,Stock,true,type)][,naive:=c(NA,head(true,-1)),by=.(Stock,type)][,':='(true=naive,default=naive),by=.(Stock,type)],id.vars = c('q.id','Stock','type'),measure.vars = c('true','naive','default'),variable.name = 'Method')[q.id!='1999 Q2',])
+
 
 #meanTper <- pt.exp.ret[,median(exp.ret,na.rm=T),by=.(q.id,Stock,Method)]
 
