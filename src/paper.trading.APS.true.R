@@ -15,7 +15,7 @@ core.dt.tmp <- setkey(q.data[,core.b:=.N>=12,by=list(Stock,Broker)][(core.b)][,t
 core.dt <- rbind(core.dt.tmp[stocks][,type:='same'],core.dt.tmp[stocks.m][,type:='all'])
 
 
-pt.exp.ret <- setkey(melt(core.dt[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock,type),.SDcols=c('q.id','Broker','Stock','b.view','type')][,.(q.id,Broker,Stock,b.view,type)][,true:=truncate.f(b.view,percentile),by=type][,naive:=c(NA,head(true,-1)),by=.(Broker,Stock,type)][,default:=rollapplyr(naive,seq_len(length(naive)),mean,na.rm=T),by=.(Broker,Stock,type)],id.vars = c('q.id','Stock','Broker','type'),measure.vars = c('true','naive','default'),value.name = 'exp.ret',variable.name = 'Method'),q.id,Stock,Broker,Method,type)
+pt.exp.ret <- setkey(melt(core.dt[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock,type),.SDcols=c('q.id','Broker','Stock','b.view','type')][,.(q.id,Broker,Stock,b.view,type)][,true:=truncate.f(b.view,percentile),by=type][,naive:=c(NA,head(true,-1)),by=.(Broker,Stock,type)][,':='(true=naive,default=naive),by=.(Broker,Stock,type)],id.vars = c('q.id','Stock','Broker','type'),measure.vars = c('true','naive','default'),value.name = 'exp.ret',variable.name = 'Method'),q.id,Stock,Broker,Method,type)
 
 ### Need ranked dt for contigency analysis
 ranked.pt.dt <- core.dt[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock,type),.SDcols=c('q.id','Broker','Stock','true','type')][,.(q.id,Broker,Stock,true,type)]
@@ -75,13 +75,7 @@ cache('eps.rank.views')
 
 
 
-meanTper <- na.omit(melt(unique(core.dt[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock,type),.SDcols=c('q.id','Broker','Stock','b.view','type')][,.(q.id,Broker,Stock,b.view,type)][,true:=truncate.f(b.view,percentile),by=type][,true:=median(true,na.rm=T),by=list(q.id,Stock,type)],by=c('q.id','Stock','type'))[,.(q.id,Stock,true,type)][,naive:=c(NA,head(true,-1)),by=.(Stock,type)][,default:=rollapplyr(naive,seq_len(length(naive)),median,na.rm=T),by=.(Stock,type)],id.vars = c('q.id','Stock','type'),measure.vars = c('true','naive','default'),variable.name = 'Method')[q.id!='1999 Q2',])
-
-#meanTper <- na.omit(melt(unique(core.dt[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock,type),.SDcols=c('q.id','Broker','Stock','b.view','type')][,.(q.id,Broker,Stock,b.view,type)][,true:=truncate.f(b.view,percentile),by=type][,true:=median(true,na.rm=T),by=list(q.id,Stock,type)],by=c('q.id','Stock','type'))[,.(q.id,Stock,true,type)][,naive:=c(NA,head(true,-1)),by=.(Stock,type)][,':='(true=naive,default=naive),by=.(Stock,type)],id.vars = c('q.id','Stock','type'),measure.vars = c('true','naive','default'),variable.name = 'Method')[q.id!='1999 Q2',])
-
-
-#meanTper <- pt.exp.ret[,median(exp.ret,na.rm=T),by=.(q.id,Stock,Method)]
-
+meanTper <- na.omit(melt(unique(core.dt[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock,type),.SDcols=c('q.id','Broker','Stock','b.view','type')][,.(q.id,Broker,Stock,b.view,type)][,true:=truncate.f(b.view,percentile),by=type][,true:=median(true,na.rm=T),by=list(q.id,Stock,type)],by=c('q.id','Stock','type'))[,.(q.id,Stock,true,type)][,naive:=c(NA,head(true,-1)),by=.(Stock,type)][,':='(true=naive,default=naive),by=.(Stock,type)],id.vars = c('q.id','Stock','type'),measure.vars = c('true','naive','default'),variable.name = 'Method')[q.id!='1999 Q2',])
 
 nr.views <- setnames(meanTper[,year:=format(as.yearqtr(q.id),'%Y')],'value','View')
 cache('nr.views')
