@@ -20,6 +20,7 @@
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{adjustbox}
+%\usepackage{floatpag}
 %\onehalfspacing
 \doublespace
 \usepackage[longnamesfirst]{natbib}
@@ -77,6 +78,7 @@ library(ggplot2)
 library(stringr)
 library(zoo)
 library(xtable)
+library(abind)
 library(PerformanceAnalytics)
 load('cache/q.data.RData')
 load('cache/final.bl.RData')
@@ -108,7 +110,7 @@ n <- 3
 n.b <- 3
 
 #options(descr.na.replacement = "noRank")
-pt.cont.tab <- lapply(c(1,4),function(i) {cont.tab.f(ranked.pt.dt,i,n.b)})
+pt.cont.tab <- abind(lapply(c(1,4),function(i) {cont.tab.f(ranked.pt.dt,i,n.b)}),along=4,new.names=list(NULL,NULL,NULL,c('t','t+4')))
 
 ###Statistics for views:
 ###non rank base data
@@ -122,22 +124,22 @@ complete.dt <- setkey(complete.dt,fis.q)[quarters]
 eps.stocks <- intersect(complete.dt$Stock,unique(market.set[,Stock]))
 complete.dt <- setnames(na.omit(setkey(complete.dt,Stock)[eps.stocks][,eps.pmafe:=abs(Est-act.eps)/mean(abs(Est-act.eps))])[,q.id:=NULL],'fis.q','q.id')
 
-eps.cont.tab <- lapply(c(1,4),function(i) {cont.tab.f(ranked.eps.dt,i,n.b)})
+eps.cont.tab <- abind(lapply(c(1,4),function(i) {cont.tab.f(ranked.eps.dt,i,n.b)}),along=4,new.names=list(NULL,NULL,NULL,c('t','t+4')))
 
 brok.full.stat.pt <- rbind(setkey(na.omit(core.dt)[,.N,by=.(Stock,q.id,year)][,list(min=min(N),mean=mean(N),median=as.character(median(N)),max=max(N),st.dev=sd(N)),by=year],year),setnames(cbind('Total',na.omit(core.dt)[,.N,by=.(Stock,q.id,year)][,list(min=min(N),mean=mean(N),median=as.character(median(N)),max=max(N),st.dev=sd(N))]),1,'year'))
 
 #Views stat
 
-stat.nr <- rbind(na.omit(nr.views)[,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(year,Method)],setnames(cbind('Total',na.omit(nr.views)[,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(Method)]),1,'year'))[,Strategy:='CONS']
+stat.nr <- rbind(na.omit(nr.views)[,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(year,Method,type)],setnames(cbind('Total',na.omit(nr.views)[,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(Method,type)]),1,'year'))[,Strategy:='CONS']
 
-stat.pt.view <- rbind(pt.rank.views[View!=0,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(year,Method)],setnames(cbind('Total',pt.rank.views[View!=0,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(Method)]),1,'year'))[,Strategy:='PT']
+stat.pt.view <- rbind(pt.rank.views[View!=0,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(year,Method,type)],setnames(cbind('Total',pt.rank.views[View!=0,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(Method,type)]),1,'year'))[,Strategy:='PT']
 
-stat.eps.view <- rbind(eps.rank.views[View!=0,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(year,Method)],setnames(cbind('Total',eps.rank.views[View!=0,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(Method)]),1,'year'))[,Strategy:='EPS']
+stat.eps.view <- rbind(eps.rank.views[View!=0,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(year,Method,type)],setnames(cbind('Total',eps.rank.views[View!=0,list(mean=mean(View),median=median(View),st.dev=sd(View),Stocks=length(unique(Stock))),by=.(Method,type)]),1,'year'))[,Strategy:='EPS']
 
 stat.full <- rbind(stat.nr,stat.pt.view,stat.eps.view)
 
-test <- melt(stat.full,id.vars = c('year','Method','Strategy'))
-test.a <- acast(test,year~Method~Strategy~variable,value.var = 'value')
+test <- melt(stat.full,id.vars = c('year','Method','Strategy','type'))
+test.a <- acast(test,year~Method~Strategy~variable~type,value.var = 'value')
 
 
 brok.full.stat.eps <- rbind(setkey(na.omit(complete.dt)[,.N,by=.(Stock,q.id,year)][,list(min=min(N),mean=mean(N),median=as.character(median(N)),max=max(N),st.dev=sd(N)),by=year],year),setnames(cbind('Total',na.omit(complete.dt)[,.N,by=.(Stock,q.id,year)][,list(min=min(N),mean=mean(N),median=as.character(median(N)),max=max(N),st.dev=sd(N))]),1,'year'))
@@ -149,15 +151,23 @@ final.bl <- final.bl[,Method:=ifelse(Method=='true',strategies[1],ifelse(Method=
 final.bl$Method <- factor(final.bl$Method,levels=strategies)
 final.bl$Views <- factor(final.bl$Views,levels=c('CONS','TP','EPS','Market'))
 final.bl <- final.bl[,ann.ret:=ann.ret*100][,ann.st:=ann.sd*100]
-bl.results <- acast(unique(melt(data = final.bl,id.vars = c('Method','Views'),measure.vars  = c('ann.ret','ann.st','ann.sr','meanViews','Ave.TO')),by=c('Method','variable','Views')),Views~Method~variable,value.var = 'value')
+bl.results <- acast(unique(melt(data = final.bl,id.vars = c('Method','Views','type'),measure.vars  = c('ann.ret','ann.st','ann.sr','meanViews','Ave.TO')),by=c('Method','variable','Views','type')),Views~Method~variable~type,value.var = 'value')
+
+
 
 quarters <- unique(final.bl[,Quarters])
 periods.id <- c(paste(gsub('[[:space:]]','',rollapplyr(as.character(quarters),20,first,by=4)),gsub('[[:space:]]','',rollapplyr(as.character(quarters),20,last,by=4)),sep='/'),'All period')
 
-periods <- rbind(final.bl[,data.table(rollapplyr(port.ret,20,roll.ret.f,by=4,partial=F)),by=.(Views,Method)][,strat:='yes'],final.bl[,data.table(rollapplyr(ns.port.ret,20,roll.ret.f,by=4,partial=F)),by=.(Views,Method)][,strat:='no'],final.bl[,data.table(roll.ret.f(port.ret)),by=.(Views,Method)][,strat:='yes'],final.bl[,data.table(roll.ret.f(ns.port.ret)),by=.(Views,Method)][,strat:='no'])[,period:=periods.id,by=.(Views,Method,strat)][,sr:=ann.ret/ann.sd]
+periods <- rbind(final.bl[,data.table(rollapplyr(port.ret,20,roll.ret.f,by=4,partial=F)),by=.(Views,Method,type)][,strat:='yes'],final.bl[,data.table(rollapplyr(ns.port.ret,20,roll.ret.f,by=4,partial=F)),by=.(Views,Method,type)][,strat:='no'],final.bl[,data.table(roll.ret.f(port.ret)),by=.(Views,Method,type)][,strat:='yes'],final.bl[,data.table(roll.ret.f(ns.port.ret)),by=.(Views,Method,type)][,strat:='no'])[,period:=periods.id,by=.(Views,Method,strat,type)][,sr:=ann.ret/ann.sd]
 
 
-periods.array <- acast(melt(periods,id.vars = c('Views','Method','period','strat')),period~Views~Method~strat~variable,value.var = 'value')
+periods.array <- acast(melt(periods,id.vars = c('Views','Method','period','strat','type')),period~Views~Method~strat~variable~type,value.var = 'value')
+
+sel.s <- 'same'
+
+test.a[,'true','CONS',,] <- NA
+bl.results['CONS','true',,] <- NA
+periods.array[,'CONS','true',,,] <- NA
 
 start.year <- format(as.Date(final.bl[,head(Quarters,1)]),'%Y')
 end.year <- format(as.Date(final.bl[,tail(Quarters,1)]),'%Y')
@@ -394,7 +404,7 @@ Over the sample period, the total number of brokers\footnote{We use words ``anal
 
 Consistent with other studies on analysts' expected returns that work with price targets  \citep{bradshaw2002,brav2003,da2011}, we truncate the sample of $TP/P-1$ at the \Sexpr{ trunk.percent *100}\textsuperscript{th} percentile (values below \Sexpr{q.data[,min(trunk.view,na.rm=T)]}) and at the \Sexpr{(1-trunk.percent)*100}\textsuperscript{th} percentile (values above \Sexpr{ q.data[,max(trunk.view,na.rm=T)]}). This is done due to occurrence of the extreme values. Most of these extreme values are driven by misalignment errors found on I/B/E/S data\footnote{We found some differences between the  DataStream and I/B/E/S the databases. In some cases the stock-splits and the dividends were not properly adjusted.}. After trimming, the number of observations ($\mathrm{Stock} \times \mathrm{Broker} \times  \mathrm{Quarter}$) is reduced  from \Sexpr{ prettyNum(q.data[,.N], big.mark=' ')} to \Sexpr{ prettyNum(q.data[!is.na(trunk.view),.N],big.mark=' ')}.
 
-The initial file of quarterly EPS forecast consists of  \Sexpr{eps.dt[,.N,by=Broker][,.N]} brokers covering \Sexpr{eps.dt[,.N,by=Stock][,.N]} stocks. To implement the EPS ranking, we require that a stock had at least three brokers per quarter. In addition, we require that a broker has to be active in covering a particular stock for at least 3 years (12 quarters). Our final sample of EPS forecasts consist of  \Sexpr{complete.dt[,.N,by=Broker][,.N]} brokers covering \Sexpr{complete.dt[,.N,by=Stock][,.N]} stocks. The total number of observation is \Sexpr{prettyNum(complete.dt[,.N],big.mar=' ')}.
+The initial file of quarterly EPS forecast consists of  \Sexpr{eps.dt[,.N,by=.(Broker)][,.N]} brokers covering \Sexpr{eps.dt[,.N,by=Stock][,.N]} stocks. To implement the EPS ranking, we require that a stock had at least three brokers per quarter. In addition, we require that a broker has to be active in covering a particular stock for at least 3 years (12 quarters). Our final sample of EPS forecasts consist of  \Sexpr{complete.dt[,.N,by=Broker][,.N]} brokers covering \Sexpr{complete.dt[,.N,by=Stock][,.N]} stocks. The total number of observation is \Sexpr{prettyNum(complete.dt[,.N],big.mar=' ')}.
  
 
 Table (\ref{tab:ret-stat}) shows the distribution of the final sample of target price and EPS data. Panel A shows the number of quarterly target prices per stock. For the sample period (1999-2009), we report \Sexpr{prettyNum(core.dt[,.N,by=list(Stock,q.id)][,.N],big.mark=' ')} stock-quarter observations. Each stock had on average of \Sexpr{core.dt[,.N,by=list(Stock,q.id)][,mean(N)]} quarterly target price reports. Panel B  presents similar statistics of the number of EPS forecasts. In total, the EPS forecast sample has \Sexpr{prettyNum(complete.dt[,.N,by=list(Stock,q.id)][,.N],big.mark=' ')} stock-quarter observations. The average number of quarterly forecasts is \Sexpr{complete.dt[,.N,by=list(Stock,q.id)][,mean(N)]}.
@@ -424,9 +434,9 @@ where $k$ is number of stocks followed by a particular analyst $j$.
 Table (\ref{tab:rank-stat}) shows a contingency analysis of the ranks. 
 %Chi square statistics include/ expected frequiency test
 %Journ. of Fin economics 
-Panel A shows the dynamics of each tercile for rankings based on target price  accuracy. We observe that analysts exhibit strong ranking consistency as, on average, they stay at the same tercile after one quarter. Of the top (bottom) most accurate (inaccurate) analysts in the previous quarter \Sexpr{pt.cont.tab[[1]][1,1]*100}\% (\Sexpr{pt.cont.tab[[1]][3,3]*100}\%) remain in that same tercile after one quarter. After one year the corresponding figures are lower respectively \Sexpr{pt.cont.tab[[2]][1,1]*100}\% and \Sexpr{pt.cont.tab[[2]][3,3]*100}\% for the top and bottom terciles. 
+Panel A shows the dynamics of each tercile for rankings based on target price  accuracy. We observe that analysts exhibit strong ranking consistency as, on average, they stay at the same tercile after one quarter. Of the top (bottom) most accurate (inaccurate) analysts in the previous quarter \Sexpr{pt.cont.tab[1,1,1,1]*100}\% (\Sexpr{pt.cont.tab[3,3,1,1]*100}\%) remain in that same tercile after one quarter. After one year the corresponding figures are lower respectively \Sexpr{pt.cont.tab[1,1,1,2]*100}\% and \Sexpr{pt.cont.tab[3,3,1,2]*100}\% for the top and bottom terciles. 
 
-In the case of EPS ranking  (panel B) \Sexpr{eps.cont.tab[[1]][1,1]*100}\% and  \Sexpr{eps.cont.tab[[1]][3,3]*100}\% ( \Sexpr{eps.cont.tab[[2]][1,1]*100}\% and  \Sexpr{eps.cont.tab[[2]][3,3]*100}\%) of the analysts  remained in the top and bottom terciles after one quarter (year)  respectively.
+In the case of EPS ranking  (panel B) \Sexpr{eps.cont.tab[1,1,1,1]*100}\% and  \Sexpr{eps.cont.tab[3,3,1,1]*100}\% ( \Sexpr{eps.cont.tab[1,1,1,2]*100}\% and  \Sexpr{eps.cont.tab[3,3,1,2]*100}\%) of the analysts  remained in the top and bottom terciles after one quarter (year)  respectively.
 
 These results are consistent with the recent findings of \cite{hilary2013} on analyst forecast consistency. 
 
@@ -450,7 +460,7 @@ The expected returns  are computed comparing TP estimates with actual prices. To
 \cite{bradshaw2002} reports analyst average expected returns for the period of 2000--2009 and 206 brokers of 24\%. \cite{da2011} report an average expected return of 40\% for the period of 1996--2004. \cite{zhou2013} finds an average expected return of 96\% for the sample period of 2000--2009. These figures suggest that analysts are overly optimistic.
 %these values from the historical perspective, i.e., how the values of expected stock returns go inline with historical stock returns. \cite{bodie2009} show that arithimatic average rate of return for the U.S. large stocks (S\&P 500) for the period of 1926--2005 is 10.17\% and the average rate of excess return is 8.39\% with the risk premium estimated 6--8\%. While it is not the best idea to extrapolate the historical values, still, we can say that the expected stocks return should be around 14--16\%. Clearly, the values presented in the literature shows that analysts are very optimistic in issuing target price reports.
 
-Panel A show the statistics for the consensus expectations as defined in eq. (\ref{consq}). The average consensus among the analysts on stock expected returns in the  \tr{}, \naive{} and \default{} information sets are, respectively, \Sexpr{stat.nr[year=='Total'&Method=='true',mean]*100 }\%, \Sexpr{stat.nr[year=='Total'&Method=='naive',mean]*100 }\%, and \Sexpr{stat.nr[year=='Total'&Method=='default',mean]*100 }\% respectively. Panel B of the table shows the TP accuracy weighted average expected returns (\Sexpr{stat.pt.view[year=='Total'&Method=='true',mean]*100}\%, \Sexpr{stat.pt.view[year=='Total'&Method=='naive',mean]*100}\%, and \Sexpr{stat.pt.view[year=='Total'&Method=='default',mean]*100}\%). Panel C shows the EPS based weighted expected returns averages (\Sexpr{stat.eps.view[year=='Total'&Method=='true',mean]*100}\%, \Sexpr{stat.eps.view[year=='Total'&Method=='naive',mean]*100}\%, and \Sexpr{stat.eps.view[year=='Total'&Method=='default',mean]*100}\%). 
+Panel A show the statistics for the consensus expectations as defined in eq. (\ref{consq}). The average consensus among the analysts on stock expected returns in the  \tr{}, \naive{} and \default{} information sets are, respectively, \Sexpr{test.a['Total',,'CONS','mean',sel.s][[1]]*100 }\%, \Sexpr{test.a['Total',,'CONS','mean',sel.s][[2]]*100 }\%, and \Sexpr{test.a['Total',,'CONS','mean',sel.s][[3]]*100}\% respectively. Panel B of the table shows the TP accuracy weighted average expected returns (\Sexpr{test.a['Total',,'PT','mean',sel.s][[1]]*100 }\%, \Sexpr{test.a['Total',,'PT','mean',sel.s][[2]]*100 }\%, and \Sexpr{test.a['Total',,'PT','mean',sel.s][[3]]*100}\%). Panel C shows the EPS based weighted expected returns averages (\Sexpr{test.a['Total',,'EPS','mean',sel.s][[1]]*100 }\%, \Sexpr{test.a['Total',,'EPS','mean',sel.s][[2]]*100 }\%, and \Sexpr{test.a['Total',,'EPS','mean',sel.s][[3]]*100}\%). 
 
 Overall compared to the consensus the ranked weighted expected returns (smart estimates) are less optimistic. The \default{} information set shows higher values of expected returns.
 
@@ -468,25 +478,25 @@ We report the results from different trading strategies in table (\ref{tab:strat
 
 \subsection{Passive strategy}
 
-The passive strategy generates an annualized cumulative return of \Sexpr{bl.results['Market',1,1]}\% with a Sharpe Ratio  of \Sexpr{bl.results['Market',1,'ann.sr']} over the period 1999-2001. The average number of stocks held per quarter was \Sexpr{bl.results['Market',1,'meanViews']} and the turnover ratio was \Sexpr{bl.results['Market',1,'Ave.TO']}, which reflects solely the inclusion and deletions  of the S\&P 500 constituent list.
+The passive strategy generates an annualized cumulative return of \Sexpr{bl.results['Market',1,1,sel.s]}\% with a Sharpe Ratio  of \Sexpr{bl.results['Market',1,'ann.sr',sel.s]} over the period 1999-2001. The average number of stocks held per quarter was \Sexpr{bl.results['Market',1,'meanViews',sel.s]} and the turnover ratio was \Sexpr{bl.results['Market',1,'Ave.TO',sel.s]}, which reflects solely the inclusion and deletions  of the S\&P 500 constituent list.
 
 \subsection{Perfect foresight strategy}
 \label{sec:perfect}
-Panel B presents the results for the case of the \tr{} information set. The annualized cumulative returns for each of the active strategies (\textit{CONS}, \textit{TP}, and \textit{EPS}) are, respectively, \Sexpr{bl.results['CONS',1,1]}\%, \Sexpr{bl.results['TP',1,1]}\%, \Sexpr{bl.results['EPS',1,1]}\%. All the strategies outperform the passive benchmark (\Sexpr{bl.results['Market',1,1]}\%). The results show, as expected, that  we would better off if we knew in advance who the top analysts in terms of TP accuracy would be. In any case, the results suggest that the advice of analysts, as a group, is valuable. 
+Panel B presents the results for the case of the \tr{} information set. The annualized cumulative returns for each of the active strategies (\textit{CONS}, \textit{TP}, and \textit{EPS}) are, respectively, \Sexpr{bl.results['CONS',1,1,sel.s]}\%, \Sexpr{bl.results['TP',1,1,sel.s]}\%, \Sexpr{bl.results['EPS',1,1,sel.s]}\%. All the strategies outperform the passive benchmark (\Sexpr{bl.results['Market',1,1,sel.s]}\%). The results show, as expected, that  we would better off if we knew in advance who the top analysts in terms of TP accuracy would be. In any case, the results suggest that the advice of analysts, as a group, is valuable. 
 %Yet, the top analyst  
 
 %The result confirms that these strategies set an upper bound for the cumulative return yield. It follows, that we setup a boundary for the results of the feasible strategies: the upper bound is the perfect foresight strategy and the lower bound is the market benchmark.
 
-The \textit{TP} ranking strategy dominates also when we look at the risk-adjusted returns. The Sharpe Ratio is \Sexpr{ bl.results['TP',1,'ann.sr']} against \Sexpr{ bl.results['CONS',1,'ann.sr']}, \Sexpr{ bl.results['EPS',1,'ann.sr']}, and \Sexpr{ bl.results['Market',1,'ann.sr']}, respectively for the \textit{CONS}, the \textit{EPS}, and the \textit{Market} strategies. In addition, the \textit{TP} strategy dominates  the others if we consider the smaller trading periods (5 years). Table \ref{tab:substrategy} shows the Sharpe Ratio for six 5-year holding periods. The \textit{TP} strategy wins over the others in every period as expected.
+The \textit{TP} ranking strategy dominates also when we look at the risk-adjusted returns. The Sharpe Ratio is \Sexpr{ bl.results['TP',1,'ann.sr',sel.s]} against \Sexpr{ bl.results['CONS',1,'ann.sr',sel.s]}, \Sexpr{ bl.results['EPS',1,'ann.sr',sel.s]}, and \Sexpr{ bl.results['Market',1,'ann.sr',sel.s]}, respectively for the \textit{CONS}, the \textit{EPS}, and the \textit{Market} strategies. In addition, the \textit{TP} strategy dominates  the others if we consider the smaller trading periods (5 years). Table \ref{tab:substrategy} shows the Sharpe Ratio for six 5-year holding periods. The \textit{TP} strategy wins over the others in every period as expected.
 
 While this is an hypothetical setting, given that it is not possible to know in advance which analyst will rank first, it suggests that if we can predict the rankings with some accuracy this will be a useful investment trading tool. One of the possibilities is using methods developed in the Machine Learning literature (e.g., \cite{aiguzhinov2010,brazdil2003}), where this type of problem (referred as a label ranking problem) has been broadly studied. For example, \cite{aiguzhinov2010} propose a label ranking algorithm using Bayesian approach to predict the rankings.
 
 
 
 \subsection{Feasible strategies}
-Panel C of table (\ref{tab:strategy}) shows the performance of the different smart strategies in the \naive{} information set. As it was the  case of the \tr{} information set, all the active strategies outperform the \textit{Market} (\Sexpr{bl.results['Market',2,1]}\%)  and show positive cumulative annualized returns of \Sexpr{bl.results['TP',2,1]}\%,  \Sexpr{bl.results['CONS',2,1]}\%, \Sexpr{bl.results['EPS',2,1]}\% respectively for the \textit{TP}, the \textit{CONS}, and the \textit{EPS} strategies. Similarly, the \textit{TP} strategy dominates when we consider the risk-adjusted returns. The Sharpe Ratio for this strategy is \Sexpr{ bl.results['TP',2,'ann.sr']} which is higher than that Sharpe Ratios of the \textit{CONS} and  the \textit{EPS} strategies  (\Sexpr{ bl.results['CONS',2,'ann.sr']} and \Sexpr{bl.results['EPS',2,'ann.sr']} respectively). The results in panel B of table \ref{tab:substrategy} show as well that this strategy outperform the others for all of 5 trading sub-periods. 
+Panel C of table (\ref{tab:strategy}) shows the performance of the different smart strategies in the \naive{} information set. As it was the  case of the \tr{} information set, all the active strategies outperform the \textit{Market} (\Sexpr{bl.results['Market',2,1,sel.s]}\%)  and show positive cumulative annualized returns of \Sexpr{bl.results['TP',2,1,sel.s]}\%,  \Sexpr{bl.results['CONS',2,1,sel.s]}\%, \Sexpr{bl.results['EPS',2,1,sel.s]}\% respectively for the \textit{TP}, the \textit{CONS}, and the \textit{EPS} strategies. Similarly, the \textit{TP} strategy dominates when we consider the risk-adjusted returns. The Sharpe Ratio for this strategy is \Sexpr{ bl.results['TP',2,'ann.sr',sel.s]} which is higher than that Sharpe Ratios of the \textit{CONS} and  the \textit{EPS} strategies  (\Sexpr{ bl.results['CONS',2,'ann.sr',sel.s]} and \Sexpr{bl.results['EPS',2,'ann.sr',sel.s]} respectively). The results in panel B of table \ref{tab:substrategy} show as well that this strategy outperform the others for all of 5 trading sub-periods. 
 
-Panel D of table \ref{tab:strategy} confirm the outperformance of the \textit{TP} smart strategy: this is the the only active strategy that yields positive annualized cumulative return (\Sexpr{bl.results['TP',3,1]}\%) whereas both  the \textit{CONS} and the \textit{EPS} show negative returns (\Sexpr{bl.results['CONS',3,1]}\% and \Sexpr{bl.results['EPS',3,1]}\% respectively). The panel C of table \ref{tab:substrategy} shows that the Sharpe Ratio of the \textit{TP} strategy is lower then that of the \textit{EPS} strategy in only first two sub-periods (2000Q1/2004Q4 and 2001Q1/2005Q4).
+Panel D of table \ref{tab:strategy} confirm the outperformance of the \textit{TP} smart strategy: this is the the only active strategy that yields positive annualized cumulative return (\Sexpr{bl.results['TP',3,1,sel.s]}\%) whereas both  the \textit{CONS} and the \textit{EPS} show negative returns (\Sexpr{bl.results['CONS',3,1,sel.s]}\% and \Sexpr{bl.results['EPS',3,1,sel.s]}\% respectively). The panel C of table \ref{tab:substrategy} shows that the Sharpe Ratio of the \textit{TP} strategy is lower then that of the \textit{EPS} strategy in only first two sub-periods (2000Q1/2004Q4 and 2001Q1/2005Q4).
 
 
 Figure \ref{fig:bl-results} shows the graphical representation of the cumulative portfolio wealth for  the passive and smart strategies in all the information sets. The $y$-axis is the monetary value of wealth and $x$-axis is the time starting at \Sexpr{ months(as.Date(final.bl[,head(Quarters,1)]))} of \Sexpr{start.year } and ending at \Sexpr{ months(as.Date(final.bl[,tail(Quarters,1)])+91)} of \Sexpr{end.year}. Figures show that strategies under the \tr{} panel outperform the \emph{Market} and that final value  of the portfolio of the TP strategy considerably outruns the other alternative strategies.
@@ -612,14 +622,12 @@ ggplot(test,aes(x=s.Date,y=PT,group=Series,color=Series,shape=Series))+theme_bw(
 &&$top$&$middle$&$bottom$&Sum\\
 
 <<desc-rank-pt-t1,echo=F,results='asis'>>=
-tab=1
-tab.r <- round(cbind(pt.cont.tab[[tab]],Total=apply(pt.cont.tab[[tab]],1,sum)),3)*100
+tab.r <- round(cbind(pt.cont.tab[,,sel.s,'t'],Total=apply(pt.cont.tab[,,1,1],1,sum)),3)*100
 rownames(tab.r) <- c('&$top$','&$middle$','&$bottom$')
 #colnames(tab.r) <- c('$top$','$middle$','$bottom$','Sum')
 print(xtable(tab.r,hline = F,digits=1),only.contents=T,include.colnames=F,include.rownames=T,hline.after=NULL,sanitize.text.function = function(x) x)
 
-tab=2
-tab.r <- round(cbind(pt.cont.tab[[tab]],Total=apply(pt.cont.tab[[tab]],1,sum)),3)*100
+tab.r <- round(cbind(pt.cont.tab[,,sel.s,'t+4'],Total=apply(pt.cont.tab[,,1,2],1,sum)),3)*100
 rownames(tab.r) <- c('&$top$','&$middle$','&$bottom$')
 #colnames(tab.r) <- c('$top$','$middle$','$bottom$','Sum')
 print(xtable(tab.r,hline = F,digits=1),only.contents=T,include.colnames=F,include.rownames=T,hline.after=NULL,add.to.row=list(pos=list(0),command=c('&&\\multicolumn{4}{c}{$t+4$}\\\\ \n')),sanitize.text.function = function(x) x)
@@ -630,13 +638,11 @@ print(xtable(tab.r,hline = F,digits=1),only.contents=T,include.colnames=F,includ
 \multirow{11}{*}{$t$}&\textbf{Panel B: EPS}&\multicolumn{4}{c}{$t+1$} \\
 &&$top$&$middle$&$bottom$&Sum\\
 <<desc-rank-eps-t1,echo=F,results='asis'>>=
-tab=1
-tab.r <- round(cbind(eps.cont.tab[[tab]],Total=apply(eps.cont.tab[[tab]],1,sum)),3)*100
+tab.r <- round(cbind(eps.cont.tab[,,sel.s,'t'],Total=apply(eps.cont.tab[,,1,1],1,sum)),3)*100
 rownames(tab.r) <- c('&$top$','&$middle$','&$bottom$')
 #colnames(tab.r) <- c('$top$','$middle$','$bottom$','Sum')
 print(xtable(tab.r,hline = F,digits=1),only.contents=T,include.colnames=F,include.rownames=T,hline.after=NULL,sanitize.text.function = function(x) x)
-tab=2
-tab.r <- round(cbind(eps.cont.tab[[tab]],Total=apply(eps.cont.tab[[tab]],1,sum)),3)*100
+tab.r <- round(cbind(eps.cont.tab[,,sel.s,'t+4'],Total=apply(eps.cont.tab[,,1,2],1,sum)),3)*100
 rownames(tab.r) <- c('&$top$','&$middle$','&$bottom$')
 #colnames(tab.r) <- c('$top$','$middle$','$bottom$','Sum')
 print(xtable(tab.r,hline = F,digits=1),only.contents=T,include.colnames=F,include.rownames=T,hline.after=NULL,add.to.row=list(pos=list(0),command=c('&&\\multicolumn{4}{c}{$t+4$}\\\\ \n')),sanitize.text.function = function(x) x)
@@ -649,180 +655,67 @@ print(xtable(tab.r,hline = F,digits=1),only.contents=T,include.colnames=F,includ
   \caption{Descriptive statistics of views}
   \label{tab:view-stat}
 \ This table shows the descriptive statistics of views (expected returns) based on the consensus (median) among the analysts (panel A); target price rankings (panel B); and EPS forecasts rankings (panel C).
-  
+
 \begin{tabularx}{\linewidth}{r*{4}{Y}}
 \toprule
-& Mean (in \%) & Median (in \%) &Std.dev\\
+& Mean (in \%)&Median (in \%)&Std.dev\\
+%&all&same&all&same&all&same\\
 \midrule
 <<desc-q-cons,echo=F,results='asis'>>=
-test.a[,,,1:2] <- test.a[,,,1:2]*100
+test.a[,,,1:2,sel.s] <- test.a[,,,1:2,sel.s]*100
 dimnames(test.a)[[2]] <- c('\\tr{}','\\naive{}','\\default{}')
-print(xtable(aperm(test.a[12,,,1:3],c(1,3,2))[,,1],display=c('s','f','f','f'),digits=3),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0),command=c('\\multicolumn{4}{l}{\\textbf{Panel A: Consensus}} \\\\ \n','\\midrule \n')),sanitize.text.function = function(x) x)
+print(xtable(acast(melt(test.a[12,1:3,'CONS',1:3,sel.s]),Var1~Var2,value.var='value'),display=c('s','f','f','f'),digits=3),only.contents=T,include.colnames=FALSE,NA.string='-',hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0),command=c('\\multicolumn{4}{c}{\\textbf{Panel A: Consensus}} \\\\ \n','\\midrule \n')),sanitize.text.function = function(x) x)
 @
 \end{tabularx}
 
-  \begin{tabularx}{\linewidth}{r*{4}{Y}}
+\begin{tabularx}{\linewidth}{r*{4}{Y}}
   \midrule
 <<desc-q-naive,echo=F,results='asis'>>=
 #data.to.display <- c('nbr.val','mean', 'median','std.dev')
 
 #cat(rep('&',ncol(results.final)),'\\\\')
-print(xtable(aperm(test.a[12,,,1:3],c(1,3,2))[,,2],display=c('s','f','f','f'),digits=3),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0),command=c('\\multicolumn{4}{l}{\\textbf{Panel B: TP}} \\\\ \n','\\midrule \n')),sanitize.text.function = function(x) x)
+print(xtable(acast(melt(test.a[12,,'PT',1:3,sel.s]),Var1~Var2,value.var='value'),display=c('s','f','f','f'),digits=3),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0),command=c('\\multicolumn{4}{c}{\\textbf{Panel B: TP}} \\\\ \n','\\midrule \n')),sanitize.text.function = function(x) x)
 @
   \end{tabularx}
-  \begin{tabularx}{\linewidth}{r*{4}{Y}}
+  
+\begin{tabularx}{\linewidth}{r*{4}{Y}}
 <<desc-q-eps,echo=F,results='asis'>>=
-#data.to.display <- c('nbr.val','mean', 'median','std.dev')
-
-#cat(rep('&',ncol(results.final)),'\\\\')
-print(xtable(aperm(test.a[12,,,1:3],c(1,3,2))[,,3],display=c('s','f','f','f'),digits=3),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0),command=c('\\multicolumn{4}{l}{\\textbf{Panel C: EPS}} \\\\ \n','\\midrule \n')),sanitize.text.function = function(x) x)
+print(xtable(acast(melt(test.a[12,,'EPS',1:3,sel.s]),Var1~Var2,value.var='value'),display=c('s','f','f','f'),digits=3),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0),command=c('\\multicolumn{4}{c}{\\textbf{Panel C: EPS}} \\\\ \n','\\midrule \n')),sanitize.text.function = function(x) x)
 @
 \bottomrule
 \end{tabularx}
   \end{table}
   
+
 \begin{table}[hp]
   \caption{Number of active stocks}
   \label{tab:stocks}
 \ This table shows number of active stocks in each of the trading strategies conditional on different information sets: \tr{} (panel A), \naive{} (panel B) and \default{} (panel C). 
+
+%\resizebox{\textwidth}{!}{%
+%\begin{tabular}{rrrrrrr}
 \begin{tabularx}{\linewidth}{r*{4}{Y}}
 \toprule
-Year& \textit{CONS}& \textit{TP} & \textit{EPS}\\
+Year&\textit{CONS}& \textit{TP} &\textit{EPS}\\
+%&all&same&all&same&all&same\\
 <<stocks-true,echo=F,results='asis'>>=
-print(xtable(aperm(test.a[,,c(1,3,2),4],c(1,3,2))[,,1],display=c('s','d','d','d'),digits=3),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0,11),command=c('\\multicolumn{4}{l}{\\textbf{Panel A: \\tr{}}} \\\\ \n','\\midrule \n','\\midrule \n')),sanitize.text.function = function(x) x)
+print(xtable(acast(melt(test.a[,1,c(1,3,2),4,sel.s]),Var1~Var2,value.var='value'),display=c('s','d','d','d'),digits=3),only.contents=T,include.colnames=FALSE,NA.string='-',hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0,11),command=c('\\multicolumn{4}{l}{\\textbf{Panel A: \\tr{}}} \\\\ \n','\\midrule \n','\\midrule \n')),sanitize.text.function = function(x) x)
 @
 \end{tabularx}
+
 \begin{tabularx}{\linewidth}{r*{4}{Y}}
 <<stocks-naive,echo=F,results='asis'>>=
-print(xtable(aperm(test.a[,,c(1,3,2),4],c(1,3,2))[,,2],display=c('s','d','d','d'),digits=3),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0,11),command=c('\\multicolumn{4}{l}{\\textbf{Panel B: \\naive{}}} \\\\ \n','\\midrule \n','\\midrule \n')),sanitize.text.function = function(x) x)
+print(xtable(acast(melt(test.a[,2,c(1,3,2),4,sel.s]),Var1~Var2,value.var='value'),display=c('s','d','d','d'),digits=3),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0,11),command=c('\\multicolumn{4}{l}{\\textbf{Panel B: \\naive{}}} \\\\ \n','\\midrule \n','\\midrule \n')),sanitize.text.function = function(x) x)
 @
 \end{tabularx}
+
 \begin{tabularx}{\linewidth}{r*{4}{Y}}
 <<stocks-def,echo=F,results='asis'>>=
-print(xtable(aperm(test.a[,,c(1,3,2),4],c(1,3,2))[,,3],display=c('s','d','d','d'),digits=3),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0,11),command=c('\\multicolumn{4}{l}{\\textbf{Panel C: \\default{}}} \\\\ \n','\\midrule \n','\\midrule \n')),sanitize.text.function = function(x) x)
+print(xtable(acast(melt(test.a[,3,c(1,3,2),4,sel.s]),Var1~Var2,value.var='value'),display=c('s','d','d','d'),digits=3),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0,11),command=c('\\multicolumn{4}{l}{\\textbf{Panel C: \\default{}}} \\\\ \n','\\midrule \n','\\midrule \n')),sanitize.text.function = function(x) x)
 @
 \bottomrule
 \end{tabularx}
 \end{table}
-
-%'   \begin{table}[hp]
-%'   \caption{Descriptive statistics of views: \tr{}}
-%'   \label{tab:view-stat}
-%'   \small\addtolength{\tabcolsep}{-2pt}
-%'   
-%' \ This table shows the descriptive (per stock per quarter) statistics of views (expected returns) for the \tr{} (\ref{q:true}) based on the consensus (median) among the analysts (panel A); target price rankings (panel B); and EPS forecasts rankings (panel C).
-%'   
-%' \begin{tabularx}{\linewidth}{r*{5}{Y}}
-%'     \toprule
-%' Year &Stocks& Mean & Median &Std.dev\\
-%' \midrule
-%' <<desc-nr.views,echo=F,results='asis'>>=
-%' 
-%' print(xtable(test.a[,1,'CONS',c(4,1,2,3)],display=c('s','d','f','f','f'),digits=3),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0),command=c('\\multicolumn{5}{c}{\\textbf{Panel A: Consensus views (\\ref{consq})}} \\\\','\\midrule \n')))
-%' @
-%'   \midrule
-%'   \end{tabularx}
-%' 
-%'   \begin{tabularx}{\linewidth}{r*{5}{Y}}
-%'   \midrule
-%' <<desc-r.views,echo=F,results='asis'>>=
-%' #data.to.display <- c('nbr.val','mean', 'median','std.dev')
-%' 
-%' #cat(rep('&',ncol(results.final)),'\\\\')
-%' print(xtable(test.a[,1,'PT',c(4,1,2,3)],display=c('s','d','f','f','f')),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0,nrow(test.a)),command=c('\\multicolumn{5}{c}{\\textbf{Panel B: TP ranking views (\\ref{rankq})}} \\\\','\\midrule \n','\\midrule \n')))
-%' @
-%'   \end{tabularx}
-%'   
-%' 
-%'   \begin{tabularx}{\linewidth}{r*{5}{Y}}
-%'   \midrule
-%' <<desc-eps.views,echo=F,results='asis'>>=
-%' #data.to.display <- c('nbr.val','mean', 'median','std.dev')
-%' 
-%' print(xtable(test.a[,1,'EPS',c(4,1,2,3)],display=c('s','d','f','f','f')),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0),command=c('\\multicolumn{5}{c}{\\textbf{Panel C: EPS ranking views (\\ref{rankq})}} \\\\','\\midrule \n')))
-%' @
-%' \bottomrule
-%'   \end{tabularx}
-%' \end{table}
-%' 
-%' 
-%' \begin{table}[hp]
-%'   \caption{Descriptive statistics of views: \naive{}}
-%'   \label{tab:view-stat-naive}
-%'   \small\addtolength{\tabcolsep}{-2pt}
-%'   
-%' \ This table shows descriptive statistics of views (expected returns) for the \naive{} (\ref{q:naive}) based on: the consensus among the analysts (panel A), target price rankings (panel B), and EPS forecasts rankings (panel C) per stock per quarter.
-%'   
-%' \begin{tabularx}{\linewidth}{r*{5}{Y}}
-%'     \toprule
-%' Year &Stocks& Mean & Median &Std.dev\\
-%' \midrule
-%' <<desc-nr.views-naive,echo=F,results='asis'>>=
-%' 
-%' print(xtable(test.a[,2,'CONS',c(4,1,2,3)],display=c('s','d','f','f','f')),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0),command=c('\\multicolumn{5}{c}{\\textbf{Panel A: Consensus views (\\ref{consq})}} \\\\','\\midrule \n')))
-%' @
-%'   \midrule
-%'   \end{tabularx}
-%' 
-%'   \begin{tabularx}{\linewidth}{r*{5}{Y}}
-%'   \midrule
-%' <<desc-r.views-naive,echo=F,results='asis'>>=
-%' #data.to.display <- c('nbr.val','mean', 'median','std.dev')
-%' 
-%' #cat(rep('&',ncol(results.final)),'\\\\')
-%' print(xtable(test.a[,2,'PT',c(4,1,2,3)],display=c('s','d','f','f','f')),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0,nrow(test.a)),command=c('\\multicolumn{5}{c}{\\textbf{Panel B: TP ranking views (\\ref{rankq})}} \\\\','\\midrule \n','\\midrule \n')))
-%' @
-%'   \end{tabularx}
-%' 
-%'   \begin{tabularx}{\linewidth}{r*{5}{Y}}
-%'   \midrule
-%' <<desc-eps.views-naive,echo=F,results='asis'>>=
-%' #data.to.display <- c('nbr.val','mean', 'median','std.dev')
-%' 
-%' print(xtable(test.a[,2,'EPS',c(4,1,2,3)],display=c('s','d','f','f','f')),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0),command=c('\\multicolumn{5}{c}{\\textbf{Panel C: EPS ranking views (\\ref{rankq})}} \\\\','\\midrule \n')))
-%' @
-%' \bottomrule
-%'   \end{tabularx}
-%' \end{table}
-%' 
-%' \begin{table}[hp]
-%'   \caption{Descriptive statistics of views: \default{}}
-%'   \label{tab:view-stat-default}
-%'   \small\addtolength{\tabcolsep}{-2pt}
-%'   
-%' \ This table shows descriptive statistics of views (expected returns) for the \default{} (\ref{q:default}) based on: the consensus among the analysts (panel A), target price rankings (panel B), and EPS forecasts rankings (panel C) per stock per quarter.
-%'   
-%' \begin{tabularx}{\linewidth}{r*{5}{Y}}
-%'     \toprule
-%' Year &Stocks& Mean & Median &Std.dev\\
-%' \midrule
-%' <<desc-nr.views-default,echo=F,results='asis'>>=
-%' 
-%' print(xtable(test.a[,3,'CONS',c(4,1,2,3)],display=c('s','d','f','f','f')),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0,11),command=c('\\multicolumn{5}{c}{\\textbf{Panel A: Consensus views (\\ref{consq})}} \\\\','\\midrule \n','\\midrule \n')))
-%' @
-%'   \midrule
-%'   \end{tabularx}
-%' 
-%'   \begin{tabularx}{\linewidth}{r*{5}{Y}}
-%'   \midrule
-%' <<desc-r.views-default,echo=F,results='asis'>>=
-%' #data.to.display <- c('nbr.val','mean', 'median','std.dev')
-%' 
-%' #cat(rep('&',ncol(results.final)),'\\\\')
-%' print(xtable(test.a[,3,'PT',c(4,1,2,3)],display=c('s','d','f','f','f')),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0,nrow(test.a)),command=c('\\multicolumn{5}{c}{\\textbf{Panel B: TP ranking views (\\ref{rankq})}} \\\\','\\midrule \n','\\midrule \n')))
-%' @
-%'   \end{tabularx}
-%' 
-%'   \begin{tabularx}{\linewidth}{r*{5}{Y}}
-%'   \midrule
-%' <<desc-eps.views-default,echo=F,results='asis'>>=
-%' #data.to.display <- c('nbr.val','mean', 'median','std.dev')
-%' 
-%' print(xtable(test.a[,3,'EPS',c(4,1,2,3)],display=c('s','d','f','f','f')),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0),command=c('\\multicolumn{5}{c}{\\textbf{Panel C: EPS ranking views (\\ref{rankq})}} \\\\','\\midrule \n')))
-%' @
-%' \bottomrule
-%'   \end{tabularx}
-%' \end{table}
 
 <<bl-results-fig,echo=FALSE, include=FALSE,results='hide',fig.width=10.7,fig.height=8.3>>=
 library(scales)
@@ -832,22 +725,8 @@ colourCount = length(unique(final.bl$Views))
 getPalette = colorRampPalette(RColorBrewer::brewer.pal(colourCount, "Set1"))
 
 #p.cum.ret <-
-ggplot(final.bl,aes(x=as.Date(Quarters),y=cum.ret,group=Views,color=Views,shape=Views))+geom_line(size=0.5)+facet_wrap(~Method,scale='free_x')+ylab('Portfolio wealth (initial=$100)')+xlab('Quarters')+ggtitle('Portfolio performance with $100 initial investment')+theme_bw()+theme(plot.title = element_text(colour = "Black"),legend.position='top',legend.title=element_blank(),strip.text=element_text(size=20),text=element_text(size=20,family='Times'))+scale_color_grey()+geom_point()+geom_hline(yintercept=100)
-#+scale_color_manual(values=getPalette(colourCount))+guides(color=guide_legend(nrow=1))
-
-#+scale_color_manual(values=getPalette(colourCount))+
-
-#+scale_x_date(breaks='year',labels=date_format('%Y'))
-
-
-#p.ann.ret <-ggplot(unique(melt(final.bl[Aggregation=='ma',list(Views,Method,ann.ret,ann.sd,ann.sr)],id.vars=c('Method','Views'))),aes(x=Views,y=value))+geom_bar(aes(fill=Views),stat='identity',alpha=0.7)+facet_grid(variable~Method,scale='free_y')+theme_bw()+ggtitle('Annualized portfolio measures (return, st.dev, and the Sharpe ratio) \n conditional on confidence aggregation')+theme(plot.title = element_text(colour = "Blue"),legend.position='top',axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())+scale_y_continuous(labels=percent)+ylab('Percent')+geom_text(aes(label=round(value,3)*100),angle=90,size=3,hjust=1.2)+scale_fill_manual(values=getPalette(colourCount))
-
-
-
-#p.TO <-ggplot(unique(melt(final.bl[Aggregation=='ma',list(Views,Method,meanViews,Ave.TO)],id.vars=c('Method','Views'))),aes(x=Views,y=value,fill=Views))+theme_bw()+geom_bar(stat='identity')+facet_grid(variable~Method,scale='free_y')+ggtitle('Trading statistics conditional confidence aggregation \n (averages of number of views and turnover ratio)')+theme(legend.position='none',axis.title.x=element_blank(),plot.title = element_text(colour = "Blue"),axis.title.y=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())+scale_fill_manual(values=getPalette(colourCount))
-
-#grid.arrange(p.cum.ret,p.ann.ret,rectGrob(gp=gpar(lwd=2, fill=NA)))
-#grid.draw(grobTree(arrangeGrob(p.cum.ret,ncol=1),rectGrob(gp=gpar(lwd=2, fill=NA))))
+ggplot(final.bl[type==sel.s],aes(x=as.Date(Quarters),y=cum.ret,group=Views,color=Views,shape=Views))+geom_line(size=0.5)+facet_grid(~Method,scale='free_x')+ylab('Portfolio wealth (initial=$100)')+xlab('Quarters')+ggtitle('Portfolio performance with $100 initial investment')+theme_bw()+theme(plot.title = element_text(colour = "Black"),legend.position='top',legend.title=element_blank(),strip.text=element_text(size=20),text=element_text(size=20,family='Times'))+scale_color_grey()+geom_point()+geom_hline(yintercept=100)
+#
 @
 
 
@@ -856,39 +735,41 @@ ggplot(final.bl,aes(x=as.Date(Quarters),y=cum.ret,group=Views,color=Views,shape=
 \begin{table}[hp]
   \caption{Trading strategies performance: entire period}
   \label{tab:strategy}
-  \ This table shows the performance statistics of the different trading strategies. Panel A presents the results for the passive strategy. Panels B,C, and D show the results for the perfect foresight scenario (\tr{}), and, respectively, the scenarios for which we use the most recent  (\naive{}) and  all ranking history of analysts (\default{}) to weight the TP/EPS estimates . Within each panel, we show the strategy results of three views regarding expected return: \textit{CONS} uses the median of the analysts estimates; \textit{TP} is based upon TP accuracy ranking; and \textit{EPS} is based upon  EPS accuracy ranking. The trading period goes from \Sexpr{gsub('[[:space:]]','',final.bl[,head(Quarters,1)])} until \Sexpr{gsub('[[:space:]]','',final.bl[,tail(Quarters,1)])}.
+  \ This table shows the performance statistics of the different trading strategies. Panel A presents the results for the passive strategy. Panels B, C, and D show the results for the perfect foresight scenario (\tr{}), and, respectively, the scenarios for which we use the most recent  (\naive{}) and  all ranking history of analysts (\default{}) to weight the TP/EPS estimates. Within each panel, we show the strategy results of three views regarding expected return: \textit{CONS} uses the median of the analysts estimates; \textit{TP} is based upon TP accuracy ranking; and \textit{EPS} is based upon  EPS accuracy ranking. The trading period goes from \Sexpr{gsub('[[:space:]]','',final.bl[,head(Quarters,1)])} until \Sexpr{gsub('[[:space:]]','',final.bl[,tail(Quarters,1)])}.
 
-\begin{tabularx}{\linewidth}{r*{5}{Y}}
+\begin{tabularx}{\linewidth}{r*{6}{Y}}
   \toprule
   %\multicolumn{5}{l}{\textbf{Panel A: Market}} \\
 <<bl-market,echo=F,results='asis'>>=
 
 dimnames(bl.results)[[1]] <- c('\\textit{CONS}','\\textit{TP}','\\textit{EPS}','\\textit{Market}')
-results.final <- bl.results[4,1,]
+results.final <- bl.results[4,1,,sel.s]
 cat(paste(c('Strategy','Annualized return (in \\%)','Annualized Std. dev (in \\%)','Sharpe ratio' ,'Average num. stock','Average turnover rate'), collapse = "&"),'\\\\')
 #cat('\\multicolumn{5}{l}{\\textbf{Panel A: Market}} \n')
-print(xtable(t(data.table('\\textit{Market}'=results.final)),display=c('s','f','f','f','d','f'),digits=4,align=c('r',rep('c',length(results.final)))),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0),command=c('\\multicolumn{5}{l}{\\textbf{Panel A}} \\\\ \n')),sanitize.text.function = function(x) x)
+print(xtable(t(data.table('\\textit{Market}'=results.final)),display=c('s','f','f','f','d','f'),digits=3,align=c('r',rep('c',length(results.final)))),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0),command=c('\\multicolumn{6}{l}{\\textbf{Panel A}} \\\\ \n')),sanitize.text.function = function(x) x)
 cat('\\midrule \n')
 @
 \end{tabularx}
 
-\begin{tabularx}{\linewidth}{r*{5}{Y}}
-  \multicolumn{5}{l}{\textbf{Panel B: \tr{} }} \\
-<<bl-nr,echo=F,results='asis'>>=
-print(xtable(bl.results[1:3,1,],display=c('s','f','f','f','d','f'),digits=4),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(nrow(bl.results[1:3,1,])),command=c('\\midrule \n')),sanitize.text.function = function(x) x)
+\begin{tabularx}{\linewidth}{r*{6}{Y}}
+\multicolumn{6}{l}{\textbf{Panel B: \tr{} }} \\
+
+  <<bl-nr,echo=F,results='asis'>>=
+print(xtable(acast(melt(bl.results[1:3,1,,sel.s]),Var1~Var2,value.var='value'),display=c('s','f','f','f','d','f'),digits=3),only.contents=T,NA.string='-',include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(nrow(bl.results[1:3,1,,sel.s])),command=c('\\midrule \n')),sanitize.text.function = function(x) x)
 @
 \end{tabularx}
 
-\begin{tabularx}{\linewidth}{r*{5}{Y}}
-  \multicolumn{5}{l}{\textbf{Panel C: \naive{}}} \\
+\begin{tabularx}{\linewidth}{r*{6}{Y}}
+  \multicolumn{6}{l}{\textbf{Panel C: \naive{}}} \\
 <<bl-pt,echo=F,results='asis'>>=
-print(xtable(bl.results[1:3,2,],display=c('s','f','f','f','d','f'),digits=4),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),,add.to.row=list(pos=list(nrow(bl.results[1:3,2,])),command=c('\\midrule \n')),sanitize.text.function = function(x) x)
+print(xtable(acast(melt(bl.results[1:3,2,,sel.s]),Var1~Var2,value.var='value'),display=c('s','f','f','f','d','f'),digits=3),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),,add.to.row=list(pos=list(nrow(bl.results[1:3,2,,sel.s])),command=c('\\midrule \n')),sanitize.text.function = function(x) x)
 @
 \end{tabularx}
-\begin{tabularx}{\linewidth}{r*{5}{Y}}
-  \multicolumn{5}{l}{\textbf{Panel D: \default{}}} \\
+
+\begin{tabularx}{\linewidth}{r*{6}{Y}}
+  \multicolumn{6}{l}{\textbf{Panel D: \default{}}} \\
 <<bl-eps,echo=F,results='asis'>>=
-print(xtable(bl.results[1:3,3,],display=c('s','f','f','f','d','f'),digits=4),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),sanitize.text.function = function(x) x)
+print(xtable(acast(melt(bl.results[1:3,3,,sel.s]),Var1~Var2,value.var='value'),display=c('s','f','f','f','d','f'),digits=3),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),sanitize.text.function = function(x) x)
 @
 \bottomrule
 \end{tabularx}
@@ -909,13 +790,13 @@ Period&\multicolumn{2}{c}{\textit{Market}}&\multicolumn{2}{c}{\textit{CONS}}&\mu
 & Ann.ret&SR& Ann.ret&SR& Ann.ret&SR& Ann.ret&SR\\
 
 <<sr-true,echo=F,results='asis'>>=
-periods.array[,,,,1] <- periods.array[,,,,1]*100
+periods.array[,,,,1,sel.s] <- periods.array[,,,,1,sel.s]*100
 #results.final <- bl.results['Market',1,]
 #cat(paste(c('Period','\\textit{Market}','\\textit{CONS}','\\textit{TP}','\\textit{EPS}'), collapse = "&"),'\\\\')
 #cat('\\multicolumn{5}{l}{\\textbf{Panel A: Market}} \n')
 #print(xtable(periods.array[,c(4,1,2,3),1,'yes','sr'],display=c('s','f','f','f','f'),digits=3),only.contents=T,include.colnames=F,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0),command=c('\\multicolumn{5}{l}{\\textbf{Panel A: \\tr{}}} \\\\\n')))
 
-print(xtable(acast(melt(periods.array[,c(4,1,2,3),1,'yes',c(1,4)]),Var1~Var2+Var3,value.var='value'),display=c('s','f','f','f','f','f','f','f','f'),digits=4),only.contents=T,include.colnames=F,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,6),command=c('\\multicolumn{9}{l}{\\textbf{Panel A: \\tr{}}} \\\\\n', '\\midrule \n')))
+print(xtable(acast(melt(periods.array[,c(4,1,2,3),1,'yes',c(1,4),sel.s]),Var1~Var2+Var3,value.var='value'),display=c('s','f','f','f','f','f','f','f','f'),digits=3),only.contents=T,NA.string='-',include.colnames=F,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,6),command=c('\\multicolumn{9}{l}{\\textbf{Panel A: \\tr{}}} \\\\\n', '\\midrule \n')))
 
 
 @
@@ -928,7 +809,7 @@ print(xtable(acast(melt(periods.array[,c(4,1,2,3),1,'yes',c(1,4)]),Var1~Var2+Var
 <<sr-naive,echo=F,results='asis'>>=
 #print(xtable(periods.array[,c(4,1,2,3),2,'yes','sr'],display=c('s','f','f','f','f'),digits=3),only.contents=T,include.colnames=F,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0),command=c('\\multicolumn{5}{l}{\\textbf{Panel B: \\naive{}}} \\\\\n')))
 
-print(xtable(acast(melt(periods.array[,c(4,1,2,3),2,'yes',c(1,4)]),Var1~Var2+Var3,value.var='value'),display=c('s','f','f','f','f','f','f','f','f'),digits=4),only.contents=T,include.colnames=F,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,6),command=c('\\multicolumn{9}{l}{\\textbf{Panel B: \\naive{}}} \\\\\n', '\\midrule \n')))
+print(xtable(acast(melt(periods.array[,c(4,1,2,3),2,'yes',c(1,4),sel.s]),Var1~Var2+Var3,value.var='value'),display=c('s','f','f','f','f','f','f','f','f'),digits=3),only.contents=T,include.colnames=F,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,6),command=c('\\multicolumn{9}{l}{\\textbf{Panel B: \\naive{}}} \\\\\n', '\\midrule \n')))
 
 @
 \midrule
@@ -939,7 +820,7 @@ print(xtable(acast(melt(periods.array[,c(4,1,2,3),2,'yes',c(1,4)]),Var1~Var2+Var
 <<sr-default,echo=F,results='asis'>>=
 #print(xtable(periods.array[,c(4,1,2,3),3,'yes','sr'],display=c('s','f','f','f','f'),digits=3),only.contents=T,include.colnames=F,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0),command=c('\\multicolumn{5}{l}{\\textbf{Panel C: \\default{}}} \\\\\n')))
 
-print(xtable(acast(melt(periods.array[,c(4,1,2,3),3,'yes',c(1,4)]),Var1~Var2+Var3,value.var='value'),display=c('s','f','f','f','f','f','f','f','f'),digits=4),only.contents=T,include.colnames=F,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,6),command=c('\\multicolumn{5}{l}{\\textbf{Panel C: \\default{}}} \\\\\n','\\midrule \n')))
+print(xtable(acast(melt(periods.array[,c(4,1,2,3),3,'yes',c(1,4),sel.s]),Var1~Var2+Var3,value.var='value'),display=c('s','f','f','f','f','f','f','f','f'),digits=3),only.contents=T,include.colnames=F,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,6),command=c('\\multicolumn{5}{l}{\\textbf{Panel C: \\default{}}} \\\\\n','\\midrule \n')))
 @
 \bottomrule
 \end{tabular}}

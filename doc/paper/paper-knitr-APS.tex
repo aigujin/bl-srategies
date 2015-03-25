@@ -69,6 +69,7 @@
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{adjustbox}
+%\usepackage{floatpag}
 %\onehalfspacing
 \doublespace
 \usepackage[longnamesfirst]{natbib}
@@ -374,9 +375,9 @@ where $k$ is number of stocks followed by a particular analyst $j$.
 Table (\ref{tab:rank-stat}) shows a contingency analysis of the ranks. 
 %Chi square statistics include/ expected frequiency test
 %Journ. of Fin economics 
-Panel A shows the dynamics of each tercile for rankings based on target price  accuracy. We observe that analysts exhibit strong ranking consistency as, on average, they stay at the same tercile after one quarter. Of the top (bottom) most accurate (inaccurate) analysts in the previous quarter 67.739\% (69.582\%) remain in that same tercile after one quarter. After one year the corresponding figures are lower respectively 46.189\% and 41.204\% for the top and bottom terciles. 
+Panel A shows the dynamics of each tercile for rankings based on target price  accuracy. We observe that analysts exhibit strong ranking consistency as, on average, they stay at the same tercile after one quarter. Of the top (bottom) most accurate (inaccurate) analysts in the previous quarter 67.593\% (69.401\%) remain in that same tercile after one quarter. After one year the corresponding figures are lower respectively 46.424\% and 40.681\% for the top and bottom terciles. 
 
-In the case of EPS ranking  (panel B) 48.417\% and  28.496\% ( 46.844\% and  32.399\%) of the analysts  remained in the top and bottom terciles after one quarter (year)  respectively.
+In the case of EPS ranking  (panel B) 48.402\% and  28.63\% ( 46.687\% and  32.253\%) of the analysts  remained in the top and bottom terciles after one quarter (year)  respectively.
 
 These results are consistent with the recent findings of \cite{hilary2013} on analyst forecast consistency. 
 
@@ -400,7 +401,7 @@ The expected returns  are computed comparing TP estimates with actual prices. To
 \cite{bradshaw2002} reports analyst average expected returns for the period of 2000--2009 and 206 brokers of 24\%. \cite{da2011} report an average expected return of 40\% for the period of 1996--2004. \cite{zhou2013} finds an average expected return of 96\% for the sample period of 2000--2009. These figures suggest that analysts are overly optimistic.
 %these values from the historical perspective, i.e., how the values of expected stock returns go inline with historical stock returns. \cite{bodie2009} show that arithimatic average rate of return for the U.S. large stocks (S\&P 500) for the period of 1926--2005 is 10.17\% and the average rate of excess return is 8.39\% with the risk premium estimated 6--8\%. While it is not the best idea to extrapolate the historical values, still, we can say that the expected stocks return should be around 14--16\%. Clearly, the values presented in the literature shows that analysts are very optimistic in issuing target price reports.
 
-Panel A show the statistics for the consensus expectations as defined in eq. (\ref{consq}). The average consensus among the analysts on stock expected returns in the  \tr{}, \naive{} and \default{} information sets are, respectively, 18.947\%, 18.993\%, and 22.216\% respectively. Panel B of the table shows the TP accuracy weighted average expected returns (16.071\%, 16.098\%, and 19.352\%). Panel C shows the EPS based weighted expected returns averages (14.964\%, 14.967\%, and 19.511\%). 
+Panel A show the statistics for the consensus expectations as defined in eq. (\ref{consq}). The average consensus among the analysts on stock expected returns in the  \tr{}, \naive{} and \default{} information sets are, respectively, NA\%, 18.993\%, and 18.993\% respectively. Panel B of the table shows the TP accuracy weighted average expected returns (15.191\%, 16.098\%, and 12.718\%). Panel C shows the EPS based weighted expected returns averages (14.774\%, 14.967\%, and 12.928\%). 
 
 Overall compared to the consensus the ranked weighted expected returns (smart estimates) are less optimistic. The \default{} information set shows higher values of expected returns.
 
@@ -422,12 +423,12 @@ The passive strategy generates an annualized cumulative return of \ensuremath{-3
 
 \subsection{Perfect foresight strategy}
 \label{sec:perfect}
-Panel B presents the results for the case of the \tr{} information set. The annualized cumulative returns for each of the active strategies (\textit{CONS}, \textit{TP}, and \textit{EPS}) are, respectively, 2.247\%, 5.4\%, 1.957\%. All the strategies outperform the passive benchmark (\ensuremath{-3.032}\%). The results show, as expected, that  we would better off if we knew in advance who the top analysts in terms of TP accuracy would be. In any case, the results suggest that the advice of analysts, as a group, is valuable. 
+Panel B presents the results for the case of the \tr{} information set. The annualized cumulative returns for each of the active strategies (\textit{CONS}, \textit{TP}, and \textit{EPS}) are, respectively, NA\%, 4.512\%, 0.718\%. All the strategies outperform the passive benchmark (\ensuremath{-3.032}\%). The results show, as expected, that  we would better off if we knew in advance who the top analysts in terms of TP accuracy would be. In any case, the results suggest that the advice of analysts, as a group, is valuable. 
 %Yet, the top analyst  
 
 %The result confirms that these strategies set an upper bound for the cumulative return yield. It follows, that we setup a boundary for the results of the feasible strategies: the upper bound is the perfect foresight strategy and the lower bound is the market benchmark.
 
-The \textit{TP} ranking strategy dominates also when we look at the risk-adjusted returns. The Sharpe Ratio is 0.371 against 0.149, 0.129, and \ensuremath{-0.182}, respectively for the \textit{CONS}, the \textit{EPS}, and the \textit{Market} strategies. In addition, the \textit{TP} strategy dominates  the others if we consider the smaller trading periods (5 years). Table \ref{tab:substrategy} shows the Sharpe Ratio for six 5-year holding periods. The \textit{TP} strategy wins over the others in every period as expected.
+The \textit{TP} ranking strategy dominates also when we look at the risk-adjusted returns. The Sharpe Ratio is 0.305 against NA, 0.046, and \ensuremath{-0.182}, respectively for the \textit{CONS}, the \textit{EPS}, and the \textit{Market} strategies. In addition, the \textit{TP} strategy dominates  the others if we consider the smaller trading periods (5 years). Table \ref{tab:substrategy} shows the Sharpe Ratio for six 5-year holding periods. The \textit{TP} strategy wins over the others in every period as expected.
 
 While this is an hypothetical setting, given that it is not possible to know in advance which analyst will rank first, it suggests that if we can predict the rankings with some accuracy this will be a useful investment trading tool. One of the possibilities is using methods developed in the Machine Learning literature (e.g., \cite{aiguzhinov2010,brazdil2003}), where this type of problem (referred as a label ranking problem) has been broadly studied. For example, \cite{aiguzhinov2010} propose a label ranking algorithm using Bayesian approach to predict the rankings.
 
@@ -436,7 +437,7 @@ While this is an hypothetical setting, given that it is not possible to know in 
 \subsection{Feasible strategies}
 Panel C of table (\ref{tab:strategy}) shows the performance of the different smart strategies in the \naive{} information set. As it was the  case of the \tr{} information set, all the active strategies outperform the \textit{Market} (\ensuremath{-3.032}\%)  and show positive cumulative annualized returns of 0.622\%,  0.449\%, \ensuremath{-0.361}\% respectively for the \textit{TP}, the \textit{CONS}, and the \textit{EPS} strategies. Similarly, the \textit{TP} strategy dominates when we consider the risk-adjusted returns. The Sharpe Ratio for this strategy is 0.04 which is higher than that Sharpe Ratios of the \textit{CONS} and  the \textit{EPS} strategies  (0.028 and \ensuremath{-0.022} respectively). The results in panel B of table \ref{tab:substrategy} show as well that this strategy outperform the others for all of 5 trading sub-periods. 
 
-Panel D of table \ref{tab:strategy} confirm the outperformance of the \textit{TP} smart strategy: this is the the only active strategy that yields positive annualized cumulative return (0.441\%) whereas both  the \textit{CONS} and the \textit{EPS} show negative returns (0.413\% and 0.441\% respectively). The panel C of table \ref{tab:substrategy} shows that the Sharpe Ratio of the \textit{TP} strategy is lower then that of the \textit{EPS} strategy in only first two sub-periods (2000Q1/2004Q4 and 2001Q1/2005Q4).
+Panel D of table \ref{tab:strategy} confirm the outperformance of the \textit{TP} smart strategy: this is the the only active strategy that yields positive annualized cumulative return (1.043\%) whereas both  the \textit{CONS} and the \textit{EPS} show negative returns (0.702\% and 0.711\% respectively). The panel C of table \ref{tab:substrategy} shows that the Sharpe Ratio of the \textit{TP} strategy is lower then that of the \textit{EPS} strategy in only first two sub-periods (2000Q1/2004Q4 and 2001Q1/2005Q4).
 
 
 Figure \ref{fig:bl-results} shows the graphical representation of the cumulative portfolio wealth for  the passive and smart strategies in all the information sets. The $y$-axis is the monetary value of wealth and $x$-axis is the time starting at January of 2000 and ending at December of 2009. Figures show that strategies under the \tr{} panel outperform the \emph{Market} and that final value  of the portfolio of the TP strategy considerably outruns the other alternative strategies.
@@ -588,10 +589,10 @@ MONTSEC & -0.120 & 0.027 &    1 \\
 \multirow{11}{*}{$t$}&\textbf{Panel B: EPS}&\multicolumn{4}{c}{$t+1$} \\
 &&$top$&$middle$&$bottom$&Sum\\
  &$top$ & 48.4 & 26.1 & 26.0 & 100.5 \\ 
-  &$middle$ & 48.2 & 26.2 & 25.8 & 100.2 \\ 
-  &$bottom$ & 46.3 & 25.9 & 28.5 & 100.6 \\ 
+  &$middle$ & 48.2 & 26.2 & 25.8 & 100.4 \\ 
+  &$bottom$ & 46.3 & 25.9 & 28.5 & 100.8 \\ 
     &&\multicolumn{4}{c}{$t+4$}\\ 
-&$top$ & 46.8 & 28.3 & 26.0 & 101.2 \\ 
+&$top$ & 46.8 & 28.3 & 26.0 & 101.1 \\ 
   &$middle$ & 45.5 & 27.0 & 28.1 & 100.6 \\ 
   &$bottom$ & 42.7 & 27.6 & 32.4 & 102.7 \\ 
   
@@ -603,63 +604,71 @@ MONTSEC & -0.120 & 0.027 &    1 \\
   \caption{Descriptive statistics of views}
   \label{tab:view-stat}
 \ This table shows the descriptive statistics of views (expected returns) based on the consensus (median) among the analysts (panel A); target price rankings (panel B); and EPS forecasts rankings (panel C).
-  
+
 \begin{tabularx}{\linewidth}{r*{4}{Y}}
 \toprule
-& Mean (in \%) & Median (in \%) &Std.dev\\
+& Mean (in \%)&Median (in \%)&Std.dev\\
+%&all&same&all&same&all&same\\
 \midrule
-  \multicolumn{4}{l}{\textbf{Panel A: Consensus}} \\ 
+  \multicolumn{4}{c}{\textbf{Panel A: Consensus}} \\ 
  \midrule 
-\tr{} & 18.947 & 17.156 & 0.119 \\ 
+\tr{} & - & - & - \\ 
   \naive{} & 18.993 & 17.173 & 0.119 \\ 
-  \default{} & 22.216 & 20.715 & 0.101 \\ 
+  \default{} & 18.993 & 17.173 & 0.119 \\ 
   
 \end{tabularx}
 
-  \begin{tabularx}{\linewidth}{r*{4}{Y}}
+\begin{tabularx}{\linewidth}{r*{4}{Y}}
   \midrule
-  \multicolumn{4}{l}{\textbf{Panel B: TP}} \\ 
+  \multicolumn{4}{c}{\textbf{Panel B: TP}} \\ 
  \midrule 
-\tr{} & 14.964 & 13.449 & 0.103 \\ 
-  \naive{} & 14.967 & 13.432 & 0.103 \\ 
-  \default{} & 19.511 & 18.756 & 0.089 \\ 
+\tr{} & 15.191 & 13.595 & 0.096 \\ 
+  \naive{} & 16.098 & 14.528 & 0.098 \\ 
+  \default{} & 12.718 & 10.789 & 0.089 \\ 
   
   \end{tabularx}
-  \begin{tabularx}{\linewidth}{r*{4}{Y}}
-  \multicolumn{4}{l}{\textbf{Panel C: EPS}} \\ 
+  
+\begin{tabularx}{\linewidth}{r*{4}{Y}}
+  \multicolumn{4}{c}{\textbf{Panel C: EPS}} \\ 
  \midrule 
-\tr{} & 16.071 & 14.525 & 0.098 \\ 
-  \naive{} & 16.098 & 14.528 & 0.098 \\ 
-  \default{} & 19.352 & 18.195 & 0.084 \\ 
+\tr{} & 14.774 & 13.269 & 0.102 \\ 
+  \naive{} & 14.967 & 13.432 & 0.103 \\ 
+  \default{} & 12.928 & 11.440 & 0.089 \\ 
   
 \bottomrule
 \end{tabularx}
   \end{table}
   
+
 \begin{table}[hp]
   \caption{Number of active stocks}
   \label{tab:stocks}
 \ This table shows number of active stocks in each of the trading strategies conditional on different information sets: \tr{} (panel A), \naive{} (panel B) and \default{} (panel C). 
+
+%\resizebox{\textwidth}{!}{%
+%\begin{tabular}{rrrrrrr}
 \begin{tabularx}{\linewidth}{r*{4}{Y}}
 \toprule
-Year& \textit{CONS}& \textit{TP} & \textit{EPS}\\
+Year&\textit{CONS}& \textit{TP} &\textit{EPS}\\
+%&all&same&all&same&all&same\\
   \multicolumn{4}{l}{\textbf{Panel A: \tr{}}} \\ 
  \midrule 
-1999 &  202 &  202 &  145 \\ 
-  2000 &  269 &  269 &  211 \\ 
-  2001 &  306 &  306 &  257 \\ 
-  2002 &  333 &  333 &  299 \\ 
-  2003 &  346 &  346 &  311 \\ 
-  2004 &  351 &  351 &  331 \\ 
-  2005 &  358 &  358 &  343 \\ 
-  2006 &  360 &  360 &  344 \\ 
-  2007 &  364 &  364 &  357 \\ 
-  2008 &  360 &  360 &  339 \\ 
-  2009 &  323 &  323 &  300 \\ 
+1999 & - &   69 &   44 \\ 
+  2000 & - &  232 &  191 \\ 
+  2001 & - &  273 &  244 \\ 
+  2002 & - &  317 &  290 \\ 
+  2003 & - &  330 &  299 \\ 
+  2004 & - &  331 &  318 \\ 
+  2005 & - &  347 &  337 \\ 
+  2006 & - &  351 &  337 \\ 
+  2007 & - &  359 &  351 \\ 
+  2008 & - &  354 &  339 \\ 
+  2009 & - &  306 &  306 \\ 
    \midrule 
-Total &  378 &  378 &  376 \\ 
+Total & - &  378 &  375 \\ 
   
 \end{tabularx}
+
 \begin{tabularx}{\linewidth}{r*{4}{Y}}
   \multicolumn{4}{l}{\textbf{Panel B: \naive{}}} \\ 
  \midrule 
@@ -678,145 +687,27 @@ Total &  378 &  378 &  376 \\
 Total &  378 &  378 &  376 \\ 
   
 \end{tabularx}
+
 \begin{tabularx}{\linewidth}{r*{4}{Y}}
   \multicolumn{4}{l}{\textbf{Panel C: \default{}}} \\ 
  \midrule 
 1999 &   69 &   69 &   54 \\ 
-  2000 &  235 &  235 &  205 \\ 
-  2001 &  284 &  284 &  264 \\ 
-  2002 &  327 &  327 &  308 \\ 
-  2003 &  341 &  341 &  326 \\ 
-  2004 &  350 &  350 &  339 \\ 
-  2005 &  364 &  364 &  357 \\ 
-  2006 &  370 &  370 &  365 \\ 
-  2007 &  374 &  374 &  371 \\ 
-  2008 &  376 &  376 &  375 \\ 
-  2009 &  378 &  378 &  378 \\ 
+  2000 &  235 &  235 &  204 \\ 
+  2001 &  281 &  281 &  261 \\ 
+  2002 &  323 &  323 &  304 \\ 
+  2003 &  334 &  334 &  317 \\ 
+  2004 &  341 &  341 &  332 \\ 
+  2005 &  352 &  352 &  344 \\ 
+  2006 &  358 &  358 &  353 \\ 
+  2007 &  361 &  361 &  358 \\ 
+  2008 &  360 &  360 &  359 \\ 
+  2009 &  351 &  351 &  350 \\ 
    \midrule 
-Total &  378 &  378 &  378 \\ 
+Total &  378 &  378 &  377 \\ 
   
 \bottomrule
 \end{tabularx}
 \end{table}
-
-%'   \begin{table}[hp]
-%'   \caption{Descriptive statistics of views: \tr{}}
-%'   \label{tab:view-stat}
-%'   \small\addtolength{\tabcolsep}{-2pt}
-%'   
-%' \ This table shows the descriptive (per stock per quarter) statistics of views (expected returns) for the \tr{} (\ref{q:true}) based on the consensus (median) among the analysts (panel A); target price rankings (panel B); and EPS forecasts rankings (panel C).
-%'   
-%' \begin{tabularx}{\linewidth}{r*{5}{Y}}
-%'     \toprule
-%' Year &Stocks& Mean & Median &Std.dev\\
-%' \midrule
-%' <<desc-nr.views,echo=F,results='asis'>>=
-%' 
-%' print(xtable(test.a[,1,'CONS',c(4,1,2,3)],display=c('s','d','f','f','f'),digits=3),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0),command=c('\\multicolumn{5}{c}{\\textbf{Panel A: Consensus views (\\ref{consq})}} \\\\','\\midrule \n')))
-%' @
-%'   \midrule
-%'   \end{tabularx}
-%' 
-%'   \begin{tabularx}{\linewidth}{r*{5}{Y}}
-%'   \midrule
-%' <<desc-r.views,echo=F,results='asis'>>=
-%' #data.to.display <- c('nbr.val','mean', 'median','std.dev')
-%' 
-%' #cat(rep('&',ncol(results.final)),'\\\\')
-%' print(xtable(test.a[,1,'PT',c(4,1,2,3)],display=c('s','d','f','f','f')),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0,nrow(test.a)),command=c('\\multicolumn{5}{c}{\\textbf{Panel B: TP ranking views (\\ref{rankq})}} \\\\','\\midrule \n','\\midrule \n')))
-%' @
-%'   \end{tabularx}
-%'   
-%' 
-%'   \begin{tabularx}{\linewidth}{r*{5}{Y}}
-%'   \midrule
-%' <<desc-eps.views,echo=F,results='asis'>>=
-%' #data.to.display <- c('nbr.val','mean', 'median','std.dev')
-%' 
-%' print(xtable(test.a[,1,'EPS',c(4,1,2,3)],display=c('s','d','f','f','f')),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0),command=c('\\multicolumn{5}{c}{\\textbf{Panel C: EPS ranking views (\\ref{rankq})}} \\\\','\\midrule \n')))
-%' @
-%' \bottomrule
-%'   \end{tabularx}
-%' \end{table}
-%' 
-%' 
-%' \begin{table}[hp]
-%'   \caption{Descriptive statistics of views: \naive{}}
-%'   \label{tab:view-stat-naive}
-%'   \small\addtolength{\tabcolsep}{-2pt}
-%'   
-%' \ This table shows descriptive statistics of views (expected returns) for the \naive{} (\ref{q:naive}) based on: the consensus among the analysts (panel A), target price rankings (panel B), and EPS forecasts rankings (panel C) per stock per quarter.
-%'   
-%' \begin{tabularx}{\linewidth}{r*{5}{Y}}
-%'     \toprule
-%' Year &Stocks& Mean & Median &Std.dev\\
-%' \midrule
-%' <<desc-nr.views-naive,echo=F,results='asis'>>=
-%' 
-%' print(xtable(test.a[,2,'CONS',c(4,1,2,3)],display=c('s','d','f','f','f')),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0),command=c('\\multicolumn{5}{c}{\\textbf{Panel A: Consensus views (\\ref{consq})}} \\\\','\\midrule \n')))
-%' @
-%'   \midrule
-%'   \end{tabularx}
-%' 
-%'   \begin{tabularx}{\linewidth}{r*{5}{Y}}
-%'   \midrule
-%' <<desc-r.views-naive,echo=F,results='asis'>>=
-%' #data.to.display <- c('nbr.val','mean', 'median','std.dev')
-%' 
-%' #cat(rep('&',ncol(results.final)),'\\\\')
-%' print(xtable(test.a[,2,'PT',c(4,1,2,3)],display=c('s','d','f','f','f')),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0,nrow(test.a)),command=c('\\multicolumn{5}{c}{\\textbf{Panel B: TP ranking views (\\ref{rankq})}} \\\\','\\midrule \n','\\midrule \n')))
-%' @
-%'   \end{tabularx}
-%' 
-%'   \begin{tabularx}{\linewidth}{r*{5}{Y}}
-%'   \midrule
-%' <<desc-eps.views-naive,echo=F,results='asis'>>=
-%' #data.to.display <- c('nbr.val','mean', 'median','std.dev')
-%' 
-%' print(xtable(test.a[,2,'EPS',c(4,1,2,3)],display=c('s','d','f','f','f')),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0),command=c('\\multicolumn{5}{c}{\\textbf{Panel C: EPS ranking views (\\ref{rankq})}} \\\\','\\midrule \n')))
-%' @
-%' \bottomrule
-%'   \end{tabularx}
-%' \end{table}
-%' 
-%' \begin{table}[hp]
-%'   \caption{Descriptive statistics of views: \default{}}
-%'   \label{tab:view-stat-default}
-%'   \small\addtolength{\tabcolsep}{-2pt}
-%'   
-%' \ This table shows descriptive statistics of views (expected returns) for the \default{} (\ref{q:default}) based on: the consensus among the analysts (panel A), target price rankings (panel B), and EPS forecasts rankings (panel C) per stock per quarter.
-%'   
-%' \begin{tabularx}{\linewidth}{r*{5}{Y}}
-%'     \toprule
-%' Year &Stocks& Mean & Median &Std.dev\\
-%' \midrule
-%' <<desc-nr.views-default,echo=F,results='asis'>>=
-%' 
-%' print(xtable(test.a[,3,'CONS',c(4,1,2,3)],display=c('s','d','f','f','f')),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0,11),command=c('\\multicolumn{5}{c}{\\textbf{Panel A: Consensus views (\\ref{consq})}} \\\\','\\midrule \n','\\midrule \n')))
-%' @
-%'   \midrule
-%'   \end{tabularx}
-%' 
-%'   \begin{tabularx}{\linewidth}{r*{5}{Y}}
-%'   \midrule
-%' <<desc-r.views-default,echo=F,results='asis'>>=
-%' #data.to.display <- c('nbr.val','mean', 'median','std.dev')
-%' 
-%' #cat(rep('&',ncol(results.final)),'\\\\')
-%' print(xtable(test.a[,3,'PT',c(4,1,2,3)],display=c('s','d','f','f','f')),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0,nrow(test.a)),command=c('\\multicolumn{5}{c}{\\textbf{Panel B: TP ranking views (\\ref{rankq})}} \\\\','\\midrule \n','\\midrule \n')))
-%' @
-%'   \end{tabularx}
-%' 
-%'   \begin{tabularx}{\linewidth}{r*{5}{Y}}
-%'   \midrule
-%' <<desc-eps.views-default,echo=F,results='asis'>>=
-%' #data.to.display <- c('nbr.val','mean', 'median','std.dev')
-%' 
-%' print(xtable(test.a[,3,'EPS',c(4,1,2,3)],display=c('s','d','f','f','f')),only.contents=T,include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0),command=c('\\multicolumn{5}{c}{\\textbf{Panel C: EPS ranking views (\\ref{rankq})}} \\\\','\\midrule \n')))
-%' @
-%' \bottomrule
-%'   \end{tabularx}
-%' \end{table}
 
 
 
@@ -826,39 +717,41 @@ Total &  378 &  378 &  378 \\
 \begin{table}[hp]
   \caption{Trading strategies performance: entire period}
   \label{tab:strategy}
-  \ This table shows the performance statistics of the different trading strategies. Panel A presents the results for the passive strategy. Panels B,C, and D show the results for the perfect foresight scenario (\tr{}), and, respectively, the scenarios for which we use the most recent  (\naive{}) and  all ranking history of analysts (\default{}) to weight the TP/EPS estimates . Within each panel, we show the strategy results of three views regarding expected return: \textit{CONS} uses the median of the analysts estimates; \textit{TP} is based upon TP accuracy ranking; and \textit{EPS} is based upon  EPS accuracy ranking. The trading period goes from 2000Q1 until 2009Q4.
+  \ This table shows the performance statistics of the different trading strategies. Panel A presents the results for the passive strategy. Panels B, C, and D show the results for the perfect foresight scenario (\tr{}), and, respectively, the scenarios for which we use the most recent  (\naive{}) and  all ranking history of analysts (\default{}) to weight the TP/EPS estimates. Within each panel, we show the strategy results of three views regarding expected return: \textit{CONS} uses the median of the analysts estimates; \textit{TP} is based upon TP accuracy ranking; and \textit{EPS} is based upon  EPS accuracy ranking. The trading period goes from 2000Q1 until 2009Q4.
 
-\begin{tabularx}{\linewidth}{r*{5}{Y}}
+\begin{tabularx}{\linewidth}{r*{6}{Y}}
   \toprule
   %\multicolumn{5}{l}{\textbf{Panel A: Market}} \\
-Strategy&Annualized return (in \%)&Annualized Std. dev (in \%)&Sharpe ratio&Average num. stock&Average turnover rate \\  \multicolumn{5}{l}{\textbf{Panel A}} \\ 
-\textit{Market} & -3.0323 & 16.6545 & -0.1821 &   499 & 0.0526 \\ 
+Strategy&Annualized return (in \%)&Annualized Std. dev (in \%)&Sharpe ratio&Average num. stock&Average turnover rate \\  \multicolumn{6}{l}{\textbf{Panel A}} \\ 
+\textit{Market} & -3.032 & 16.654 & -0.182 &  499 & 0.053 \\ 
   \midrule 
 
 \end{tabularx}
 
-\begin{tabularx}{\linewidth}{r*{5}{Y}}
-  \multicolumn{5}{l}{\textbf{Panel B: \tr{} }} \\
- \textit{CONS} & 2.2470 & 15.0316 & 0.1495 &   257 & 0.2774 \\ 
-  \textit{TP} & 5.3998 & 14.5525 & 0.3711 &   257 & 0.2982 \\ 
-  \textit{EPS} & 1.9567 & 15.1450 & 0.1292 &   209 & 0.5006 \\ 
+\begin{tabularx}{\linewidth}{r*{6}{Y}}
+\multicolumn{6}{l}{\textbf{Panel B: \tr{} }} \\
+
+ \textit{CONS} & - & - & - & - & - \\ 
+  \textit{TP} & 4.512 & 14.792 & 0.305 &  251 & 0.326 \\ 
+  \textit{EPS} & 0.718 & 15.509 & 0.046 &  205 & 0.493 \\ 
    \midrule 
 
 \end{tabularx}
 
-\begin{tabularx}{\linewidth}{r*{5}{Y}}
-  \multicolumn{5}{l}{\textbf{Panel C: \naive{}}} \\
- \textit{CONS} & 0.4491 & 15.9932 & 0.0281 &   252 & 0.2503 \\ 
-  \textit{TP} & 0.6217 & 15.6819 & 0.0396 &   252 & 0.2556 \\ 
-  \textit{EPS} & -0.3614 & 16.1002 & -0.0224 &   206 & 0.4077 \\ 
+\begin{tabularx}{\linewidth}{r*{6}{Y}}
+  \multicolumn{6}{l}{\textbf{Panel C: \naive{}}} \\
+ \textit{CONS} & 0.449 & 15.993 & 0.028 &  252 & 0.250 \\ 
+  \textit{TP} & 0.622 & 15.682 & 0.040 &  252 & 0.256 \\ 
+  \textit{EPS} & -0.361 & 16.100 & -0.022 &  206 & 0.408 \\ 
    \midrule 
 
 \end{tabularx}
-\begin{tabularx}{\linewidth}{r*{5}{Y}}
-  \multicolumn{5}{l}{\textbf{Panel D: \default{}}} \\
- \textit{CONS} & 0.4128 & 15.8729 & 0.0260 &   257 & 0.1853 \\ 
-  \textit{TP} & 0.4414 & 15.6585 & 0.0282 &   257 & 0.1888 \\ 
-  \textit{EPS} & 0.4409 & 15.7018 & 0.0281 &   250 & 0.1977 \\ 
+
+\begin{tabularx}{\linewidth}{r*{6}{Y}}
+  \multicolumn{6}{l}{\textbf{Panel D: \default{}}} \\
+ \textit{CONS} & 0.702 & 15.820 & 0.044 &  252 & 0.223 \\ 
+  \textit{TP} & 1.043 & 15.476 & 0.067 &  252 & 0.248 \\ 
+  \textit{EPS} & 0.711 & 15.481 & 0.046 &  245 & 0.255 \\ 
   
 \bottomrule
 \end{tabularx}
@@ -879,14 +772,14 @@ Period&\multicolumn{2}{c}{\textit{Market}}&\multicolumn{2}{c}{\textit{CONS}}&\mu
 & Ann.ret&SR& Ann.ret&SR& Ann.ret&SR& Ann.ret&SR\\
 
   \multicolumn{9}{l}{\textbf{Panel A: \tr{}}} \\
-2000Q1/2004Q4 & -3.4007 & -0.2011 & 5.2694 & 0.3428 & 7.5639 & 0.5094 & 3.7574 & 0.2453 \\ 
-  2001Q1/2005Q4 & -1.5393 & -0.0926 & 4.2321 & 0.2804 & 7.1589 & 0.4958 & 4.8590 & 0.3349 \\ 
-  2002Q1/2006Q4 & 2.5665 & 0.1960 & 6.2298 & 0.5039 & 9.6824 & 0.8158 & 6.4279 & 0.5371 \\ 
-  2003Q1/2007Q4 & 7.9195 & 0.9254 & 10.0924 & 1.1796 & 14.3387 & 1.8166 & 10.7077 & 1.2962 \\ 
-  2004Q1/2008Q4 & -5.6671 & -0.4354 & -3.0593 & -0.2447 & 1.2854 & 0.1032 & -2.1627 & -0.1744 \\ 
-  2005Q1/2009Q4 & -2.6625 & -0.1582 & -0.6887 & -0.0461 & 3.2793 & 0.2252 & 0.1873 & 0.0122 \\ 
+2000Q1/2004Q4 & -3.401 & -0.201 & - & - & 6.545 & 0.447 & 2.080 & 0.137 \\ 
+  2001Q1/2005Q4 & -1.539 & -0.093 & - & - & 6.185 & 0.429 & 4.076 & 0.279 \\ 
+  2002Q1/2006Q4 & 2.567 & 0.196 & - & - & 8.985 & 0.768 & 5.822 & 0.485 \\ 
+  2003Q1/2007Q4 & 7.919 & 0.925 & - & - & 14.236 & 1.889 & 10.690 & 1.365 \\ 
+  2004Q1/2008Q4 & -5.667 & -0.435 & - & - & 0.399 & 0.030 & -3.083 & -0.229 \\ 
+  2005Q1/2009Q4 & -2.662 & -0.158 & - & - & 2.518 & 0.165 & -0.625 & -0.039 \\ 
    \midrule 
-All period & -3.0323 & -0.1821 & 2.2470 & 0.1495 & 5.3998 & 0.3711 & 1.9567 & 0.1292 \\ 
+All period & -3.032 & -0.182 & - & - & 4.512 & 0.305 & 0.718 & 0.046 \\ 
   
 \midrule
 \end{tabular}}
@@ -895,14 +788,14 @@ All period & -3.0323 & -0.1821 & 2.2470 & 0.1495 & 5.3998 & 0.3711 & 1.9567 & 0.
 \begin{tabular}{rrrrrrrrr}
 %\begin{tabularx}{\linewidth}{r*{9}{Y}}
   \multicolumn{9}{l}{\textbf{Panel B: \naive{}}} \\
-2000Q1/2004Q4 & -3.4007 & -0.2011 & 3.4013 & 0.2145 & 3.3446 & 0.2169 & 1.0450 & 0.0656 \\ 
-  2001Q1/2005Q4 & -1.5393 & -0.0926 & 2.8396 & 0.1805 & 3.5380 & 0.2323 & 2.5370 & 0.1628 \\ 
-  2002Q1/2006Q4 & 2.5665 & 0.1960 & 5.8368 & 0.4684 & 6.2288 & 0.5169 & 5.4148 & 0.4477 \\ 
-  2003Q1/2007Q4 & 7.9195 & 0.9254 & 9.4104 & 1.0983 & 9.9651 & 1.2416 & 9.2980 & 1.1488 \\ 
-  2004Q1/2008Q4 & -5.6671 & -0.4354 & -4.8255 & -0.3490 & -4.2537 & -0.3109 & -4.5513 & -0.3325 \\ 
-  2005Q1/2009Q4 & -2.6625 & -0.1582 & -2.4189 & -0.1474 & -2.0293 & -0.1250 & -1.7483 & -0.1050 \\ 
+2000Q1/2004Q4 & -3.401 & -0.201 & 3.401 & 0.215 & 3.345 & 0.217 & 1.045 & 0.066 \\ 
+  2001Q1/2005Q4 & -1.539 & -0.093 & 2.840 & 0.180 & 3.538 & 0.232 & 2.537 & 0.163 \\ 
+  2002Q1/2006Q4 & 2.567 & 0.196 & 5.837 & 0.468 & 6.229 & 0.517 & 5.415 & 0.448 \\ 
+  2003Q1/2007Q4 & 7.919 & 0.925 & 9.410 & 1.098 & 9.965 & 1.242 & 9.298 & 1.149 \\ 
+  2004Q1/2008Q4 & -5.667 & -0.435 & -4.826 & -0.349 & -4.254 & -0.311 & -4.551 & -0.333 \\ 
+  2005Q1/2009Q4 & -2.662 & -0.158 & -2.419 & -0.147 & -2.029 & -0.125 & -1.748 & -0.105 \\ 
    \midrule 
-All period & -3.0323 & -0.1821 & 0.4491 & 0.0281 & 0.6217 & 0.0396 & -0.3614 & -0.0224 \\ 
+All period & -3.032 & -0.182 & 0.449 & 0.028 & 0.622 & 0.040 & -0.361 & -0.022 \\ 
   
 \midrule
 \end{tabular}}
@@ -910,14 +803,14 @@ All period & -3.0323 & -0.1821 & 0.4491 & 0.0281 & 0.6217 & 0.0396 & -0.3614 & -
 \begin{tabular}{rrrrrrrrr}
 %\begin{tabularx}{\linewidth}{r*{9}{Y}}
   \multicolumn{5}{l}{\textbf{Panel C: \default{}}} \\
-2000Q1/2004Q4 & -3.4007 & -0.2011 & 4.7015 & 0.3048 & 4.3673 & 0.2913 & 4.2041 & 0.2771 \\ 
-  2001Q1/2005Q4 & -1.5393 & -0.0926 & 3.8730 & 0.2529 & 4.1116 & 0.2777 & 4.2935 & 0.2865 \\ 
-  2002Q1/2006Q4 & 2.5665 & 0.1960 & 5.7738 & 0.4555 & 6.0452 & 0.4941 & 5.9968 & 0.4914 \\ 
-  2003Q1/2007Q4 & 7.9195 & 0.9254 & 8.3443 & 0.8812 & 8.5839 & 0.9635 & 8.6038 & 0.9724 \\ 
-  2004Q1/2008Q4 & -5.6671 & -0.4354 & -6.0175 & -0.4319 & -5.6861 & -0.4116 & -5.5371 & -0.4018 \\ 
-  2005Q1/2009Q4 & -2.6625 & -0.1582 & -3.7003 & -0.2250 & -3.3367 & -0.2025 & -3.1863 & -0.1942 \\ 
+2000Q1/2004Q4 & -3.401 & -0.201 & 3.934 & 0.252 & 3.833 & 0.256 & 3.470 & 0.229 \\ 
+  2001Q1/2005Q4 & -1.539 & -0.093 & 3.278 & 0.211 & 4.000 & 0.270 & 3.883 & 0.259 \\ 
+  2002Q1/2006Q4 & 2.567 & 0.196 & 5.464 & 0.433 & 5.907 & 0.487 & 5.686 & 0.465 \\ 
+  2003Q1/2007Q4 & 7.919 & 0.925 & 9.285 & 1.066 & 10.185 & 1.252 & 9.964 & 1.195 \\ 
+  2004Q1/2008Q4 & -5.667 & -0.435 & -4.979 & -0.364 & -4.093 & -0.299 & -4.251 & -0.311 \\ 
+  2005Q1/2009Q4 & -2.662 & -0.158 & -2.429 & -0.149 & -1.671 & -0.103 & -1.974 & -0.122 \\ 
    \midrule 
-All period & -3.0323 & -0.1821 & 0.4128 & 0.0260 & 0.4414 & 0.0282 & 0.4409 & 0.0281 \\ 
+All period & -3.032 & -0.182 & 0.702 & 0.044 & 1.043 & 0.067 & 0.711 & 0.046 \\ 
   
 \bottomrule
 \end{tabular}}
