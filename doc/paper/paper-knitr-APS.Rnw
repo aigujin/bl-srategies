@@ -47,8 +47,8 @@
 %-------------------------------------------------------------------------
 % take the % away on next line to produce the final camera-ready version
 % Be sure to remove \thispagestyle{fancy} as well after the \maketitle.
-%\pagestyle{empty}
-\pagestyle{fancy}
+\pagestyle{empty}
+%\pagestyle{fancy}
  
 \newcommand\myTime{\now}
 \fancyhead{}
@@ -174,18 +174,18 @@ end.year <- format(as.Date(final.bl[,tail(Quarters,1)]),'%Y')
 @
 
 \title{Are rankings of financial analysts useful to investors?}
- \author[1,2]{ Artur Aiguzhinov (\href{mailto:artur.aiguzhinov@inescporto.pt}{artur.aiguzhinov@inescporto.pt})}
- \author[1]{ Ana Paula Serra (\href{mailto:aserra@fep.up.pt}{aserra@fep.up.pt})}
- \author[2,4]{Carlos Soares (\href{mailto:csoares@fe.up.pt}{csoares@fe.up.pt})}
-
-\affil[1]{FEP \& CEF.UP, University of Porto}
-\affil[2]{INESC TEC}
-\affil[4]{FEUP, University of Porto}
+%  \author[1,2]{ Artur Aiguzhinov (\href{mailto:artur.aiguzhinov@inescporto.pt}{artur.aiguzhinov@inescporto.pt})}
+%  \author[1]{ Ana Paula Serra (\href{mailto:aserra@fep.up.pt}{aserra@fep.up.pt})}
+%  \author[2,4]{Carlos Soares (\href{mailto:csoares@fe.up.pt}{csoares@fe.up.pt})}
+% 
+% \affil[1]{FEP \& CEF.UP, University of Porto}
+% \affil[2]{INESC TEC}
+% \affil[4]{FEUP, University of Porto}
 
 
 \maketitle
 % You need this here, or else the first page won't have a header.
-\thispagestyle{fancy}
+%\thispagestyle{fancy}
 
 \begin{abstract}
 Several institutions issue rankings based on the accuracy of price and EPS forecasts. Given that these rankings are \textit{ex-post} they may not be able useful to investors. In this paper  we show that trading strategies based on perfect foresight and past rankings outperform a passive strategy.  In addition, we report that investors are better off following analysts that issue  accurate price targets rather that those with accurate EPS forecasts. 
@@ -388,7 +388,7 @@ Formalizing information sets considered are:
 %\end{equation}
 %\end{itemize}
 \end{itemize}
-where  $Q_{rank,i,.}$ is the smart estimate for stock $i$ (eq. \ref{rankq}). For the case of consensus based expected returns ($Q_{cons,i}), the \tr{} information set is not applicable as analysts have equal weights.
+where  $Q_{rank,i,.}$ is the smart estimate for stock $i$ (eq. \ref{rankq}). For the case of consensus based expected returns ($Q_{cons,i}$), the \tr{} information set is not applicable as analysts have equal weights.
 
 
 \section{Data and preliminary results}
@@ -482,42 +482,40 @@ The passive strategy generates an annualized cumulative return of \Sexpr{bl.resu
 
 \subsection{Perfect foresight strategy}
 \label{sec:perfect}
-Panel B presents the results for the case of the \tr{} information set. The annualized cumulative returns for each of the active strategies (\textit{TP}, and \textit{EPS}) are, respectively, \Sexpr{bl.results['TP',1,1,sel.s]}\%, \Sexpr{bl.results['EPS',1,1,sel.s]}\%. All the strategies outperform the passive benchmark (\Sexpr{bl.results['Market',1,1,sel.s]}\%). The results show, as expected, that  we would better off if we knew in advance who the top analysts in terms of TP accuracy would be. In any case, the results suggest that the advice of analysts, as a group, is valuable. 
+Panel B presents the results for the case of the \tr{} information set. The annualized cumulative returns for each of the active strategies (\textit{TP} and \textit{EPS}) are, respectively, \Sexpr{bl.results['TP',1,1,sel.s]}\% and \Sexpr{bl.results['EPS',1,1,sel.s]}\%. All the strategies outperform the passive benchmark (\Sexpr{bl.results['Market',1,1,sel.s]}\%). The results show, as expected, that  we would better off if we knew in advance who the top analysts in terms of TP accuracy would be. In any case, the results suggest that the advice of analysts, as a group, is valuable. 
 %Yet, the top analyst  
 
 %The result confirms that these strategies set an upper bound for the cumulative return yield. It follows, that we setup a boundary for the results of the feasible strategies: the upper bound is the perfect foresight strategy and the lower bound is the market benchmark.
 
-The \textit{TP} ranking strategy dominates also when we look at the risk-adjusted returns. The Sharpe Ratio is \Sexpr{ bl.results['TP',1,'ann.sr',sel.s]} against \Sexpr{ bl.results['EPS',1,'ann.sr',sel.s]} and \Sexpr{ bl.results['Market',1,'ann.sr',sel.s]}, respectively for the \textit{EPS}and the \textit{Market} strategies. In addition, the \textit{TP} strategy dominates  the others if we consider the smaller trading periods (5 years). Table \ref{tab:substrategy} shows the Sharpe Ratio for six 5-year holding periods. The \textit{TP} strategy wins over the others in every period as expected.
+The \textit{TP} ranking strategy dominates also when we look at the risk-adjusted returns. The Sharpe Ratio is \Sexpr{ bl.results['TP',1,'ann.sr',sel.s]} against \Sexpr{ bl.results['EPS',1,'ann.sr',sel.s]} and \Sexpr{ bl.results['Market',1,'ann.sr',sel.s]}, respectively, for the \textit{EPS} and the \textit{Market} strategies. In addition, the \textit{TP} strategy dominates  the others if we consider the smaller trading periods (5 years). Table \ref{tab:substrategy} shows the Sharpe Ratio for six 5-year holding periods. The \textit{TP} strategy wins over the others in every period as expected.
 
 While this is an hypothetical setting, given that it is not possible to know in advance which analyst will rank first, it suggests that if we can predict the rankings with some accuracy this will be a useful investment trading tool. One of the possibilities is using methods developed in the Machine Learning literature (e.g., \cite{aiguzhinov2010,brazdil2003}), where this type of problem (referred as a label ranking problem) has been broadly studied. For example, \cite{aiguzhinov2010} propose a label ranking algorithm using Bayesian approach to predict the rankings.
 
 
 
 \subsection{Feasible strategies}
-Panel C of table (\ref{tab:strategy}) shows the performance of the different smart strategies in the \naive{} information set. As it was the  case of the \tr{} information set, all the active strategies outperform the \textit{Market} (\Sexpr{bl.results['Market',2,1,sel.s]}\%)  and show positive cumulative annualized returns of \Sexpr{bl.results['TP',2,1,sel.s]}\%,  \Sexpr{bl.results['CONS',2,1,sel.s]}\%, \Sexpr{bl.results['EPS',2,1,sel.s]}\% respectively for the \textit{TP}, the \textit{CONS}, and the \textit{EPS} strategies. Similarly, the \textit{TP} strategy dominates when we consider the risk-adjusted returns. The Sharpe Ratio for this strategy is \Sexpr{ bl.results['TP',2,'ann.sr',sel.s]} which is higher than that Sharpe Ratios of the \textit{CONS} and  the \textit{EPS} strategies  (\Sexpr{ bl.results['CONS',2,'ann.sr',sel.s]} and \Sexpr{bl.results['EPS',2,'ann.sr',sel.s]} respectively). The results in panel B of table \ref{tab:substrategy} show as well that this strategy outperform the others for all of 5 trading sub-periods. 
+Panel C of table (\ref{tab:strategy}) shows the performance of the different smart strategies in the \naive{} information set. The \textit{TP} and \textit{CONS} active strategies outperform the \textit{Market} (\Sexpr{bl.results['Market',2,1,sel.s]}\%)  and show positive cumulative annualized returns of \Sexpr{bl.results['TP',2,1,sel.s]}\% and  \Sexpr{bl.results['CONS',2,1,sel.s]}\% respectively. The active strategy based on EPS forecasts, demonstrated negative annualized cumulative return of \Sexpr{bl.results['EPS',2,1,sel.s]}\%. 
 
-Panel D of table \ref{tab:strategy} confirm the outperformance of the \textit{TP} smart strategy: this is the the only active strategy that yields positive annualized cumulative return (\Sexpr{bl.results['TP',3,1,sel.s]}\%) whereas both  the \textit{CONS} and the \textit{EPS} show negative returns (\Sexpr{bl.results['CONS',3,1,sel.s]}\% and \Sexpr{bl.results['EPS',3,1,sel.s]}\% respectively). The panel C of table \ref{tab:substrategy} shows that the Sharpe Ratio of the \textit{TP} strategy is lower then that of the \textit{EPS} strategy in only first two sub-periods (2000Q1/2004Q4 and 2001Q1/2005Q4).
+%Moreover, comparing the smart estimate and the consensus based strategy, observe that the former outperforms the latter confirming that rankings can identify the best analsyts
+
+The \textit{TP} strategy also dominates when we consider the risk-adjusted returns. The Sharpe Ratio for this strategy is \Sexpr{ bl.results['TP',2,'ann.sr',sel.s]} which is higher than that Sharpe Ratios of the \textit{CONS} and  the \textit{EPS} strategies  (\Sexpr{ bl.results['CONS',2,'ann.sr',sel.s]} and \Sexpr{bl.results['EPS',2,'ann.sr',sel.s]} respectively). The results in panel B of table \ref{tab:substrategy} show as well that this strategy outperform the others for all of 5 trading sub-periods. 
+
+Panel D of table \ref{tab:strategy} further confirms the outperformance of the \textit{TP} smart strategy: under the \default{} information set it yields the highest annualized cumulative return  of \Sexpr{bl.results['TP',3,1,sel.s]}\% comparing to the \textit{CONS} and the \textit{EPS} strategies (\Sexpr{bl.results['CONS',3,1,sel.s]}\% and \Sexpr{bl.results['EPS',3,1,sel.s]}\% respectively). The panel C of table \ref{tab:substrategy} shows that \textit{TP} strategy is also dominant in every sub-periods. 
+
 
 
 Figure \ref{fig:bl-results} shows the graphical representation of the cumulative portfolio wealth for  the passive and smart strategies in all the information sets. The $y$-axis is the monetary value of wealth and $x$-axis is the time starting at \Sexpr{ months(as.Date(final.bl[,head(Quarters,1)]))} of \Sexpr{start.year } and ending at \Sexpr{ months(as.Date(final.bl[,tail(Quarters,1)])+91)} of \Sexpr{end.year}. Figures show that strategies under the \tr{} panel outperform the \emph{Market} and that final value  of the portfolio of the TP strategy considerably outruns the other alternative strategies.
 
 
-In sum the results of  feasible information sets outlined above suggest that  it is worth to follow the top analysts and are supportive of \cite{desai2000ass} in that rankings are useful for investors.
-
-
-
-%The results of trading strategies suggest that the dominant trading strategy is \textit{TP} strategy which is based on the accuracy of analsyts' TP reports. Thus, an investor is better off when following the analysts who issue more accurate target price; hence, rankings are usefull for the investors.
-
-%do identify the best analysts and this findings supports the argument of \cite{desai2000ass}. In addition, the results show that keeping all available information about analysts' performance does not create any value. As we see, the \default{} strategy is the worse in term of the annualized cumulative returns. 
-
-Finally, the results suggest that, from an investor's point of view, following analysts who are accurate in setting price targets is more valuable than following those that good at forecasting EPS.  This result contradicts the findings of \cite{bradshaw2004} and supports the argument of \cite{simon2011} that the stock recommendations of the most accurate analysts are not based upon the simple valuation models.
+In sum the results of  feasible information sets outlined above suggest that  it is worth to follow the top analysts and are supportive of \cite{desai2000ass} in that rankings are useful for investors. Moreover, the results also show  that when consider the all history of  analyst' performance, investors gain the best outcomes for all active  strategies.    Finally, the results suggest that, from an investor's point of view, following analysts who are accurate in setting price targets is more valuable than following those that good at forecasting EPS.  This result contradicts the findings of \cite{bradshaw2004} and supports the argument of \cite{simon2011} that the stock recommendations of the most accurate analysts are not based upon the simple valuation models.
 
 \section{Conclusions}
 \label{sec:conclusion}
 
 Some institutions, such as StarMine, rank financial analysts based on EPS and target price accuracy. These rankings are published and are relevant: stocks favored by top-ranked analysts will probably receive more attention from investors. Therefore, there is a growing interest in understanding the relative performance of strategies based upon analysts forecasts.
 
-By applying the Black-Litterman model, we developed simulations of trading strategies using  different information sets. The perfect foresight scenario (using the information know at time $t$) sets the upper bound of the trading strategies in terms of the maximum yield any such strategies could achieve. If only the information known at time $t-1$ is used, investors would be better off following the strategy that weights more heavily the estimates given by the most accurate TP forecast analysts.
+By applying the Black-Litterman model, we developed simulations of trading strategies using  different information sets. The perfect foresight scenario (using the information know at time $t$) sets the upper bound of the trading strategies in terms of the maximum yield any such strategies could achieve. If only the information known at time $t-1$ is used, investors would be better off following the strategy that weights more heavily the estimates given by the most accurate TP forecast analysts. This also holds if the all history of analyst's performance is considered. 
+
 
 %We report that under the \tr{} information (the information known at time $t$) about stock's expected return we get the upper bound of the trading strategies, . The \naive{} information (the information known at time $t-1$) create more value from the following the top-ranked analysts who set accurate stock price targets. %The \default{} information (the information known from the beginning up to $t-1$), because of its outdated nature, fails to show any positive outcomes and the passive strategy is the only choice for this information set.
 

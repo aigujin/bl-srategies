@@ -96,8 +96,8 @@
 %-------------------------------------------------------------------------
 % take the % away on next line to produce the final camera-ready version
 % Be sure to remove \thispagestyle{fancy} as well after the \maketitle.
-%\pagestyle{empty}
-\pagestyle{fancy}
+\pagestyle{empty}
+%\pagestyle{fancy}
  
 \newcommand\myTime{\now}
 \fancyhead{}
@@ -115,18 +115,18 @@
 
 
 \title{Are rankings of financial analysts useful to investors?}
- \author[1,2]{ Artur Aiguzhinov (\href{mailto:artur.aiguzhinov@inescporto.pt}{artur.aiguzhinov@inescporto.pt})}
- \author[1]{ Ana Paula Serra (\href{mailto:aserra@fep.up.pt}{aserra@fep.up.pt})}
- \author[2,4]{Carlos Soares (\href{mailto:csoares@fe.up.pt}{csoares@fe.up.pt})}
-
-\affil[1]{FEP \& CEF.UP, University of Porto}
-\affil[2]{INESC TEC}
-\affil[4]{FEUP, University of Porto}
+%  \author[1,2]{ Artur Aiguzhinov (\href{mailto:artur.aiguzhinov@inescporto.pt}{artur.aiguzhinov@inescporto.pt})}
+%  \author[1]{ Ana Paula Serra (\href{mailto:aserra@fep.up.pt}{aserra@fep.up.pt})}
+%  \author[2,4]{Carlos Soares (\href{mailto:csoares@fe.up.pt}{csoares@fe.up.pt})}
+% 
+% \affil[1]{FEP \& CEF.UP, University of Porto}
+% \affil[2]{INESC TEC}
+% \affil[4]{FEUP, University of Porto}
 
 
 \maketitle
 % You need this here, or else the first page won't have a header.
-\thispagestyle{fancy}
+%\thispagestyle{fancy}
 
 \begin{abstract}
 Several institutions issue rankings based on the accuracy of price and EPS forecasts. Given that these rankings are \textit{ex-post} they may not be able useful to investors. In this paper  we show that trading strategies based on perfect foresight and past rankings outperform a passive strategy.  In addition, we report that investors are better off following analysts that issue  accurate price targets rather that those with accurate EPS forecasts. 
@@ -223,7 +223,7 @@ Q_{cons,i}= \median \left\{r_{j,i}\right\}
 %\frac{1}{N} \sum_{j=1}^{N} r_{j,i}
 \end{equation}
 %$N$ is the number of analysts with a valid TP report and
-where $r_{j,i}=TP_{j,i}/P_{i}-1$  is analyst's $j$ expected return computed using the analyst price target $TP_{j,i}$ and stock price $P_{i}$\footnote{Consistent with the literature, we use stock price 3 days \emph{ex-ante} the TP announcement. This is done to avoid any information leakage around new TP announcement day \citep{bonini2010}}. 
+where $r_{j,i}=TP_{j,i}/P_{i}-1$  is the last known analyst's $j$ expected return computed using the analyst price target $TP_{j,i}$ and stock price $P_{i}$\footnote{Consistent with the literature, we use stock price 3 days \emph{ex-ante} the TP announcement. This is done to avoid any information leakage around new TP announcement day \citep{bonini2010}}. 
 
 For the strategies that weight the analysts' estimates of expected return the weight of each analyst $j$ is based on his/her rank such that the top analyst has the weight of 1 and then the weights diminish as the rank increases.
 
@@ -306,21 +306,21 @@ Formalizing information sets considered are:
 \item  the \tr{} set%-- a perfect foresight information:
 \begin{equation}
 \label{q:true}
-\widehat{Q_{.,t}}=Q_{.,t}
+\widehat{Q_{rank,i,t}}=Q_{rank,i,t}
 \end{equation}
-
+% 
 \item  the \naive{} set % -- $t-$ information:
 \begin{equation}
 \label{q:naive}
-\widehat{Q_{.,t}}=Q_{.,t-1}
+\widehat{Q_{rank,i,t}}=Q_{rank,i,t-1}
 \end{equation}
-
+% 
 \item  the \default{}  set%-- the entire history of analysts performance:
 %\begin{itemize}
 %\item ranking based views:
 \begin{equation}
 \label{q:default}
-\widehat{Q_{.,t}} = \frac{1}{T} \sum_{t=1}^{T} Q_{.,t}
+\widehat{Q_{rank,i,t}} = \frac{1}{T-1} \sum_{t=1}^{T-1} Q_{rank,i,t}
 \end{equation}
 %\item consensus based views:
 %\begin{equation}
@@ -329,9 +329,7 @@ Formalizing information sets considered are:
 %\end{equation}
 %\end{itemize}
 \end{itemize}
-where the $.$ subscript corresponds to either $Q_{cons,i}$ (eq. \ref{consq}) or $Q_{rank,i}$ (eq. \ref{rankq}), i.e. this is consensus or smart estimate.
-
-
+where  $Q_{rank,i,.}$ is the smart estimate for stock $i$ (eq. \ref{rankq}). For the case of consensus based expected returns ($Q_{cons,i}$), the \tr{} information set is not applicable as analysts have equal weights.
 
 
 \section{Data and preliminary results}
@@ -345,7 +343,9 @@ Over the sample period, the total number of brokers\footnote{We use words ``anal
 
 Consistent with other studies on analysts' expected returns that work with price targets  \citep{bradshaw2002,brav2003,da2011}, we truncate the sample of $TP/P-1$ at the 5\textsuperscript{th} percentile (values below \ensuremath{-0.114}) and at the 95\textsuperscript{th} percentile (values above 0.791). This is done due to occurrence of the extreme values. Most of these extreme values are driven by misalignment errors found on I/B/E/S data\footnote{We found some differences between the  DataStream and I/B/E/S the databases. In some cases the stock-splits and the dividends were not properly adjusted.}. After trimming, the number of observations ($\mathrm{Stock} \times \mathrm{Broker} \times  \mathrm{Quarter}$) is reduced  from 145 630 to 131 068.
 
-The initial file of quarterly EPS forecast consists of  560 brokers covering 3517 stocks. To implement the EPS ranking, we require that a stock had at least three brokers per quarter. In addition, we require that a broker has to be active in covering a particular stock for at least 3 years (12 quarters). Our final sample of EPS forecasts consist of  155 brokers covering 402 stocks. The total number of observation is 79 539.
+The initial file of quarterly EPS forecast consists of  560 brokers covering 3517 stocks. To implement the EPS ranking, we require that a stock had at least three brokers per quarter. In addition, we require that a broker has to be active in covering a particular stock for at least 3 years (12 quarters). Our sample of EPS forecasts consist of  155 brokers covering 402 stocks. Finally, we consider stocks that have both EPS and TP forecasts in a given quarter. The total number of stocks in our sample, thus, is 378 stocks.
+
+%The total number of observation is prettyNum(complete.dt[,.N],big.mar=' ').  
  
 
 Table (\ref{tab:ret-stat}) shows the distribution of the final sample of target price and EPS data. Panel A shows the number of quarterly target prices per stock. For the sample period (1999-2009), we report 13 672 stock-quarter observations. Each stock had on average of 6.421 quarterly target price reports. Panel B  presents similar statistics of the number of EPS forecasts. In total, the EPS forecast sample has 12 084 stock-quarter observations. The average number of quarterly forecasts is 6.582.
@@ -392,7 +392,7 @@ These results are consistent with the recent findings of \cite{hilary2013} on an
 
 \subsection{Views: descriptive statistics}
 
-Tables \ref{tab:view-stat} present the descriptive statistics of the analysts' expected returns conditional on the different information sets. 
+Table \ref{tab:view-stat} present the descriptive statistics of the analysts' expected returns conditional on the different information sets. 
 %Panel A shows the expected returns based on the analysts consensus and Panel B and C are based on the smart estimates (TP and EPS).
 
 
@@ -401,7 +401,7 @@ The expected returns  are computed comparing TP estimates with actual prices. To
 \cite{bradshaw2002} reports analyst average expected returns for the period of 2000--2009 and 206 brokers of 24\%. \cite{da2011} report an average expected return of 40\% for the period of 1996--2004. \cite{zhou2013} finds an average expected return of 96\% for the sample period of 2000--2009. These figures suggest that analysts are overly optimistic.
 %these values from the historical perspective, i.e., how the values of expected stock returns go inline with historical stock returns. \cite{bodie2009} show that arithimatic average rate of return for the U.S. large stocks (S\&P 500) for the period of 1926--2005 is 10.17\% and the average rate of excess return is 8.39\% with the risk premium estimated 6--8\%. While it is not the best idea to extrapolate the historical values, still, we can say that the expected stocks return should be around 14--16\%. Clearly, the values presented in the literature shows that analysts are very optimistic in issuing target price reports.
 
-Panel A show the statistics for the consensus expectations as defined in eq. (\ref{consq}). The average consensus among the analysts on stock expected returns in the  \tr{}, \naive{} and \default{} information sets are, respectively, NA\%, 18.993\%, and 18.993\% respectively. Panel B of the table shows the TP accuracy weighted average expected returns (15.191\%, 16.098\%, and 12.718\%). Panel C shows the EPS based weighted expected returns averages (14.774\%, 14.967\%, and 12.928\%). 
+Panel A show the statistics for the consensus expectations as defined in eq. (\ref{consq}). The average consensus among the analysts on stock expected returns in the  \naive{} and \default{} information sets are, respectively, 18.993\%, and 18.993\% respectively. Panel B of the table shows the TP accuracy weighted average expected returns (15.191\%, 16.098\%, and 12.718\%). Panel C shows the EPS based weighted expected returns averages (14.774\%, 14.967\%, and 12.928\%). 
 
 Overall compared to the consensus the ranked weighted expected returns (smart estimates) are less optimistic. The \default{} information set shows higher values of expected returns.
 
@@ -423,42 +423,40 @@ The passive strategy generates an annualized cumulative return of \ensuremath{-3
 
 \subsection{Perfect foresight strategy}
 \label{sec:perfect}
-Panel B presents the results for the case of the \tr{} information set. The annualized cumulative returns for each of the active strategies (\textit{CONS}, \textit{TP}, and \textit{EPS}) are, respectively, NA\%, 4.512\%, 0.718\%. All the strategies outperform the passive benchmark (\ensuremath{-3.032}\%). The results show, as expected, that  we would better off if we knew in advance who the top analysts in terms of TP accuracy would be. In any case, the results suggest that the advice of analysts, as a group, is valuable. 
+Panel B presents the results for the case of the \tr{} information set. The annualized cumulative returns for each of the active strategies (\textit{TP} and \textit{EPS}) are, respectively, 4.512\% and 0.718\%. All the strategies outperform the passive benchmark (\ensuremath{-3.032}\%). The results show, as expected, that  we would better off if we knew in advance who the top analysts in terms of TP accuracy would be. In any case, the results suggest that the advice of analysts, as a group, is valuable. 
 %Yet, the top analyst  
 
 %The result confirms that these strategies set an upper bound for the cumulative return yield. It follows, that we setup a boundary for the results of the feasible strategies: the upper bound is the perfect foresight strategy and the lower bound is the market benchmark.
 
-The \textit{TP} ranking strategy dominates also when we look at the risk-adjusted returns. The Sharpe Ratio is 0.305 against NA, 0.046, and \ensuremath{-0.182}, respectively for the \textit{CONS}, the \textit{EPS}, and the \textit{Market} strategies. In addition, the \textit{TP} strategy dominates  the others if we consider the smaller trading periods (5 years). Table \ref{tab:substrategy} shows the Sharpe Ratio for six 5-year holding periods. The \textit{TP} strategy wins over the others in every period as expected.
+The \textit{TP} ranking strategy dominates also when we look at the risk-adjusted returns. The Sharpe Ratio is 0.305 against 0.046 and \ensuremath{-0.182}, respectively, for the \textit{EPS} and the \textit{Market} strategies. In addition, the \textit{TP} strategy dominates  the others if we consider the smaller trading periods (5 years). Table \ref{tab:substrategy} shows the Sharpe Ratio for six 5-year holding periods. The \textit{TP} strategy wins over the others in every period as expected.
 
 While this is an hypothetical setting, given that it is not possible to know in advance which analyst will rank first, it suggests that if we can predict the rankings with some accuracy this will be a useful investment trading tool. One of the possibilities is using methods developed in the Machine Learning literature (e.g., \cite{aiguzhinov2010,brazdil2003}), where this type of problem (referred as a label ranking problem) has been broadly studied. For example, \cite{aiguzhinov2010} propose a label ranking algorithm using Bayesian approach to predict the rankings.
 
 
 
 \subsection{Feasible strategies}
-Panel C of table (\ref{tab:strategy}) shows the performance of the different smart strategies in the \naive{} information set. As it was the  case of the \tr{} information set, all the active strategies outperform the \textit{Market} (\ensuremath{-3.032}\%)  and show positive cumulative annualized returns of 0.622\%,  0.449\%, \ensuremath{-0.361}\% respectively for the \textit{TP}, the \textit{CONS}, and the \textit{EPS} strategies. Similarly, the \textit{TP} strategy dominates when we consider the risk-adjusted returns. The Sharpe Ratio for this strategy is 0.04 which is higher than that Sharpe Ratios of the \textit{CONS} and  the \textit{EPS} strategies  (0.028 and \ensuremath{-0.022} respectively). The results in panel B of table \ref{tab:substrategy} show as well that this strategy outperform the others for all of 5 trading sub-periods. 
+Panel C of table (\ref{tab:strategy}) shows the performance of the different smart strategies in the \naive{} information set. The \textit{TP} and \textit{CONS} active strategies outperform the \textit{Market} (\ensuremath{-3.032}\%)  and show positive cumulative annualized returns of 0.622\% and  0.449\% respectively. The active strategy based on EPS forecasts, demonstrated negative annualized cumulative return of \ensuremath{-0.361}\%. 
 
-Panel D of table \ref{tab:strategy} confirm the outperformance of the \textit{TP} smart strategy: this is the the only active strategy that yields positive annualized cumulative return (1.043\%) whereas both  the \textit{CONS} and the \textit{EPS} show negative returns (0.702\% and 0.711\% respectively). The panel C of table \ref{tab:substrategy} shows that the Sharpe Ratio of the \textit{TP} strategy is lower then that of the \textit{EPS} strategy in only first two sub-periods (2000Q1/2004Q4 and 2001Q1/2005Q4).
+%Moreover, comparing the smart estimate and the consensus based strategy, observe that the former outperforms the latter confirming that rankings can identify the best analsyts
+
+The \textit{TP} strategy also dominates when we consider the risk-adjusted returns. The Sharpe Ratio for this strategy is 0.04 which is higher than that Sharpe Ratios of the \textit{CONS} and  the \textit{EPS} strategies  (0.028 and \ensuremath{-0.022} respectively). The results in panel B of table \ref{tab:substrategy} show as well that this strategy outperform the others for all of 5 trading sub-periods. 
+
+Panel D of table \ref{tab:strategy} further confirms the outperformance of the \textit{TP} smart strategy: under the \default{} information set it yields the highest annualized cumulative return  of 1.043\% comparing to the \textit{CONS} and the \textit{EPS} strategies (0.702\% and 0.711\% respectively). The panel C of table \ref{tab:substrategy} shows that \textit{TP} strategy is also dominant in every sub-periods. 
+
 
 
 Figure \ref{fig:bl-results} shows the graphical representation of the cumulative portfolio wealth for  the passive and smart strategies in all the information sets. The $y$-axis is the monetary value of wealth and $x$-axis is the time starting at January of 2000 and ending at December of 2009. Figures show that strategies under the \tr{} panel outperform the \emph{Market} and that final value  of the portfolio of the TP strategy considerably outruns the other alternative strategies.
 
 
-In sum the results of  feasible information sets outlined above suggest that  it is worth to follow the top analysts and are supportive of \cite{desai2000ass} in that rankings are useful for investors.
-
-
-
-%The results of trading strategies suggest that the dominant trading strategy is \textit{TP} strategy which is based on the accuracy of analsyts' TP reports. Thus, an investor is better off when following the analysts who issue more accurate target price; hence, rankings are usefull for the investors.
-
-%do identify the best analysts and this findings supports the argument of \cite{desai2000ass}. In addition, the results show that keeping all available information about analysts' performance does not create any value. As we see, the \default{} strategy is the worse in term of the annualized cumulative returns. 
-
-Finally, the results suggest that, from an investor's point of view, following analysts who are accurate in setting price targets is more valuable than following those that good at forecasting EPS.  This result contradicts the findings of \cite{bradshaw2004} and supports the argument of \cite{simon2011} that the stock recommendations of the most accurate analysts are not based upon the simple valuation models.
+In sum the results of  feasible information sets outlined above suggest that  it is worth to follow the top analysts and are supportive of \cite{desai2000ass} in that rankings are useful for investors. Moreover, the results also show  that when consider the all history of  analyst' performance, investors gain the best outcomes for all active  strategies.    Finally, the results suggest that, from an investor's point of view, following analysts who are accurate in setting price targets is more valuable than following those that good at forecasting EPS.  This result contradicts the findings of \cite{bradshaw2004} and supports the argument of \cite{simon2011} that the stock recommendations of the most accurate analysts are not based upon the simple valuation models.
 
 \section{Conclusions}
 \label{sec:conclusion}
 
 Some institutions, such as StarMine, rank financial analysts based on EPS and target price accuracy. These rankings are published and are relevant: stocks favored by top-ranked analysts will probably receive more attention from investors. Therefore, there is a growing interest in understanding the relative performance of strategies based upon analysts forecasts.
 
-By applying the Black-Litterman model, we developed simulations of trading strategies using  different information sets. The perfect foresight scenario (using the information know at time $t$) sets the upper bound of the trading strategies in terms of the maximum yield any such strategies could achieve. If only the information known at time $t-1$ is used, investors would be better off following the strategy that weights more heavily the estimates given by the most accurate TP forecast analysts.
+By applying the Black-Litterman model, we developed simulations of trading strategies using  different information sets. The perfect foresight scenario (using the information know at time $t$) sets the upper bound of the trading strategies in terms of the maximum yield any such strategies could achieve. If only the information known at time $t-1$ is used, investors would be better off following the strategy that weights more heavily the estimates given by the most accurate TP forecast analysts. This also holds if the all history of analyst's performance is considered. 
+
 
 %We report that under the \tr{} information (the information known at time $t$) about stock's expected return we get the upper bound of the trading strategies, . The \naive{} information (the information known at time $t-1$) create more value from the following the top-ranked analysts who set accurate stock price targets. %The \default{} information (the information known from the beginning up to $t-1$), because of its outdated nature, fails to show any positive outcomes and the passive strategy is the only choice for this information set.
 
