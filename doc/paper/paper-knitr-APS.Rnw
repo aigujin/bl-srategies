@@ -47,8 +47,8 @@
 %-------------------------------------------------------------------------
 % take the % away on next line to produce the final camera-ready version
 % Be sure to remove \thispagestyle{fancy} as well after the \maketitle.
-\pagestyle{empty}
-%\pagestyle{fancy}
+%\pagestyle{empty}
+\pagestyle{fancy}
  
 \newcommand\myTime{\now}
 \fancyhead{}
@@ -163,7 +163,7 @@ periods <- rbind(final.bl[,data.table(rollapplyr(port.ret,20,roll.ret.f,by=4,par
 
 periods.array <- acast(melt(periods,id.vars = c('Views','Method','period','strat','type')),period~Views~Method~strat~variable~type,value.var = 'value')
 
-sel.s <- 'same'
+sel.s <- 'all'
 
 test.a[,'true','CONS',,] <- NA
 bl.results['CONS','true',,] <- NA
@@ -174,18 +174,18 @@ end.year <- format(as.Date(final.bl[,tail(Quarters,1)]),'%Y')
 @
 
 \title{Are rankings of financial analysts useful to investors?}
-%  \author[1,2]{ Artur Aiguzhinov (\href{mailto:artur.aiguzhinov@inescporto.pt}{artur.aiguzhinov@inescporto.pt})}
-%  \author[1]{ Ana Paula Serra (\href{mailto:aserra@fep.up.pt}{aserra@fep.up.pt})}
-%  \author[2,4]{Carlos Soares (\href{mailto:csoares@fe.up.pt}{csoares@fe.up.pt})}
-% 
-% \affil[1]{FEP \& CEF.UP, University of Porto}
-% \affil[2]{INESC TEC}
-% \affil[4]{FEUP, University of Porto}
+ \author[1,2]{ Artur Aiguzhinov (\href{mailto:artur.aiguzhinov@inescporto.pt}{artur.aiguzhinov@inescporto.pt})}
+ \author[1]{ Ana Paula Serra (\href{mailto:aserra@fep.up.pt}{aserra@fep.up.pt})}
+ \author[2,4]{Carlos Soares (\href{mailto:csoares@fe.up.pt}{csoares@fe.up.pt})}
+
+\affil[1]{FEP \& CEF.UP, University of Porto}
+\affil[2]{INESC TEC}
+\affil[4]{FEUP, University of Porto}
 
 
 \maketitle
 % You need this here, or else the first page won't have a header.
-%\thispagestyle{fancy}
+\thispagestyle{fancy}
 
 \begin{abstract}
 Several institutions issue rankings based on the accuracy of price and EPS forecasts. Given that these rankings are \textit{ex-post} they may not be able useful to investors. In this paper  we show that trading strategies based on perfect foresight and past rankings outperform a passive strategy.  In addition, we report that investors are better off following analysts that issue  accurate price targets rather that those with accurate EPS forecasts. 
@@ -398,11 +398,13 @@ where  $Q_{rank,i,.}$ is the smart estimate for stock $i$ (eq. \ref{rankq}). For
 We focus on the  S\&P500 stocks. We extract the target price information and the EPS forecasts from ThomsonReuters  I/B/E/S detailed history database. The  S\&P500 constituents' list and the stock daily prices are from ThomsonReuters DataStream.
 
 
-Over the sample period, the total number of brokers\footnote{We use words ``analyst" and ``broker" interchangeably.} in TP dataset is \Sexpr{q.data[!is.na(b.view),.N,by=Broker][,.N]}, covering \Sexpr{q.data[!is.na(b.view),.N,by=Stock][,.N]} S\&P500 stocks. Given the fact that financial analysts commonly issue TP with the one year horizon \footnote{According to Wharton Research Data Services (WRDS), 92.33\% of all price targets reported in I/B/E/S have a 12-month horizon \citep{glushkov2009}.}, we assume that analysts keep their TP forecasts valid for one calendar year unless it is revised. After one year we assume that TP recommendation expires.
+Over the sample period, the total number of brokers\footnote{We use words ``analyst" and ``broker" interchangeably.} in TP dataset is \Sexpr{q.data[!is.na(b.view),.N,by=Broker][,.N]}, covering \Sexpr{pt.rank.views[,.N,by=.(type,Stock)][type==sel.s,.N,by=type][,N]} S\&P500 stocks. Given the fact that financial analysts commonly issue TP with the one year horizon \footnote{According to Wharton Research Data Services (WRDS), 92.33\% of all price targets reported in I/B/E/S have a 12-month horizon \citep{glushkov2009}.}, we assume that analysts keep their TP forecasts valid for one calendar year unless it is revised. After one year we assume that TP recommendation expires.
 
-Consistent with other studies on analysts' expected returns that work with price targets  \citep{bradshaw2002,brav2003,da2011}, we truncate the sample of $TP/P-1$ at the \Sexpr{ trunk.percent *100}\textsuperscript{th} percentile (values below \Sexpr{q.data[,min(trunk.view,na.rm=T)]}) and at the \Sexpr{(1-trunk.percent)*100}\textsuperscript{th} percentile (values above \Sexpr{ q.data[,max(trunk.view,na.rm=T)]}). This is done due to occurrence of the extreme values. Most of these extreme values are driven by misalignment errors found on I/B/E/S data\footnote{We found some differences between the  DataStream and I/B/E/S the databases. In some cases the stock-splits and the dividends were not properly adjusted.}. After trimming, the number of observations ($\mathrm{Stock} \times \mathrm{Broker} \times  \mathrm{Quarter}$) is reduced  from \Sexpr{ prettyNum(q.data[,.N], big.mark=' ')} to \Sexpr{ prettyNum(q.data[!is.na(trunk.view),.N],big.mark=' ')}.
+Consistent with other studies on analysts' expected returns that work with price targets  \citep{bradshaw2002,brav2003,da2011}, we truncate the sample of $TP/P-1$ at the \Sexpr{ trunk.percent *100}\textsuperscript{th} percentile (values below \Sexpr{q.data[,min(trunk.view,na.rm=T)]}) and at the \Sexpr{(1-trunk.percent)*100}\textsuperscript{th} percentile (values above \Sexpr{ q.data[,max(trunk.view,na.rm=T)]}). This is done due to occurrence of the extreme values. Most of these extreme values are driven by misalignment errors found on I/B/E/S data\footnote{We found some differences between the  DataStream and I/B/E/S the databases. In some cases the stock-splits and the dividends were not properly adjusted.}. We also require that a stock had at least three brokers per quarter. In addition, we require that a broker has to be active in covering a particular stock for at least 3 years (12 quarters). After all necessary data requirements, the number of observations ($\mathrm{Stock} \times \mathrm{Broker} \times  \mathrm{Quarter}$) is reduced  from \Sexpr{ prettyNum(q.data[,.N], big.mark=' ')} to \Sexpr{ prettyNum(pt.rank.views[,.N],big.mark=' ')}.
 
-The initial file of quarterly EPS forecast consists of  \Sexpr{eps.dt[,.N,by=.(Broker)][,.N]} brokers covering \Sexpr{eps.dt[,.N,by=Stock][,.N]} stocks. To implement the EPS ranking, we require that a stock had at least three brokers per quarter. In addition, we require that a broker has to be active in covering a particular stock for at least 3 years (12 quarters). Our sample of EPS forecasts consist of  \Sexpr{complete.dt[,.N,by=Broker][,.N]} brokers covering \Sexpr{complete.dt[,.N,by=Stock][,.N]} stocks. Finally, we consider stocks that have both EPS and TP forecasts in a given quarter. The total number of stocks in our sample, thus, is \Sexpr{pt.rank.views[,.N,by=.(type,Stock)][type==sel.s,.N,by=type][,N]} stocks.
+The initial file of quarterly EPS forecast consists of  \Sexpr{eps.dt[,.N,by=.(Broker)][,.N]} brokers covering \Sexpr{eps.dt[,.N,by=Stock][,.N]} stocks. We apply the same data requirements as in case of TP dataset (minimum 3 brokers per stock and 12 quarters of coverage). Our sample of EPS forecasts consist of  \Sexpr{complete.dt[,.N,by=Broker][,.N]} brokers covering \Sexpr{eps.rank.views[,.N,by=Stock][,.N]} stocks 
+
+Finally, we consider stocks that have both EPS and TP forecasts in a given quarter. 
 
 %The total number of observation is \Sexpr{prettyNum(complete.dt[,.N],big.mar=' ')}.  
  

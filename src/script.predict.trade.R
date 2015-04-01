@@ -27,5 +27,15 @@ setwd('~/Dropbox/workspace/Projects/BL-strategies/')
 ggplot(unique(final.bl[Views!='Market'&type=='same'],by=c('Quarters','n.views','Method','Views')),aes(x=as.Date(Quarters),y=n.views,group=Method,color=Method))+geom_point()+geom_line()+facet_grid(Views~.,scale='free_x')+theme_bw()
 
 
+# 
+# con <- file("E: \\sales.txt", "r")
+# result=read.table(con,nrows=100000,sep="\t",header=TRUE)
+# result<-aggregate(result[,4],list(result[,2]),sum)
+# while(nrow(databatch<-read.table(con,header=FALSE,nrows=100000,sep="\t",col.names=c("ORDERID","Group.1","SELLERID","x","ORDERDATE")))!=0) {
+#         databatch<-databatch[,c(2,4)]
+#         result<-rbind(result,databatch)
+#         result<-aggregate(result[,2],list(result[,1]),sum)
+# }
+# close(con)
 
 
