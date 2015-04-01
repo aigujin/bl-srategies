@@ -81,6 +81,7 @@ library(xtable)
 library(abind)
 library(PerformanceAnalytics)
 load('cache/q.data.RData')
+load('cache/core.dt.RData')
 load('cache/final.bl.RData')
 load('cache/market.set.RData')
 load('cache/example.dt.RData')
@@ -100,8 +101,9 @@ q.data <- q.data[,trunk.view:=truncate.f(b.view,trunk.percent)]
 ### General stat of TP/P-1
 #stats.tper <- setnames(rbind(q.data[!is.na(trunk.view),mean(trunk.view,na.rm=T),by=list(year)],data.table(cbind(year='All',V1=q.data[!is.na(trunk.view),mean(trunk.view,na.rm=T)])))[,V1:=as.numeric(as.character(V1))],'V1','TP/P-1')
 
-core.dt <- na.omit(q.data)[,core.b:=.N>=12,by=list(Stock,Broker)][(core.b)][,rank:=rank(score),by=list(q.id,Stock)][,core.s:=.N>=3,by=list(q.id,Stock)][(core.s)]
+#core.dt <- na.omit(q.data)[,core.b:=.N>=12,by=list(Stock,Broker)][(core.b)][,rank:=rank(score),by=list(q.id,Stock)][,core.s:=.N>=3,by=list(q.id,Stock)][(core.s)]
 
+#core.dt <- core.dt[,year:=format(q.id,'%Y')]
 #pt.contin.dt <- unique(core.dt[,cont.rank:=.N>8,by=.(q.id,Stock)][(cont.rank)],by=c('q.id','Broker','Stock'))
 quarters <- data.table(q.id=core.dt[order(q.id)][,unique(q.id)])
 
@@ -126,7 +128,7 @@ complete.dt <- setnames(na.omit(setkey(complete.dt,Stock)[eps.stocks][,eps.pmafe
 
 eps.cont.tab <- abind(lapply(c(1,4),function(i) {cont.tab.f(ranked.eps.dt,i,n.b)}),along=4,new.names=list(NULL,NULL,NULL,c('t','t+4')))
 
-brok.full.stat.pt <- rbind(setkey(na.omit(core.dt)[,.N,by=.(Stock,q.id,year)][,list(min=min(N),mean=mean(N),median=as.character(median(N)),max=max(N),st.dev=sd(N)),by=year],year),setnames(cbind('Total',na.omit(core.dt)[,.N,by=.(Stock,q.id,year)][,list(min=min(N),mean=mean(N),median=as.character(median(N)),max=max(N),st.dev=sd(N))]),1,'year'))
+brok.full.stat.pt <- rbind(setkey(core.dt[,.N,by=.(Stock,q.id,year,type)][,list(min=min(N),mean=mean(N),median=as.character(median(N)),max=max(N),st.dev=sd(N)),by=.(year,type)],year),setnames(cbind('Total',(core.dt)[,.N,by=.(Stock,q.id,year,type)][,list(min=min(N),mean=mean(N),median=as.character(median(N)),max=max(N),st.dev=sd(N)),by=type]),1,'year'))
 
 #Views stat
 

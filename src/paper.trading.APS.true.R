@@ -1,19 +1,28 @@
 
+q.data <- na.omit(q.data)
 
-stocks.m <- sort(unique(unlist(lapply(market.list,function(m){m$stock.names}))))
+stocks.m <- setkey(data.table(Stock.m=sort(unique(unlist(lapply(market.list,function(m){m$stock.names}))))),Stock.m)
 
 load('~/Dropbox/workspace/Projects/EPS/cache/complete.dt.RData')
 
 quarters <- setnames(unique(market.set[,.(Quarters)]),'q.id')[,q.id:=as.yearqtr(q.id)]
 
-stocks <- sort(intersect(intersect(stocks.m,setkey(q.data,q.id)[quarters]$Stock),setkey(complete.dt,q.id)[quarters]$Stock))
+stocks <- setkey(data.table(Stock=sort(intersect(intersect(stocks.m$Stock.m,setkey(q.data,q.id)[quarters]$Stock),setkey(complete.dt,q.id)[quarters]$Stock))),Stock)
 
 
 
-core.dt.tmp <- setkey(q.data[,core.b:=.N>=12,by=list(Stock,Broker)][(core.b)][,true:=rank(score),by=list(q.id,Stock)][,core.s:=.N>=3,by=list(q.id,Stock)][(core.s)][,core.q:=length(unique(q.id))>=8,by=.(Stock)][(core.q)],Stock)
+core.dt.tmp <- setkey(setkey(q.data,Stock)[stocks,core.b:=.N>=12,by=list(Stock,Broker)][(core.b)][,true:=rank(score),by=list(q.id,Stock)][,core.s:=.N>=3,by=list(q.id,Stock)][(core.s)][,core.q:=length(unique(q.id))>=8,by=.(Stock)][(core.q)],Stock)
 
-core.dt <- rbind(core.dt.tmp[stocks][,type:='same'],core.dt.tmp[stocks.m][,type:='all'])
+load('cache/q.data.RData')
+q.data <- na.omit(q.data)
+core.dt.tmp.m <- setkey(setkey(q.data,Stock)[stocks.m,core.b:=.N>=12,by=list(Stock,Broker)][(core.b)][,true:=rank(score),by=list(q.id,Stock)][,core.s:=.N>=3,by=list(q.id,Stock)][(core.s)][,core.q:=length(unique(q.id))>=8,by=.(Stock)][(core.q)],Stock)
 
+
+core.dt <- rbind(core.dt.tmp[,type:='same'],core.dt.tmp.m[,type:='all'])[,year:=format(q.id,'%Y')]
+
+
+
+cache('core.dt')
 
 pt.exp.ret <- setkey(melt(core.dt[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock,type),.SDcols=c('q.id','Broker','Stock','b.view','type')][,.(q.id,Broker,Stock,b.view,type)][,true:=truncate.f(b.view,percentile),by=type][,naive:=c(NA,head(true,-1)),by=.(Broker,Stock,type)][,':='(true=naive,default=naive),by=.(Broker,Stock,type)],id.vars = c('q.id','Stock','Broker','type'),measure.vars = c('true','naive','default'),value.name = 'exp.ret',variable.name = 'Method'),q.id,Stock,Broker,Method,type)
 
