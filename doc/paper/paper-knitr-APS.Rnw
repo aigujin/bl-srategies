@@ -89,13 +89,22 @@ source('lib/aux.functions.R')
 #library(ProjectTemplate)
 #load.project()
 ###ADD NAs for the case of no ranking ( if NA, no raking)
-trunk.percent <- 0.05
-stocks <- unique(market.set[,Stock])
-#q.data[,quantile(b.view,c(trunk.percent,1-trunk.percent),na.rm=T)]
-q.data.full <- setkey(q.data[,':='(year=format(s.Date,'%Y'))],Stock)
+q.data.ex <- q.data
+q.data <- na.omit(q.data)
 
-q.data <- na.omit(q.data.full[stocks])
-q.data <- q.data[,trunk.view:=truncate.f(b.view,trunk.percent)]
+stocks.m <- setkey(data.table(Stock.m=sort(market.set[,unique(Stock)])),Stock.m)
+
+load('~/Dropbox/workspace/Projects/EPS/cache/complete.dt.RData')
+complete.dt.ex <- complete.dt
+quarters <- setnames(unique(market.set[,.(Quarters)]),'q.id')[,q.id:=as.yearqtr(q.id)]
+
+stocks <- setkey(data.table(Stock=sort(intersect(intersect(stocks.m$Stock.m,setkey(q.data,q.id)[quarters]$Stock),setkey(complete.dt,q.id)[quarters]$Stock))),Stock)
+dt.1 <- setkey(q.data,Stock)[stocks]
+dt.2 <- q.data[stocks.m]
+q.data <- rbind(dt.1[,type:='same'],dt.2[,type:='all'])
+
+trunk.percent <- 0.05
+q.data <- na.omit(q.data[,trunk.view:=truncate.f(b.view,trunk.percent),by=type][,year:=format(q.id,'%Y')])
 #stats.q.data <- summary.stat(q.data[!is.na(trunk.view),])
 
 ### General stat of TP/P-1
@@ -105,7 +114,6 @@ q.data <- q.data[,trunk.view:=truncate.f(b.view,trunk.percent)]
 
 #core.dt <- core.dt[,year:=format(q.id,'%Y')]
 #pt.contin.dt <- unique(core.dt[,cont.rank:=.N>8,by=.(q.id,Stock)][(cont.rank)],by=c('q.id','Broker','Stock'))
-quarters <- data.table(q.id=core.dt[order(q.id)][,unique(q.id)])
 
 load('cache/ranked.pt.dt.RData')
 n <- 3
@@ -120,15 +128,23 @@ load('cache/nr.views.RData')
 load('cache/pt.rank.views.RData')
 load('cache/eps.rank.views.RData')
 load('cache/ranked.eps.dt.RData')
-load('~/Dropbox/workspace/Projects/EPS/cache/complete.dt.RData')
 
-complete.dt <- setkey(complete.dt,fis.q)[quarters]
-eps.stocks <- intersect(complete.dt$Stock,unique(market.set[,Stock]))
-complete.dt <- setnames(na.omit(setkey(complete.dt,Stock)[eps.stocks][,eps.pmafe:=abs(Est-act.eps)/mean(abs(Est-act.eps))])[,q.id:=NULL],'fis.q','q.id')
+dt.3 <- setkey(complete.dt,Stock)[stocks]
+dt.4 <- complete.dt[stocks.m]
+complete.dt <- na.omit(setkey(rbind(dt.3[,type:='same'],dt.4[,type:='all']),q.id)[quarters])
+
+#complete.dt <- setkey(complete.dt,fis.q)[quarters]
+#eps.stocks <- intersect(complete.dt$Stock,unique(market.set[,Stock]))
+
+
+complete.dt <- setnames(complete.dt[,eps.pmafe:=abs(Est-act.eps)/mean(abs(Est-act.eps)),by=type],'fis.q','q.id')
 
 eps.cont.tab <- abind(lapply(c(1,4),function(i) {cont.tab.f(ranked.eps.dt,i,n.b)}),along=4,new.names=list(NULL,NULL,NULL,c('t','t+4')))
 
-brok.full.stat.pt <- rbind(setkey(core.dt[,.N,by=.(Stock,q.id,year,type)][,list(min=min(N),mean=mean(N),median=as.character(median(N)),max=max(N),st.dev=sd(N)),by=.(year,type)],year),setnames(cbind('Total',(core.dt)[,.N,by=.(Stock,q.id,year,type)][,list(min=min(N),mean=mean(N),median=as.character(median(N)),max=max(N),st.dev=sd(N)),by=type]),1,'year'))
+brok.full.stat.pt <- rbind(setkey(core.dt[,.N,by=.(Stock,q.id,year,type)][,list(min=min(N),mean=mean(N),median=as.numeric(median(N)),max=max(N),st.dev=sd(N)),by=.(year,type)],year),setnames(cbind('Total',(core.dt)[,.N,by=.(Stock,q.id,year,type)][,list(min=min(N),mean=mean(N),median=as.numeric(median(N)),max=max(N),st.dev=sd(N)),by=type]),1,'year'))
+
+brok.full.stat.eps <- rbind(setkey(complete.dt[,.N,by=.(Stock,q.id,year,type)][,list(min=min(N),mean=mean(N),median=as.numeric(median(N)),max=max(N),st.dev=sd(N)),by=.(year,type)],year),setnames(cbind('Total',complete.dt[,.N,by=.(Stock,q.id,year,type)][,list(min=min(N),mean=mean(N),median=as.numeric(median(N)),max=max(N),st.dev=sd(N)),by=type]),1,'year'))
+
 
 #Views stat
 
@@ -144,7 +160,6 @@ test <- melt(stat.full,id.vars = c('year','Method','Strategy','type'))
 test.a <- acast(test,year~Method~Strategy~variable~type,value.var = 'value')
 test.a[,'true','CONS',,] <- NA
 
-brok.full.stat.eps <- rbind(setkey(na.omit(complete.dt)[,.N,by=.(Stock,q.id,year)][,list(min=min(N),mean=mean(N),median=as.character(median(N)),max=max(N),st.dev=sd(N)),by=year],year),setnames(cbind('Total',na.omit(complete.dt)[,.N,by=.(Stock,q.id,year)][,list(min=min(N),mean=mean(N),median=as.character(median(N)),max=max(N),st.dev=sd(N))]),1,'year'))
 
 load('~/Dropbox/workspace/Projects/EPS/cache/eps.dt.RData')
 
@@ -168,6 +183,7 @@ periods.array[,'CONS','true',,,] <- NA
 
 start.year <- format(as.Date(final.bl[,head(Quarters,1)]),'%Y')
 end.year <- format(as.Date(final.bl[,tail(Quarters,1)]),'%Y')
+
 @
 
 \title{Are rankings of financial analysts useful to investors?}
@@ -536,31 +552,29 @@ For the future work we will developed new methods to forecast analysts rankings 
   \label{tab:ret-stat}
 \ This table shows the average number of target prices  (panel A) and EPS forecasts (panel B) per stock per quarter.
 
-\begin{tabularx}{\linewidth}{r*{6}{Y}}
-    \toprule
-Year & Min& Mean & Median &Max& Std.dev\\
+\begin{tabularx}{\linewidth}{r*{11}{Y}}
+\toprule
+    & \multicolumn{2}{c}{Min}&\multicolumn{2}{c}{Mean}& \multicolumn{2}{c}{Median}& \multicolumn{2}{c}{Max}&\multicolumn{2}{c}{Std.dev}\\
+&all&same&all&same&all&same&all&same&all&same\\
 \midrule
 %Panel A: TP&&&&&\\
-\multicolumn{6}{c}{\textbf{Panel A: TP}} \\
+\multicolumn{11}{l}{\textbf{Panel A: TP}} \\
 \midrule
 %Year & Min& Mean & Median &Max& Std.dev\\
-<<desc-pt,echo=F,results='asis'>>=
-
-#data.to.display <- c('min','mean', 'median','max','std.dev')
-#results.final <- rbind(brok.full.stat.pt[,data.to.display],'Total period'=setkey(pt.full.period,Statistics)[data.to.display][,value])
+<<desc-pt,echo=F,results='asis',warning=FALSE>>=
 
 options(xtable.comment = FALSE)
 #cat(rep('&',ncol(results.final)),'\\\\')
-print(xtable(brok.full.stat.pt,display=c('s','f','d','f','f','d','f'),digits=3),only.contents=T,include.colnames=FALSE,include.rownames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(11),command=c('\\midrule \n')))
+print(xtable(acast(melt(brok.full.stat.pt,id.vars=c('year','type')),year~type+variable,value.var='value')[,c(1,6,2,7,3,8,4,9,5,10)],display=c('s','d','d','f','f','d','d','d','d','f','f'),digits=3),only.contents=T,include.colnames=FALSE,include.rownames=T,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(11),command=c('\\midrule \n')))
 @
 \end{tabularx}
 
-\begin{tabularx}{\linewidth}{r*{6}{Y}}
+\begin{tabularx}{\linewidth}{r*{11}{Y}}
 \midrule
-\multicolumn{6}{c}{\textbf{Panel B: EPS}} \\
+\multicolumn{11}{l}{\textbf{Panel B: EPS}} \\
 \midrule
-<<desc-eps,echo=F,results='asis'>>=
-print(xtable(brok.full.stat.eps,display=c('s','d','d','f','f','d','f'),digits=3),only.contents=T,include.colnames=FALSE,include.rownames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(11),command=c('\\midrule \n')))
+<<desc-eps,echo=F,results='asis',warning=FALSE>>=
+print(xtable(acast(melt(brok.full.stat.eps,id.vars=c('year','type')),year~type+variable,value.var='value')[,c(1,6,2,7,3,8,4,9,5,10)],display=c('s','d','d','f','f','d','d','d','d','f','f'),digits=3),only.contents=T,include.colnames=FALSE,include.rownames=T,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(11),command=c('\\midrule \n')))
 @
 \bottomrule
 \end{tabularx}
@@ -575,13 +589,17 @@ print(xtable(brok.full.stat.eps,display=c('s','d','d','f','f','d','f'),digits=3)
     \toprule
     \multicolumn{4}{c}{\textbf{Panel A: TP}} \\
 <<example-table,echo=FALSE,warning=FALSE,message=FALSE,results='asis'>>=
-print(xtable(setnames(q.data[Stock=='AMZN'&q.id=='1999 Q2'][,list('Broker/Analyst'=Broker,'\\emph{TP}'=PT,'$\\overline{PMAFE}^{TP}$'=round(score,3))][,rank:=c(4,3,1,2)][order(rank)],4,'$rank^{TP}$'),display=c('s','d','f','f','d')),include.rownames=F,only.contents = T,hline.after=NULL,add.to.row=list(pos=list(0,4),command=c('\\midrule \n','\\midrule \n')),sanitize.text.function = function(x) x)
+print(xtable(setnames(q.data.ex[Stock=='AMZN'&q.id=='1999 Q2'][,list('Broker/Analyst'=Broker,'\\emph{TP}'=PT,'$\\overline{PMAFE}^{TP}$'=round(score,3),rank=rank(score))][order(rank)],4,'$rank^{TP}$'),display=c('s','d','f','f','f')),include.rownames=F,only.contents = T,hline.after=NULL,add.to.row=list(pos=list(0),command=c('\\midrule \n')),sanitize.text.function = function(x) x)
 @
+\midrule
 \end{tabularx}
 \begin{tabularx}{\linewidth}{r*{4}{Y}}
     \multicolumn{4}{c}{\textbf{Panel B: EPS}} \\
 <<example-table-eps,echo=FALSE,warning=FALSE,message=FALSE,results='asis'>>=
-print(xtable(setnames(complete.dt[Stock=='AMZN'&q.id=='1999 Q2'][,list('Broker/Analyst'=Broker,'$PRED$'=Est,'$PMAFE^{EPS}$'=eps.pmafe,rank)][order(rank)],4,'$rank^{EPS}$'),display=c('s','d','f','f','d'),digits=3),include.rownames=F,only.contents=T,hline.after=NULL,add.to.row=list(pos=list(0),command=c('\\midrule \n')),sanitize.text.function = function(x) x)
+
+ex.eps <- setnames(complete.dt.ex[,eps.pmafe:=abs(Est-act.eps)/mean(abs(Est-act.eps))],'fis.q','q.id')
+
+print(xtable(setnames(ex.eps[Stock=='AMZN'&q.id=='1999 Q2'][,list('Broker/Analyst'=Broker,'$PRED$'=Est,'$PMAFE^{EPS}$'=eps.pmafe,rank)][order(rank)],4,'$rank^{EPS}$'),display=c('s','d','f','f','f'),digits=3),include.rownames=F,only.contents=T,hline.after=NULL,add.to.row=list(pos=list(0),command=c('\\midrule \n')),sanitize.text.function = function(x) x)
 @
 \bottomrule
 \end{tabularx}
@@ -589,19 +607,13 @@ print(xtable(setnames(complete.dt[Stock=='AMZN'&q.id=='1999 Q2'][,list('Broker/A
 
 
 <<example-fig,echo=F,include=FALSE,results='hide',fig.width=10.7,fig.height=8.3>>=
-require(gridExtra)
+
 example.dt$Broker <- factor(example.dt$Broker,levels=unique(example.dt$Broker))
 test <- rbind(example.dt[,.(s.Date,PT,Series=Broker)][,Broker:='Broker'],example.dt[,.(s.Date,PT=priceAdj)][,Broker:='AMZN'][,Series:='AMZN'])
 test$Series <- factor(test$Series,levels=c('AMZN',as.character(unique(example.dt$Broker))))
 
-#ggplot(setnames(rbind(example.dt[,.(s.Date,PT,Broker)],setnames(example.dt[,.(s.Date,priceAdj)][,Broker:='AMZN'],2,'PT')),'Broker','Stock Price'),aes(x=s.Date,y=PT,group=`Stock Price`,color=`Stock Price`,shape=`Stock Price`))+geom_line(size=1)+geom_point()+theme_bw()+ylab('Dollars')+xlab('1999Q2')+ggtitle('Daily stock price (AMZN) compared to broker\'s target prices')+scale_color_grey()
-
-#ggplot(example.dt,aes(x=s.Date,y=PT,group=Broker,color=Broker,shape=Broker))+geom_line(size=1)+geom_line(aes(y=priceAdj),color='black')+geom_point()+theme_bw()+ylab('Dollars')+xlab('1999Q2')+ggtitle('Daily stock price (AMZN) compared to broker\'s target prices')+scale_color_grey()
 
 ggplot(test,aes(x=s.Date,y=PT,group=Series,color=Series,shape=Series))+theme_bw()+ylab('Dollars')+ggtitle('Daily stock price (AMZN) compared to broker\'s target prices \n over the period of the second calendar quarter of 1999')+geom_line()+geom_point(size=2)+scale_color_grey()+theme(axis.title.x=element_blank(),text=element_text(size=20,family='Times'),legend.title=element_blank())
-
-#+geom_line(aes(y=priceAdj),color='black')+theme(plot.title = element_text(colour = "Black"),legend.position='top')
-#grid.draw(grobTree(arrangeGrob(p,ncol=1),rectGrob(gp=gpar(lwd=2, fill=NA))))
 @
 
 
@@ -613,36 +625,38 @@ ggplot(test,aes(x=s.Date,y=PT,group=Series,color=Series,shape=Series))+theme_bw(
   \label{tab:rank-stat}
   
 \ This contingency table shows changes in analysts'  \textit{top}, \textit{middle}, \textit{bottom} ranking bins. Panel A (Panel B) depicts the dynamics of the analysts' ranks  based on the accuracy in target prices (EPS forecasts).
-\begin{tabularx}{\linewidth}{r*{6}{Y}}
+\begin{tabularx}{\linewidth}{r*{10}{Y}}
     \toprule
-\multirow{10}{*}{$t$}&\textbf{Panel A: TP}&\multicolumn{4}{c}{$t+1$} \\
-&&$top$&$middle$&$bottom$&Sum\\
+&&\multicolumn{2}{c}{$top$}&\multicolumn{2}{c}{$middle$}&\multicolumn{2}{c}{$bottom$}&\multicolumn{2}{c}{$Sum$}\\
+&&all&same&all&same&all&same&all&same\\
+\midrule
+\multirow{10}{*}{$t$}&\multicolumn{2}{l}{\textbf{Panel A: TP}}&\multicolumn{6}{c}{$t+1$} \\
 
 <<desc-rank-pt-t1,echo=F,results='asis'>>=
-tab.r <- round(cbind(pt.cont.tab[,,'all','t'],Total=apply(pt.cont.tab[,,1,1],1,sum)),3)*100
+tab.r <- acast(rbind(melt(pt.cont.tab[,,,'t']),data.table(melt(aperm(apply(pt.cont.tab,c(1,3,4),sum),c(1,3,2))))[Var2=='t']),Var1~Var2+Var3,value.var='value')*100
 rownames(tab.r) <- c('&$top$','&$middle$','&$bottom$')
 #colnames(tab.r) <- c('$top$','$middle$','$bottom$','Sum')
 print(xtable(tab.r,hline = F,digits=1),only.contents=T,include.colnames=F,include.rownames=T,hline.after=NULL,sanitize.text.function = function(x) x)
 
-tab.r <- round(cbind(pt.cont.tab[,,'all','t+4'],Total=apply(pt.cont.tab[,,1,2],1,sum)),3)*100
+tab.r <- acast(rbind(melt(pt.cont.tab[,,,'t+4']),data.table(melt(aperm(apply(pt.cont.tab,c(1,3,4),sum),c(1,3,2))))[Var2=='t+4']),Var1~Var2+Var3,value.var='value')*100
 rownames(tab.r) <- c('&$top$','&$middle$','&$bottom$')
 #colnames(tab.r) <- c('$top$','$middle$','$bottom$','Sum')
-print(xtable(tab.r,hline = F,digits=1),only.contents=T,include.colnames=F,include.rownames=T,hline.after=NULL,add.to.row=list(pos=list(0),command=c('&&\\multicolumn{4}{c}{$t+4$}\\\\ \n')),sanitize.text.function = function(x) x)
+print(xtable(tab.r,hline = F,digits=1),only.contents=T,include.colnames=F,include.rownames=T,hline.after=NULL,add.to.row=list(pos=list(0),command=c('&&\\multicolumn{8}{c}{$t+4$}\\\\ \n')),sanitize.text.function = function(x) x)
 @
 \end{tabularx}
-\begin{tabularx}{\linewidth}{r*{6}{Y}}
+\begin{tabularx}{\linewidth}{r*{10}{Y}}
 \midrule
-\multirow{11}{*}{$t$}&\textbf{Panel B: EPS}&\multicolumn{4}{c}{$t+1$} \\
-&&$top$&$middle$&$bottom$&Sum\\
+\multirow{10}{*}{$t$}&\multicolumn{2}{l}{\textbf{Panel B: EPS}}&\multicolumn{6}{c}{$t+1$} \\
+%&&$top$&$middle$&$bottom$&Sum\\
 <<desc-rank-eps-t1,echo=F,results='asis'>>=
-tab.r <- round(cbind(eps.cont.tab[,,'all','t'],Total=apply(eps.cont.tab[,,1,1],1,sum)),3)*100
+tab.r <- acast(rbind(melt(eps.cont.tab[,,,'t']),data.table(melt(aperm(apply(eps.cont.tab,c(1,3,4),sum),c(1,3,2))))[Var2=='t']),Var1~Var2+Var3,value.var='value')*100
 rownames(tab.r) <- c('&$top$','&$middle$','&$bottom$')
 #colnames(tab.r) <- c('$top$','$middle$','$bottom$','Sum')
 print(xtable(tab.r,hline = F,digits=1),only.contents=T,include.colnames=F,include.rownames=T,hline.after=NULL,sanitize.text.function = function(x) x)
-tab.r <- round(cbind(eps.cont.tab[,,'all','t+4'],Total=apply(eps.cont.tab[,,1,2],1,sum)),3)*100
+tab.r <- acast(rbind(melt(eps.cont.tab[,,,'t+4']),data.table(melt(aperm(apply(eps.cont.tab,c(1,3,4),sum),c(1,3,2))))[Var2=='t+4']),Var1~Var2+Var3,value.var='value')*100
 rownames(tab.r) <- c('&$top$','&$middle$','&$bottom$')
 #colnames(tab.r) <- c('$top$','$middle$','$bottom$','Sum')
-print(xtable(tab.r,hline = F,digits=1),only.contents=T,include.colnames=F,include.rownames=T,hline.after=NULL,add.to.row=list(pos=list(0),command=c('&&\\multicolumn{4}{c}{$t+4$}\\\\ \n')),sanitize.text.function = function(x) x)
+print(xtable(tab.r,hline = F,digits=1),only.contents=T,include.colnames=F,include.rownames=T,hline.after=NULL,add.to.row=list(pos=list(0),command=c('&&\\multicolumn{8}{c}{$t+4$}\\\\ \n')),sanitize.text.function = function(x) x)
 @
 \bottomrule
 \end{tabularx}
@@ -722,7 +736,7 @@ colourCount = length(unique(final.bl$Views))
 getPalette = colorRampPalette(RColorBrewer::brewer.pal(colourCount, "Set1"))
 
 #p.cum.ret <-
-ggplot(final.bl,aes(x=as.Date(Quarters),y=cum.ret,group=Views,color=Views,shape=Views))+geom_line(size=0.5)+facet_grid(type~Method,scale='free_x')+ylab('Portfolio wealth (initial=$100)')+xlab('Quarters')+ggtitle('Portfolio performance with $100 initial investment')+theme_bw()+theme(plot.title = element_text(colour = "Black"),legend.position='top',legend.title=element_blank(),strip.text=element_text(size=20),text=element_text(size=20,family='Times'))+scale_color_grey()+geom_point()+geom_hline(yintercept=100)
+ggplot(final.bl,aes(x=as.Date(Quarters),y=cum.ret,group=Views,color=Views,shape=Views))+geom_line(size=0.5)+facet_grid(type~Method,scale='free_x')+ylab('Portfolio wealth (initial=$100)')+xlab('Quarters')+ggtitle('Portfolio performance with $100 initial investment')+theme_bw()+theme(plot.title = element_text(colour = "Black"),legend.position='top',legend.title=element_blank(),strip.text=element_text(size=20),text=element_text(size=20,family='Times'))+scale_color_grey()+geom_point()+geom_hline(yintercept=100)+scale_x_date(breaks=date_breaks('2 years'),labels=date_format('%Y'))
 #
 @
 

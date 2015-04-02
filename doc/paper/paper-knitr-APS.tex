@@ -341,14 +341,14 @@ where the $.$ subscript corresponds to either $Q_{cons,i}$ (eq. \ref{consq}) or 
 We focus on the  S\&P500 stocks. We extract the target price information and the EPS forecasts from ThomsonReuters  I/B/E/S detailed history database. The  S\&P500 constituents' list and the stock daily prices are from ThomsonReuters DataStream.
 
 
-Over the sample period, the total number of brokers\footnote{We use words ``analyst" and ``broker" interchangeably.} in TP dataset is 361, covering 504 S\&P500 stocks. Given the fact that financial analysts commonly issue TP with the one year horizon \footnote{According to Wharton Research Data Services (WRDS), 92.33\% of all price targets reported in I/B/E/S have a 12-month horizon \citep{glushkov2009}.}, we assume that analysts keep their TP forecasts valid for one calendar year unless it is revised. After one year we assume that TP recommendation expires.
+Over the sample period, the total number of brokers\footnote{We use words ``analyst" and ``broker" interchangeably.} in TP dataset is 351, covering 498 S\&P500 stocks. Given the fact that financial analysts commonly issue TP with the one year horizon \footnote{According to Wharton Research Data Services (WRDS), 92.33\% of all price targets reported in I/B/E/S have a 12-month horizon \citep{glushkov2009}.}, we assume that analysts keep their TP forecasts valid for one calendar year unless it is revised. After one year we assume that TP recommendation expires.
 
-Consistent with other studies on analysts' expected returns that work with price targets  \citep{bradshaw2002,brav2003,da2011}, we truncate the sample of $TP/P-1$ at the 5\textsuperscript{th} percentile (values below \ensuremath{-0.114}) and at the 95\textsuperscript{th} percentile (values above 0.791). This is done due to occurrence of the extreme values. Most of these extreme values are driven by misalignment errors found on I/B/E/S data\footnote{We found some differences between the  DataStream and I/B/E/S the databases. In some cases the stock-splits and the dividends were not properly adjusted.}. After trimming, the number of observations ($\mathrm{Stock} \times \mathrm{Broker} \times  \mathrm{Quarter}$) is reduced  from 145 630 to 131 068.
+Consistent with other studies on analysts' expected returns that work with price targets  \citep{bradshaw2002,brav2003,da2011}, we truncate the sample of $TP/P-1$ at the 5\textsuperscript{th} percentile (values below \ensuremath{-0.114}) and at the 95\textsuperscript{th} percentile (values above 0.805). This is done due to occurrence of the extreme values. Most of these extreme values are driven by misalignment errors found on I/B/E/S data\footnote{We found some differences between the  DataStream and I/B/E/S the databases. In some cases the stock-splits and the dividends were not properly adjusted.}. After trimming, the number of observations ($\mathrm{Stock} \times \mathrm{Broker} \times  \mathrm{Quarter}$) is reduced  from 247 163 to 247 163.
 
-The initial file of quarterly EPS forecast consists of  560 brokers covering 3517 stocks. To implement the EPS ranking, we require that a stock had at least three brokers per quarter. In addition, we require that a broker has to be active in covering a particular stock for at least 3 years (12 quarters). Our final sample of EPS forecasts consist of  155 brokers covering 402 stocks. The total number of observation is 79 539.
+The initial file of quarterly EPS forecast consists of  560 brokers covering 3517 stocks. To implement the EPS ranking, we require that a stock had at least three brokers per quarter. In addition, we require that a broker has to be active in covering a particular stock for at least 3 years (12 quarters). Our final sample of EPS forecasts consist of  157 brokers covering 402 stocks. The total number of observation is 158 029.
  
 
-Table (\ref{tab:ret-stat}) shows the distribution of the final sample of target price and EPS data. Panel A shows the number of quarterly target prices per stock. For the sample period (1999-2009), we report 15 048 stock-quarter observations. Each stock had on average of 12.823 quarterly target price reports. Panel B  presents similar statistics of the number of EPS forecasts. In total, the EPS forecast sample has 12 084 stock-quarter observations. The average number of quarterly forecasts is 6.582.
+Table (\ref{tab:ret-stat}) shows the distribution of the final sample of target price and EPS data. Panel A shows the number of quarterly target prices per stock. For the sample period (1999-2009), we report 15 048 stock-quarter observations. Each stock had on average of 12.823 quarterly target price reports. Panel B  presents similar statistics of the number of EPS forecasts. In total, the EPS forecast sample has 12 203 stock-quarter observations. The average number of quarterly forecasts is 12.95.
 
 We apply the ranking procedure outline in section \ref{def-q} to the two datasets. For target price rankings, we use the average daily errors within one quarter as the measure of analysts' forecasting ability (eq. \ref{tp:pmafe}). 
 
@@ -480,37 +480,48 @@ For the future work we will developed new methods to forecast analysts rankings 
   \label{tab:ret-stat}
 \ This table shows the average number of target prices  (panel A) and EPS forecasts (panel B) per stock per quarter.
 
-\begin{tabularx}{\linewidth}{r*{6}{Y}}
-    \toprule
-Year & Min& Mean & Median &Max& Std.dev\\
+\begin{tabularx}{\linewidth}{r*{11}{Y}}
+\toprule
+    & \multicolumn{2}{c}{Min}&\multicolumn{2}{c}{Mean}& \multicolumn{2}{c}{Median}& \multicolumn{2}{c}{Max}&\multicolumn{2}{c}{Std.dev}\\
+&all&same&all&same&all&same&all&same&all&same\\
 \midrule
 %Panel A: TP&&&&&\\
-\multicolumn{6}{c}{\textbf{Panel A: TP}} \\
+\multicolumn{11}{l}{\textbf{Panel A: TP}} \\
 \midrule
 %Year & Min& Mean & Median &Max& Std.dev\\
-\begin{kframe}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in `display<-.xtable`(`*tmp*`, value = c("{}s"{}, "{}f"{}, "{}d"{}, "{}f"{}, "{}f"{}, : "{}display"{} must have length equal to 8 ( ncol(x) + 1 )}}\end{kframe}
+ 1999 &    3 &    3 & 4.286 & 4.326 &    4 &    4 &   11 &   11 & 1.657 & 1.668 \\ 
+  2000 &    3 &    3 & 4.873 & 4.944 &    4 &    4 &   14 &   14 & 2.009 & 2.017 \\ 
+  2001 &    3 &    3 & 5.537 & 5.691 &    5 &    5 &   16 &   16 & 2.453 & 2.481 \\ 
+  2002 &    3 &    3 & 6.411 & 6.611 &    6 &    6 &   19 &   19 & 3.108 & 3.145 \\ 
+  2003 &    3 &    3 & 7.021 & 7.252 &    6 &    6 &   21 &   21 & 3.524 & 3.573 \\ 
+  2004 &    3 &    3 & 7.477 & 7.728 &    7 &    7 &   22 &   22 & 3.671 & 3.726 \\ 
+  2005 &    3 &    3 & 7.667 & 7.946 &    7 &    7 &   24 &   24 & 3.736 & 3.744 \\ 
+  2006 &    3 &    3 & 7.754 & 8.037 &    7 &    7 &   22 &   22 & 3.561 & 3.532 \\ 
+  2007 &    3 &    3 & 7.394 & 7.691 &    7 &    7 &   22 &   22 & 3.494 & 3.429 \\ 
+  2008 &    3 &    3 & 6.708 & 6.973 &    6 &    6 &   18 &   18 & 3.023 & 2.964 \\ 
+  2009 &    3 &    3 & 5.510 & 5.627 &    5 &    5 &   19 &   19 & 2.412 & 2.433 \\ 
+   \midrule 
+Total &    3 &    3 & 6.710 & 6.915 &    6 &    6 &   24 &   24 & 3.336 & 3.356 \\ 
+  
 \end{tabularx}
 
-\begin{tabularx}{\linewidth}{r*{6}{Y}}
+\begin{tabularx}{\linewidth}{r*{11}{Y}}
 \midrule
-\multicolumn{6}{c}{\textbf{Panel B: EPS}} \\
+\multicolumn{11}{l}{\textbf{Panel B: EPS}} \\
 \midrule
- 1999 &    3 & 5.728 & 5 &   17 & 3.007 \\ 
-  2000 &    3 & 5.433 & 5 &   17 & 2.774 \\ 
-  2001 &    3 & 6.020 & 5 &   18 & 2.972 \\ 
-  2002 &    3 & 6.338 & 5 &   21 & 3.264 \\ 
-  2003 &    3 & 6.523 & 6 &   24 & 3.430 \\ 
-  2004 &    3 & 6.947 & 6 &   22 & 3.749 \\ 
-  2005 &    3 & 7.205 & 6 &   24 & 3.774 \\ 
-  2006 &    3 & 7.494 & 7 &   26 & 3.843 \\ 
-  2007 &    3 & 7.134 & 6 &   21 & 3.532 \\ 
-  2008 &    3 & 6.378 & 6 &   22 & 3.062 \\ 
-  2009 &    3 & 5.811 & 5 &   20 & 2.783 \\ 
+ 1999 &    3 &    3 & 5.673 & 5.643 &    5 &    5 &   17 &   17 & 2.991 & 2.936 \\ 
+  2000 &    3 &    3 & 5.433 & 5.426 &    5 &    5 &   17 &   17 & 2.774 & 2.733 \\ 
+  2001 &    3 &    3 & 6.020 & 6.048 &    5 &    5 &   18 &   18 & 2.972 & 2.987 \\ 
+  2002 &    3 &    3 & 6.338 & 6.357 &    5 &    5 &   21 &   21 & 3.264 & 3.274 \\ 
+  2003 &    3 &    3 & 6.523 & 6.532 &    6 &    6 &   24 &   24 & 3.430 & 3.443 \\ 
+  2004 &    3 &    3 & 6.947 & 6.978 &    6 &    6 &   22 &   22 & 3.749 & 3.771 \\ 
+  2005 &    3 &    3 & 7.205 & 7.216 &    6 &    6 &   24 &   24 & 3.774 & 3.777 \\ 
+  2006 &    3 &    3 & 7.494 & 7.467 &    7 &    7 &   26 &   26 & 3.843 & 3.820 \\ 
+  2007 &    3 &    3 & 7.134 & 7.091 &    6 &    6 &   21 &   21 & 3.532 & 3.489 \\ 
+  2008 &    3 &    3 & 6.378 & 6.353 &    6 &    6 &   22 &   22 & 3.062 & 3.039 \\ 
+  2009 &    3 &    3 & 5.811 & 5.773 &    5 &    5 &   20 &   20 & 2.783 & 2.753 \\ 
    \midrule 
-Total &    3 & 6.582 & 6 &   26 & 3.426 \\ 
+Total &    3 &    3 & 6.571 & 6.563 &    6 &    6 &   26 &   26 & 3.423 & 3.412 \\ 
   
 \bottomrule
 \end{tabularx}
@@ -526,23 +537,23 @@ Total &    3 & 6.582 & 6 &   26 & 3.426 \\
     \multicolumn{4}{c}{\textbf{Panel A: TP}} \\
 Broker/Analyst & \emph{TP} & $\overline{PMAFE}^{TP}$ & $rank^{TP}$ \\ 
   \midrule 
-LEGG & 58.50 & 0.05 &   1 \\ 
-  MONTSEC & 87.50 & 0.46 &   2 \\ 
-  KAUFBRO & 125.00 & 1.65 &   3 \\ 
-  DLJ & 140.00 & 1.97 &   4 \\ 
-   \midrule 
-
+LEGG & 58.50 & 0.05 & 1.00 \\ 
+  MONTSEC & 87.50 & 0.46 & 2.00 \\ 
+  KAUFBRO & 125.00 & 1.65 & 3.00 \\ 
+  DLJ & 140.00 & 1.97 & 4.00 \\ 
+  
+\midrule
 \end{tabularx}
 \begin{tabularx}{\linewidth}{r*{4}{Y}}
     \multicolumn{4}{c}{\textbf{Panel B: EPS}} \\
 Broker/Analyst & $PRED$ & $PMAFE^{EPS}$ & $rank^{EPS}$ \\ 
   \midrule 
-MONTSEC & -0.120 & 0.027 &    1 \\ 
-  BEAR & -0.130 & 0.080 &    2 \\ 
-  PACCREST & -0.130 & 0.080 &    2 \\ 
-  BACHE & -0.135 & 0.107 &    4 \\ 
-  RBRTSON & -0.140 & 0.133 &    5 \\ 
-  FBOSTON & -0.145 & 0.160 &    6 \\ 
+MONTSEC & -0.120 & 0.023 & 1.000 \\ 
+  BEAR & -0.130 & 0.068 & 2.500 \\ 
+  PACCREST & -0.130 & 0.068 & 2.500 \\ 
+  BACHE & -0.135 & 0.091 & 4.000 \\ 
+  RBRTSON & -0.140 & 0.114 & 5.000 \\ 
+  FBOSTON & -0.145 & 0.137 & 6.000 \\ 
   
 \bottomrule
 \end{tabularx}
@@ -560,31 +571,33 @@ MONTSEC & -0.120 & 0.027 &    1 \\
   \label{tab:rank-stat}
   
 \ This contingency table shows changes in analysts'  \textit{top}, \textit{middle}, \textit{bottom} ranking bins. Panel A (Panel B) depicts the dynamics of the analysts' ranks  based on the accuracy in target prices (EPS forecasts).
-\begin{tabularx}{\linewidth}{r*{6}{Y}}
+\begin{tabularx}{\linewidth}{r*{10}{Y}}
     \toprule
-\multirow{10}{*}{$t$}&\textbf{Panel A: TP}&\multicolumn{4}{c}{$t+1$} \\
-&&$top$&$middle$&$bottom$&Sum\\
+&&\multicolumn{2}{c}{$top$}&\multicolumn{2}{c}{$middle$}&\multicolumn{2}{c}{$bottom$}&\multicolumn{2}{c}{$Sum$}\\
+&&all&same&all&same&all&same&all&same\\
+\midrule
+\multirow{10}{*}{$t$}&\multicolumn{2}{l}{\textbf{Panel A: TP}}&\multicolumn{6}{c}{$t+1$} \\
 
- &$top$ & 67.6 & 22.2 & 10.3 & 100.0 \\ 
-  &$middle$ & 30.5 & 47.8 & 21.7 & 100.0 \\ 
-  &$bottom$ & 13.7 & 16.9 & 69.4 & 100.0 \\ 
-    &&\multicolumn{4}{c}{$t+4$}\\ 
-&$top$ & 46.6 & 27.9 & 25.6 & 100.0 \\ 
-  &$middle$ & 39.0 & 29.1 & 31.9 & 100.0 \\ 
-  &$bottom$ & 32.7 & 26.4 & 40.9 & 100.0 \\ 
+ &$top$ & 67.6 & 67.7 & 22.2 & 22.0 & 10.3 & 10.2 & 100.0 & 100.0 \\ 
+  &$middle$ & 30.5 & 29.7 & 47.8 & 48.4 & 21.7 & 21.9 & 100.0 & 100.0 \\ 
+  &$bottom$ & 13.7 & 13.4 & 16.9 & 17.0 & 69.4 & 69.6 & 100.0 & 100.0 \\ 
+    &&\multicolumn{8}{c}{$t+4$}\\ 
+&$top$ & 46.6 & 46.3 & 27.9 & 28.2 & 25.6 & 25.5 & 100.0 & 100.0 \\ 
+  &$middle$ & 39.0 & 39.1 & 29.1 & 29.1 & 31.9 & 31.7 & 100.0 & 100.0 \\ 
+  &$bottom$ & 32.7 & 32.1 & 26.4 & 26.5 & 40.9 & 41.4 & 100.0 & 100.0 \\ 
   
 \end{tabularx}
-\begin{tabularx}{\linewidth}{r*{6}{Y}}
+\begin{tabularx}{\linewidth}{r*{10}{Y}}
 \midrule
-\multirow{11}{*}{$t$}&\textbf{Panel B: EPS}&\multicolumn{4}{c}{$t+1$} \\
-&&$top$&$middle$&$bottom$&Sum\\
- &$top$ & 48.4 & 26.1 & 26.0 & 100.5 \\ 
-  &$middle$ & 48.1 & 26.3 & 25.9 & 100.4 \\ 
-  &$bottom$ & 46.5 & 25.7 & 28.6 & 100.8 \\ 
-    &&\multicolumn{4}{c}{$t+4$}\\ 
-&$top$ & 46.7 & 28.4 & 26.1 & 101.1 \\ 
-  &$middle$ & 45.4 & 27.1 & 28.1 & 100.6 \\ 
-  &$bottom$ & 42.8 & 27.7 & 32.3 & 102.7 \\ 
+\multirow{10}{*}{$t$}&\multicolumn{2}{l}{\textbf{Panel B: EPS}}&\multicolumn{6}{c}{$t+1$} \\
+%&&$top$&$middle$&$bottom$&Sum\\
+ &$top$ & 48.4 & 48.4 & 26.1 & 26.1 & 26.0 & 26.0 & 100.5 & 100.5 \\ 
+  &$middle$ & 48.1 & 48.2 & 26.3 & 26.2 & 25.9 & 25.8 & 100.4 & 100.2 \\ 
+  &$bottom$ & 46.5 & 46.3 & 25.7 & 25.9 & 28.6 & 28.5 & 100.8 & 100.6 \\ 
+    &&\multicolumn{8}{c}{$t+4$}\\ 
+&$top$ & 46.7 & 46.8 & 28.4 & 28.3 & 26.1 & 26.0 & 101.1 & 101.2 \\ 
+  &$middle$ & 45.4 & 45.5 & 27.1 & 27.0 & 28.1 & 28.1 & 100.6 & 100.6 \\ 
+  &$bottom$ & 42.8 & 42.7 & 27.7 & 27.6 & 32.3 & 32.4 & 102.7 & 102.7 \\ 
   
 \bottomrule
 \end{tabularx}
