@@ -1,4 +1,5 @@
 \documentclass{article}
+\usepackage[printfigures]{figcaps}
 \usepackage{fancyhdr}
 \usepackage{time}
 \usepackage{authblk}
@@ -22,7 +23,7 @@
 \usepackage{adjustbox}
 %\usepackage{floatpag}
 %\onehalfspacing
-\doublespace
+%\doublespace
 \usepackage[longnamesfirst]{natbib}
 %\usepackage[natbibapa,longnamesfist]{apacite}
 
@@ -32,9 +33,13 @@
 \DeclareMathOperator*{\median}{median}
 %\newcommand{\theHalgorithm}{\arabic{algorithm}}
 \newcommand{\tr}{\textit{true}}
+\newcommand{\true}{\textit{true}}
 \newcommand{\naive}{\textit{recent}}
 \newcommand{\default}{\textit{all-time}}
 \newcommand{\market}{\textit{market}}
+
+\newcommand{\same}{\textit{same}}
+\newcommand{\all}{\textit{all}}
 \newcolumntype{Y}{>{\raggedleft\arraybackslash}X}% raggedleft column X
 %\newcommand{\raw}{\textit{raw}}
 %\newcommand{\diff}{\textit{diff}}
@@ -70,6 +75,7 @@ options(digits = 3)
 
 <<load.data,echo=F,warning=FALSE,message=FALSE>>=
 strategies <- c('true','recent','all-time')
+sets <- c('all','same')
 setwd('~/Dropbox/workspace/Projects/BL-strategies')
 library(reshape2)
 library(descr)
@@ -96,12 +102,13 @@ stocks.m <- setkey(data.table(Stock.m=sort(market.set[,unique(Stock)])),Stock.m)
 
 load('~/Dropbox/workspace/Projects/EPS/cache/complete.dt.RData')
 complete.dt.ex <- complete.dt
+
 quarters <- setnames(unique(market.set[,.(Quarters)]),'q.id')[,q.id:=as.yearqtr(q.id)]
 
 stocks <- setkey(data.table(Stock=sort(intersect(intersect(stocks.m$Stock.m,setkey(q.data,q.id)[quarters]$Stock),setkey(complete.dt,q.id)[quarters]$Stock))),Stock)
 dt.1 <- setkey(q.data,Stock)[stocks]
 dt.2 <- q.data[stocks.m]
-q.data <- rbind(dt.1[,type:='same'],dt.2[,type:='all'])
+q.data <- rbind(dt.1[,type:=sets[2]],dt.2[,type:=sets[1]])
 
 trunk.percent <- 0.05
 q.data <- na.omit(q.data[,trunk.view:=truncate.f(b.view,trunk.percent),by=type][,year:=format(q.id,'%Y')])
@@ -131,7 +138,7 @@ load('cache/ranked.eps.dt.RData')
 
 dt.3 <- setkey(complete.dt,Stock)[stocks]
 dt.4 <- complete.dt[stocks.m]
-complete.dt <- na.omit(setkey(rbind(dt.3[,type:='same'],dt.4[,type:='all']),q.id)[quarters])
+complete.dt <- na.omit(setkey(rbind(dt.3[,type:=sets[2]],dt.4[,type:=sets[1]]),q.id)[quarters])
 
 #complete.dt <- setkey(complete.dt,fis.q)[quarters]
 #eps.stocks <- intersect(complete.dt$Stock,unique(market.set[,Stock]))
@@ -295,7 +302,7 @@ Q_{cons,i}= \median \left\{r_{j,i}\right\}
 %\frac{1}{N} \sum_{j=1}^{N} r_{j,i}
 \end{equation}
 %$N$ is the number of analysts with a valid TP report and
-where $r_{j,i}=TP_{j,i}/P_{i}-1$  is analyst's $j$ expected return computed using the analyst price target $TP_{j,i}$ and stock price $P_{i}$\footnote{Consistent with the literature, we use stock price 3 days \emph{ex-ante} the TP announcement. This is done to avoid any information leakage around new TP announcement day \citep{bonini2010}}. 
+where $r_{j,i}=TP_{j,i}/P_{i}-1$  is last known analyst's $j$ expected return computed using the analyst price target $TP_{j,i}$ and stock price $P_{i}$\footnote{Consistent with the literature, we use stock price 3 days \emph{ex-ante} the TP announcement. This is done to avoid any information leakage around new TP announcement day \citep{bonini2010}}. 
 
 For the strategies that weight the analysts' estimates of expected return the weight of each analyst $j$ is based on his/her rank such that the top analyst has the weight of 1 and then the weights diminish as the rank increases.
 
@@ -331,14 +338,14 @@ where $\overline{{FE}_{i}^{TP}}$ is the average forecasting error across analyst
 
 The rank  that enters equation (\ref{eq:weight}) is average analyst's $PMAFE^{TP}$ over a particular quarter:
 \begin{equation}
-\overline{PMAFE_{j,i}^{TP}}=\frac{1}{T} \sum_{t=1}^{T} PMAFE_{j,t,i}^{TP}
+\overline{PMAFE_{j,i}^{TP}}=\frac{1}{D} \sum_{t=1}^{D} PMAFE_{j,t,i}^{TP}
 \end{equation}
 
 \begin{equation}
 \label{tp:rank}
 rank_{j,i}=\rank_{j=1}^{N} \left\{ \overline{PMAFE_{j,i}^{TP}} \right\}
 \end{equation}
-where $T$ are the number of trading days in a quarter and $N$ is the number of brokers with a valid TP.  Figure \ref{fig:example} shows an example.
+where $D$ are the number of trading days in a quarter and $N$ is the number of brokers with a valid TP.  Figure \ref{fig:example} shows an example.
 
 
 \subsubsection{EPS ranking} 
@@ -361,6 +368,7 @@ where $ACT_{i}$ and $PRED_{j,i}$ are the actual quarterly EPS and  analyst $j$'s
 The confidence of $Q$ is given by the coefficient of variation (CV) of forecasting errors. For each stock $i$ is given by:
 
 \begin{equation}
+\label{eq-cv}
 CV_{i} = \frac{\sigma_i (FE_{i})}{\overline{FE}_{i}}
 \end{equation}
 where $\sigma_i$ and $\overline{FE}_i$ are the standard deviation and the mean of the forecast errors across analysts for either TP or EPS. A low value of $CV$ reflects consensual estimates of either future prices or EPS.
@@ -368,7 +376,7 @@ where $\sigma_i$ and $\overline{FE}_i$ are the standard deviation and the mean o
 
 
 \subsection{Information sets to define the views}
-
+\label{inf-set}
 To proceed with the trading strategy, we need to establish which information we  will be using to build the rankings. These rankings will be the inputs to compute the weighted return estimates (``smart estimates"). Different analysts' ranks are obtained  if we select different time horizons. If we use only the most  recent information, we will capture the recent performance of the analysts. This, of course, is more sensitive to unique episodes (e.g., a quarter which has been surprisingly good or bad). If, alternatively, we opt to incorporate the entire analyst performance, the ranking is less affected by such events, yet it may not reflect the current analyst ability. We use two information sets: the first uses only the  information about the analyst' performance in period $t-1$; the second, uses all the available  information for that particular analyst. We call the former the \naive{} set and the latter the \default{} set. 
 
 In addition to these sets,  we also create a hypothetical scenario that assumes we anticipate perfectly the future analyst accuracy performance  that would only be available at the end of $t$.  This represents the perfect foresight strategy. Therefore, it serves a performance reference point to evaluate the other trading strategies. We call this the \tr{} set. 
@@ -378,13 +386,13 @@ Formalizing information sets considered are:
 \item  the \tr{} set%-- a perfect foresight information:
 \begin{equation}
 \label{q:true}
-\widehat{Q_{.,t}}=Q_{.,t}
+\widehat{Q_{t}}=Q_{t}
 \end{equation}
 
 \item  the \naive{} set % -- $t-$ information:
 \begin{equation}
 \label{q:naive}
-\widehat{Q_{.,t}}=Q_{.,t-1}
+\widehat{Q_{t}}=Q_{t-1}
 \end{equation}
 
 \item  the \default{}  set%-- the entire history of analysts performance:
@@ -392,7 +400,7 @@ Formalizing information sets considered are:
 %\item ranking based views:
 \begin{equation}
 \label{q:default}
-\widehat{Q_{.,t}} = \frac{1}{T} \sum_{t=1}^{T} Q_{.,t}
+\widehat{Q_{t}} = \frac{1}{T} \sum_{t=1}^{T} Q_{t}
 \end{equation}
 %\item consensus based views:
 %\begin{equation}
@@ -401,7 +409,7 @@ Formalizing information sets considered are:
 %\end{equation}
 %\end{itemize}
 \end{itemize}
-where the $.$ subscript corresponds to either $Q_{cons,i}$ (eq. \ref{consq}) or $Q_{rank,i}$ (eq. \ref{rankq}), i.e. this is consensus or smart estimate.
+where $Q_{t}$ is the analysts' expected rank-weighted stock return (eq. \ref{rankq})\footnote{The  consensus returns ($Q_{cons}$) have equal weights among the analysts, and, thus, are not included information sets. However, since views also include the confidence (\ref{eq-cv}), which is based on analysts performance, we include the consensus returns to \naive{} and \default{} information sets.}.
 
 
 
@@ -413,14 +421,16 @@ where the $.$ subscript corresponds to either $Q_{cons,i}$ (eq. \ref{consq}) or 
 We focus on the  S\&P500 stocks. We extract the target price information and the EPS forecasts from ThomsonReuters  I/B/E/S detailed history database. The  S\&P500 constituents' list and the stock daily prices are from ThomsonReuters DataStream.
 
 
-Over the sample period, the total number of brokers\footnote{We use words ``analyst" and ``broker" interchangeably.} in TP dataset is \Sexpr{q.data[!is.na(b.view),.N,by=Broker][,.N]}, covering \Sexpr{q.data[!is.na(b.view),.N,by=Stock][,.N]} S\&P500 stocks. Given the fact that financial analysts commonly issue TP with the one year horizon \footnote{According to Wharton Research Data Services (WRDS), 92.33\% of all price targets reported in I/B/E/S have a 12-month horizon \citep{glushkov2009}.}, we assume that analysts keep their TP forecasts valid for one calendar year unless it is revised. After one year we assume that TP recommendation expires.
+Over the sample period, the total number of brokers\footnote{We use words ``analyst" and ``broker" interchangeably.} in TP dataset is \Sexpr{q.data[,.N,by=.(Broker,type)][,.N,by=type][,N][2]}, covering \Sexpr{q.data[,.N,by=.(Stock,type)][,.N,by=type][,N][2]} S\&P500 stocks. Given the fact that financial analysts commonly issue TP with the one year horizon \footnote{According to Wharton Research Data Services (WRDS), 92.33\% of all price targets reported in I/B/E/S have a 12-month horizon \citep{glushkov2009}.}, we assume that analysts keep their TP forecasts valid for one calendar year unless it is revised. After one year we assume that TP recommendation expires.
 
-Consistent with other studies on analysts' expected returns that work with price targets  \citep{bradshaw2002,brav2003,da2011}, we truncate the sample of $TP/P-1$ at the \Sexpr{ trunk.percent *100}\textsuperscript{th} percentile (values below \Sexpr{q.data[,min(trunk.view,na.rm=T)]}) and at the \Sexpr{(1-trunk.percent)*100}\textsuperscript{th} percentile (values above \Sexpr{ q.data[,max(trunk.view,na.rm=T)]}). This is done due to occurrence of the extreme values. Most of these extreme values are driven by misalignment errors found on I/B/E/S data\footnote{We found some differences between the  DataStream and I/B/E/S the databases. In some cases the stock-splits and the dividends were not properly adjusted.}. After trimming, the number of observations ($\mathrm{Stock} \times \mathrm{Broker} \times  \mathrm{Quarter}$) is reduced  from \Sexpr{ prettyNum(q.data[,.N], big.mark=' ')} to \Sexpr{ prettyNum(q.data[!is.na(trunk.view),.N],big.mark=' ')}.
+Consistent with other studies on analysts' expected returns that work with price targets  \citep{bradshaw2002,brav2003,da2011}, we truncate the sample of $TP/P-1$ at the \Sexpr{ trunk.percent *100}\textsuperscript{th} percentile (values below \Sexpr{q.data[,min(trunk.view)]}) and at the \Sexpr{(1-trunk.percent)*100}\textsuperscript{th} percentile (values above \Sexpr{ q.data[,max(trunk.view)]}). This is done due to occurrence of the extreme values. Most of these extreme values are driven by misalignment errors found on I/B/E/S data\footnote{We found some differences between the  DataStream and I/B/E/S the databases. In some cases the stock-splits and the dividends were not properly adjusted.}. To implement ranking, we require that a stock had at least three brokers per quarter and that a broker has to be active in covering a particular stock for at least 3 years (12 quarters). After all the  data requirements, our final sample number of brokers issued target prices is \Sexpr{core.dt[,.N,by=.(Broker,type)][,.N,by=type][,N][2]} covering \Sexpr{core.dt[,.N,by=.(Stock,type)][,.N,by=type][,N][2]} S\&P500 stocks. Overall, the number of observations ($\mathrm{Stock} \times \mathrm{Broker} \times  \mathrm{Quarter}$) is reduced  from \Sexpr{ prettyNum(q.data[,.N,by=type][,N][2], big.mark=' ')} (initial) to \Sexpr{ prettyNum(core.dt[,.N,by=type][,N][2],big.mark=' ')} (filtered).
 
-The initial file of quarterly EPS forecast consists of  \Sexpr{eps.dt[,.N,by=.(Broker)][,.N]} brokers covering \Sexpr{eps.dt[,.N,by=Stock][,.N]} stocks. To implement the EPS ranking, we require that a stock had at least three brokers per quarter. In addition, we require that a broker has to be active in covering a particular stock for at least 3 years (12 quarters). Our final sample of EPS forecasts consist of  \Sexpr{complete.dt[,.N,by=Broker][,.N]} brokers covering \Sexpr{complete.dt[,.N,by=Stock][,.N]} stocks. The total number of observation is \Sexpr{prettyNum(complete.dt[,.N],big.mar=' ')}.
- 
+In the case of EPS forecasts, the initial file of quarterly EPS forecast consists of \Sexpr{eps.dt[,.N,by=.(Broker)][,.N]} brokers covering \Sexpr{eps.dt[,.N,by=Stock][,.N]} stocks. Considering the ranking data requirement, our final sample of EPS forecasts consist of  \Sexpr{complete.dt[,.N,by=.(Broker,type)][,.N,by=type][,N][2]} brokers covering \Sexpr{complete.dt[,.N,by=.(Stock,type)][,.N,by=type][,N][2]} S\&P500 stocks. The total number of observation is \Sexpr{prettyNum(complete.dt[,.N,by=type][,N][2],big.mar=' ')}.
 
-Table (\ref{tab:ret-stat}) shows the distribution of the final sample of target price and EPS data. Panel A shows the number of quarterly target prices per stock. For the sample period (1999-2009), we report \Sexpr{prettyNum(core.dt[,.N,by=list(Stock,q.id)][,.N],big.mark=' ')} stock-quarter observations. Each stock had on average of \Sexpr{core.dt[,.N,by=list(Stock,q.id)][,mean(N)]} quarterly target price reports. Panel B  presents similar statistics of the number of EPS forecasts. In total, the EPS forecast sample has \Sexpr{prettyNum(complete.dt[,.N,by=list(Stock,q.id)][,.N],big.mark=' ')} stock-quarter observations. The average number of quarterly forecasts is \Sexpr{complete.dt[,.N,by=list(Stock,q.id)][,mean(N)]}.
+
+Given that we have two different ranking datasets (based on TP and EPS), we, further, consider S\&P500 stocks that are part of both datasets. We call this subset of stocks as the \same{} and the full set of S\&P500 stocks as the \all{}. 
+
+Table (\ref{tab:ret-stat}) shows the distribution of the final sample of target price and EPS data. Panel A shows the number of quarterly target prices per stock. For the sample period (1999-2009), we report that each stock in the \same{} and the \all{} stock sets had on average of \Sexpr{core.dt[,.N,by=list(Stock,q.id,type)][,mean(N),by=type][,V1][1]} and \Sexpr{core.dt[,.N,by=list(Stock,q.id,type)][,mean(N),by=type][,V1][2]}, respectively, quarterly target price reports. Panel B  presents similar statistics of the number of EPS forecasts. The average number of quarterly forecasts for the  \same{} and the \all{} is \Sexpr{complete.dt[,.N,by=list(Stock,q.id,type)][,mean(N),by=type][,V1][1]} and \Sexpr{complete.dt[,.N,by=list(Stock,q.id,type)][,mean(N),by=type][,V1][2]}, respectively.
 
 We apply the ranking procedure outline in section \ref{def-q} to the two datasets. For target price rankings, we use the average daily errors within one quarter as the measure of analysts' forecasting ability (eq. \ref{tp:pmafe}). 
 
@@ -447,9 +457,9 @@ where $k$ is number of stocks followed by a particular analyst $j$.
 Table (\ref{tab:rank-stat}) shows a contingency analysis of the ranks. 
 %Chi square statistics include/ expected frequiency test
 %Journ. of Fin economics 
-Panel A shows the dynamics of each tercile for rankings based on target price  accuracy. We observe that analysts exhibit strong ranking consistency as, on average, they stay at the same tercile after one quarter. Of the top (bottom) most accurate (inaccurate) analysts in the previous quarter \Sexpr{pt.cont.tab[1,1,1,1]*100}\% (\Sexpr{pt.cont.tab[3,3,1,1]*100}\%) remain in that same tercile after one quarter. After one year the corresponding figures are lower respectively \Sexpr{pt.cont.tab[1,1,1,2]*100}\% and \Sexpr{pt.cont.tab[3,3,1,2]*100}\% for the top and bottom terciles. 
+Panel A shows the dynamics of each tercile for rankings based on target price  accuracy. We observe that analysts exhibit strong ranking consistency as, on average, they stay at the same tercile after one quarter. For the \all{} stocks,  of the top (bottom) most accurate (inaccurate) analysts in the previous quarter \Sexpr{pt.cont.tab[1,1,1,1]*100}\% (\Sexpr{pt.cont.tab[3,3,1,1]*100}\%) remain in that same tercile after one quarter. After one year the corresponding figures are lower respectively \Sexpr{pt.cont.tab[1,1,1,2]*100}\% and \Sexpr{pt.cont.tab[3,3,1,2]*100}\% for the top and bottom terciles\footnote{For the case of the \same{} stock set, the results of ranking consistency are similar to that of the \all{} stock set.}.
 
-In the case of EPS ranking  (panel B) \Sexpr{eps.cont.tab[1,1,1,1]*100}\% and  \Sexpr{eps.cont.tab[3,3,1,1]*100}\% ( \Sexpr{eps.cont.tab[1,1,1,2]*100}\% and  \Sexpr{eps.cont.tab[3,3,1,2]*100}\%) of the analysts  remained in the top and bottom terciles after one quarter (year)  respectively.
+In the case of EPS ranking  (panel B) \Sexpr{eps.cont.tab[1,1,1,1]*100}\% and  \Sexpr{eps.cont.tab[3,3,1,1]*100}\% ( \Sexpr{eps.cont.tab[1,1,1,2]*100}\% and  \Sexpr{eps.cont.tab[3,3,1,2]*100}\%) of the analysts  remained in the top and bottom terciles after one quarter (year) in the \all{} stock set respectively.
 
 These results are consistent with the recent findings of \cite{hilary2013} on analyst forecast consistency. 
 
@@ -473,9 +483,13 @@ The expected returns  are computed comparing TP estimates with actual prices. To
 \cite{bradshaw2002} reports analyst average expected returns for the period of 2000--2009 and 206 brokers of 24\%. \cite{da2011} report an average expected return of 40\% for the period of 1996--2004. \cite{zhou2013} finds an average expected return of 96\% for the sample period of 2000--2009. These figures suggest that analysts are overly optimistic.
 %these values from the historical perspective, i.e., how the values of expected stock returns go inline with historical stock returns. \cite{bodie2009} show that arithimatic average rate of return for the U.S. large stocks (S\&P 500) for the period of 1926--2005 is 10.17\% and the average rate of excess return is 8.39\% with the risk premium estimated 6--8\%. While it is not the best idea to extrapolate the historical values, still, we can say that the expected stocks return should be around 14--16\%. Clearly, the values presented in the literature shows that analysts are very optimistic in issuing target price reports.
 
-Panel A show the statistics for the consensus expectations as defined in eq. (\ref{consq}). The average consensus among the analysts on stock expected returns in the  \tr{}, \naive{} and \default{} information sets are, respectively, \Sexpr{test.a['Total',,'CONS','mean','all'][[1]]*100 }\%, \Sexpr{test.a['Total',,'CONS','mean','all'][[2]]*100 }\%, and \Sexpr{test.a['Total',,'CONS','mean','all'][[3]]*100}\% respectively. Panel B of the table shows the TP accuracy weighted average expected returns (\Sexpr{test.a['Total',,'PT','mean','all'][[1]]*100 }\%, \Sexpr{test.a['Total',,'PT','mean','all'][[2]]*100 }\%, and \Sexpr{test.a['Total',,'PT','mean','all'][[3]]*100}\%). Panel C shows the EPS based weighted expected returns averages (\Sexpr{test.a['Total',,'EPS','mean','all'][[1]]*100 }\%, \Sexpr{test.a['Total',,'EPS','mean','all'][[2]]*100 }\%, and \Sexpr{test.a['Total',,'EPS','mean','all'][[3]]*100}\%). 
+Panel A show the statistics for the consensus expectations as defined in eq. (\ref{consq}). As mentioned above (sec. \ref{inf-set}), the consensus views have equal weights among the analysts; thus, for the case of \tr{} they are not existent and for cases of the \naive{} and the \default{}, they are equal as we use the last known $Q_{cons}$ (eq. \ref{consq}). Therefore, the average consensus among the analysts on stock expected returns in the  \naive{} and \default{} information sets for the \all{} stock set is \Sexpr{test.a['Total',,'CONS','mean','all'][[2]]*100 }\% and for the \same{} stock set is \Sexpr{test.a['Total',,'CONS','mean','same'][[2]]*100 }\%
 
-Overall compared to the consensus the ranked weighted expected returns (smart estimates) are less optimistic. The \default{} information set shows higher values of expected returns.
+Panel B of the table shows the TP accuracy weighted average expected returns for the \all{} stock sets (\Sexpr{test.a['Total',,'PT','mean','all'][[1]]*100 }\%, \Sexpr{test.a['Total',,'PT','mean','all'][[2]]*100 }\%, and \Sexpr{test.a['Total',,'PT','mean','all'][[3]]*100}\%) and for the \same{} (\Sexpr{test.a['Total',,'PT','mean','same'][[1]]*100 }\%, \Sexpr{test.a['Total',,'PT','mean','same'][[2]]*100 }\%, and \Sexpr{test.a['Total',,'PT','mean','same'][[3]]*100}\%)
+
+Panel C shows the EPS based weighted expected returns averages for the \all{} set (\Sexpr{test.a['Total',,'EPS','mean','all'][[1]]*100 }\%, \Sexpr{test.a['Total',,'EPS','mean','all'][[2]]*100 }\%, and \Sexpr{test.a['Total',,'EPS','mean','all'][[3]]*100}\%) and for the \same{} stock set (\Sexpr{test.a['Total',,'EPS','mean','same'][[1]]*100 }\%, \Sexpr{test.a['Total',,'EPS','mean','same'][[2]]*100 }\%, and \Sexpr{test.a['Total',,'EPS','mean','same'][[3]]*100}\%)
+
+Overall compared to the consensus the ranked weighted expected returns (``smart estimates") are less optimistic. The \default{} information set shows the lowest values of expected returns among all information sets. For the different stock sets,  the \same{} set of stocks has higher values of expected returns compared to the \all{} stocks.
 
 Table \ref{tab:stocks} shows the number of active stocks for each of the trading strategies (\textit{CONS}, \textit{TP}, and \textit{EPS}) conditional on considered information sets.
 %obtained from the rankings based on the target price accuracy. We observe a reduction in average per stock expected return with the mean of \Sexpr{ round(rank.views.full.period['true','mean'],3)*100}\%. The case of rankings based on EPS forecasts (panel C) shows even more moderate average stock expected return of \Sexpr{ round(pt.eps.rank.views.full.period['true','mean'],3)*100}\%. Overall, compared to the consensus, both ranking-based methods exhibit less optimistic expected returns and are pretty close to the historical averages.
@@ -495,27 +509,39 @@ The passive strategy generates an annualized cumulative return of \Sexpr{bl.resu
 
 \subsection{Perfect foresight strategy}
 \label{sec:perfect}
-Panel B presents the results for the case of the \tr{} information set. The annualized cumulative returns for each of the active strategies (\textit{CONS}, \textit{TP}, and \textit{EPS}) are, respectively, \Sexpr{bl.results['CONS',1,1,'all']}\%, \Sexpr{bl.results['TP',1,1,'all']}\%, \Sexpr{bl.results['EPS',1,1,'all']}\%. All the strategies outperform the passive benchmark (\Sexpr{bl.results['Market',1,1,'all']}\%). The results show, as expected, that  we would better off if we knew in advance who the top analysts in terms of TP accuracy would be. In any case, the results suggest that the advice of analysts, as a group, is valuable. 
-%Yet, the top analyst  
+Panel B presents the results for the case of the \tr{} information set. The annualized cumulative returns for each of the active strategies (\textit{TP} and \textit{EPS}) are, respectively, for the \all{} stock set: \Sexpr{bl.results['TP',1,1,'all']}\% and  \Sexpr{bl.results['EPS',1,1,'all']}\% and, respectively, for the \same{} set of stocks: \Sexpr{bl.results['TP',1,1,'same']}\% and \Sexpr{bl.results['EPS',1,1,'same']}\%. All the strategies outperform the passive benchmark (\Sexpr{bl.results['Market',1,1,'all']}\%). The results show, as expected, that  we would better off if we knew in advance who the top analysts in terms of TP accuracy would be. In any case, the results suggest that the advice of analysts, as a group, is valuable. 
+%Yet the top analyst  
 
 %The result confirms that these strategies set an upper bound for the cumulative return yield. It follows, that we setup a boundary for the results of the feasible strategies: the upper bound is the perfect foresight strategy and the lower bound is the market benchmark.
 
-The \textit{TP} ranking strategy dominates also when we look at the risk-adjusted returns. The Sharpe Ratio is \Sexpr{ bl.results['TP',1,'ann.sr','all']} against \Sexpr{ bl.results['CONS',1,'ann.sr','all']}, \Sexpr{ bl.results['EPS',1,'ann.sr','all']}, and \Sexpr{ bl.results['Market',1,'ann.sr','all']}, respectively for the \textit{CONS}, the \textit{EPS}, and the \textit{Market} strategies. In addition, the \textit{TP} strategy dominates  the others if we consider the smaller trading periods (5 years). Table \ref{tab:substrategy} shows the Sharpe Ratio for six 5-year holding periods. The \textit{TP} strategy wins over the others in every period as expected.
+The \textit{TP} ranking strategy dominates also when we look at the risk-adjusted returns. The Sharpe Ratio for the \all{} (\same{}) stock set is \Sexpr{ bl.results['TP',1,'ann.sr','all']} (\Sexpr{ bl.results['TP',1,'ann.sr','same']}) against \Sexpr{ bl.results['EPS',1,'ann.sr','all']} (\Sexpr{ bl.results['EPS',1,'ann.sr','same']}), and \Sexpr{ bl.results['Market',1,'ann.sr','all']}, respectively for  the \textit{EPS}, and the \textit{Market} strategies. In addition, the \textit{TP} strategy dominates  the others if we consider the smaller trading periods (5 years). Table \ref{tab:substrategy} shows the Sharpe Ratio for six 5-year holding periods. The \textit{TP} strategy wins over the others in every period as expected.
 
 While this is an hypothetical setting, given that it is not possible to know in advance which analyst will rank first, it suggests that if we can predict the rankings with some accuracy this will be a useful investment trading tool. One of the possibilities is using methods developed in the Machine Learning literature (e.g., \cite{aiguzhinov2010,brazdil2003}), where this type of problem (referred as a label ranking problem) has been broadly studied. For example, \cite{aiguzhinov2010} propose a label ranking algorithm using Bayesian approach to predict the rankings.
 
 
 
 \subsection{Feasible strategies}
-Panel C of table (\ref{tab:strategy}) shows the performance of the different smart strategies in the \naive{} information set. As it was the  case of the \tr{} information set, all the active strategies outperform the \textit{Market} (\Sexpr{bl.results['Market',2,1,'all']}\%)  and show positive cumulative annualized returns of \Sexpr{bl.results['TP',2,1,'all']}\%,  \Sexpr{bl.results['CONS',2,1,'all']}\%, \Sexpr{bl.results['EPS',2,1,'all']}\% respectively for the \textit{TP}, the \textit{CONS}, and the \textit{EPS} strategies. Similarly, the \textit{TP} strategy dominates when we consider the risk-adjusted returns. The Sharpe Ratio for this strategy is \Sexpr{ bl.results['TP',2,'ann.sr','all']} which is higher than that Sharpe Ratios of the \textit{CONS} and  the \textit{EPS} strategies  (\Sexpr{ bl.results['CONS',2,'ann.sr','all']} and \Sexpr{bl.results['EPS',2,'ann.sr','all']} respectively). The results in panel B of table \ref{tab:substrategy} show as well that this strategy outperform the others for all of 5 trading sub-periods. 
+Panel C of table (\ref{tab:strategy}) shows the performance of the different smart strategies and the consensus strategy in the \naive{} information set. The \textit{TP} and \textit{CONS} active strategies outperform the \textit{Market} (\Sexpr{bl.results['Market',2,1,1]}\%)  and show positive cumulative annualized returns for the \all{} (\same{}) set of stocks of \Sexpr{bl.results['TP',2,1,sets[1]]}\% (\Sexpr{bl.results['TP',2,1,sets[2]]}\%) and  \Sexpr{bl.results['CONS',2,1,sets[1]]}\% (\Sexpr{bl.results['CONS',2,1,sets[2]]}\%) respectively. The active strategy based on EPS forecasts, demonstrated negative annualized cumulative returns in both sets of stocks of  \Sexpr{bl.results['EPS',2,1,sets[1]]}\% and \Sexpr{bl.results['EPS',2,1,sets[2]]}\% for the \all{} and the \same{} respectively.
 
-Panel D of table \ref{tab:strategy} confirm the outperformance of the \textit{TP} smart strategy: this is the the only active strategy that yields positive annualized cumulative return (\Sexpr{bl.results['TP',3,1,'all']}\%) whereas both  the \textit{CONS} and the \textit{EPS} show negative returns (\Sexpr{bl.results['CONS',3,1,'all']}\% and \Sexpr{bl.results['EPS',3,1,'all']}\% respectively). The panel C of table \ref{tab:substrategy} shows that the Sharpe Ratio of the \textit{TP} strategy is lower then that of the \textit{EPS} strategy in only first two sub-periods (2000Q1/2004Q4 and 2001Q1/2005Q4).
+The risk-adjusted results for this information sets shows that, as in the case with the \tr{}, the dominant trading strategy is the \textit{TP} strategy with Sharpe ratios for the \all{} stocks of \Sexpr{ bl.results['TP',2,'ann.sr',sets[1]]} and for the \same{} of \Sexpr{ bl.results['TP',2,'ann.sr',sets[2]]} which is higher than that Sharpe Ratios of the \textit{CONS} and  the \textit{EPS} strategies of \Sexpr{ bl.results['CONS',2,'ann.sr',sets[1]]} and \Sexpr{bl.results['EPS',2,'ann.sr',sets[1]]} respectively for the \all{} set  and  of \Sexpr{ bl.results['CONS',2,'ann.sr',sets[2]]} and \Sexpr{bl.results['EPS',2,'ann.sr',sets[2]]} respectively for the \same{} set of stocks. The results in panel B of table \ref{tab:substrategy} show as well that this strategy outperform the others for all of 5 trading sub-periods independent of stock sets. 
+
+
+
+Panel D of table \ref{tab:strategy} demonstrates an interesting finding. On one hand, when consider \all{} set of stocks, the  strategy based on the accuracy of EPS forecasts  outperforms the strategies based on the target prices (\Sexpr{bl.results['EPS',3,1,sets[1]]}\%, \Sexpr{bl.results['TP',3,1,sets[1]]}\%, \Sexpr{bl.results['CONS',3,1,sets[1]]}\%, respectively for the \textit{EPS}, \textit{TP}, and \textit{CONS} strategies). On the other hand, the result changes when consider \same{} set of stocks (\Sexpr{bl.results['TP',3,1,sets[2]]}\%, \Sexpr{bl.results['EPS',3,1,sets[2]]}\%, \Sexpr{bl.results['CONS',3,1,sets[2]]}\%, respectively for the \textit{TP}, \textit{EPS}, and \textit{CONS} strategies). 
+
+The analysis of the sub-periods performance of \textit{TP} and \textit{EPS} depicted in table \ref{tab:substrategy} shows that the latter outperforms the former in terms of the annualized cumulative return only for the first two periods: in  2000Q1/2004Q4 of \Sexpr{periods.array[1,'EPS',3,2,1,1]*100}\% and \Sexpr{periods.array[1,'TP',3,2,1,1]*100}\%  in 2001Q1/2005Q4 of \Sexpr{periods.array[2,'EPS',3,2,1,1]*100}\% and \Sexpr{periods.array[2,'TP',3,2,1,1]*100}\% respectively for the \textit{EPS} and \textit{TP}. For the rest  sup-periods, the annualized cumulative returns of the \textit{EPS} strategy have been constantly lower than that of the \textit{TP} strategy. This can imply that the quality of EPS forecasts have changed in response to the new SEC legislation that took place in the early 2000s. Table \ref{tab:substrategy-same} shows the sub-period results when considered only the \same{} set of stock. In this setting, the \textit{TP} strategy dominates the \textit{EPS} and \text{CONS} in every sup-period. 
+
+
+%The sub-period results analysis and the dominant out-performance of the \same{} set of stocks relative to the \all{} set can be attributed to the fact that \all{} set for the \textit{EPS} strategy included the stocks 
+
 
 
 Figure \ref{fig:bl-results} shows the graphical representation of the cumulative portfolio wealth for  the passive and smart strategies in all the information sets. The $y$-axis is the monetary value of wealth and $x$-axis is the time starting at \Sexpr{ months(as.Date(final.bl[,head(Quarters,1)]))} of \Sexpr{start.year } and ending at \Sexpr{ months(as.Date(final.bl[,tail(Quarters,1)])+91)} of \Sexpr{end.year}. Figures show that strategies under the \tr{} panel outperform the \emph{Market} and that final value  of the portfolio of the TP strategy considerably outruns the other alternative strategies.
 
 
 In sum the results of  feasible information sets outlined above suggest that  it is worth to follow the top analysts and are supportive of \cite{desai2000ass} in that rankings are useful for investors.
+
+Second, the results show that the values of the annualized cumulative return are higher in the \default{} information sets when compared with \naive{}. This suggests that analysts accumulate forecasting skills overtime which brings more value to investors rather than recent analyst's performance that, presumably, takes advantage of the price momentum.
 
 
 
@@ -530,7 +556,7 @@ Finally, the results suggest that, from an investor's point of view, following a
 
 Some institutions, such as StarMine, rank financial analysts based on EPS and target price accuracy. These rankings are published and are relevant: stocks favored by top-ranked analysts will probably receive more attention from investors. Therefore, there is a growing interest in understanding the relative performance of strategies based upon analysts forecasts.
 
-By applying the Black-Litterman model, we developed simulations of trading strategies using  different information sets. The perfect foresight scenario (using the information know at time $t$) sets the upper bound of the trading strategies in terms of the maximum yield any such strategies could achieve. If only the information known at time $t-1$ is used, investors would be better off following the strategy that weights more heavily the estimates given by the most accurate TP forecast analysts.
+By applying the Black-Litterman model, we developed simulations of trading strategies using  different information sets. The perfect foresight scenario (using the information know at time $t$) sets the upper bound of the trading strategies in terms of the maximum yield any such strategies could achieve. If only the information known at time $t-1$ is used, investors would be better off following the strategy that weights more heavily the estimates given by the most accurate TP forecast analysts considering a whole history of analysts performance.
 
 %We report that under the \tr{} information (the information known at time $t$) about stock's expected return we get the upper bound of the trading strategies, . The \naive{} information (the information known at time $t-1$) create more value from the following the top-ranked analysts who set accurate stock price targets. %The \default{} information (the information known from the beginning up to $t-1$), because of its outdated nature, fails to show any positive outcomes and the passive strategy is the only choice for this information set.
 
@@ -550,12 +576,12 @@ For the future work we will developed new methods to forecast analysts rankings 
 \begin{table}[hp]
   \caption{Sample Statistics}
   \label{tab:ret-stat}
-\ This table shows the average number of target prices  (panel A) and EPS forecasts (panel B) per stock per quarter.
+\ This table shows the average number of target prices  (panel A) and EPS forecasts (panel B) per stock per quarter. Stocks in the \all{} set are part of the S\&P 500, stocks in the \same{} set are part of both the EPS and TP datasets.
 
 \begin{tabularx}{\linewidth}{r*{11}{Y}}
 \toprule
     & \multicolumn{2}{c}{Min}&\multicolumn{2}{c}{Mean}& \multicolumn{2}{c}{Median}& \multicolumn{2}{c}{Max}&\multicolumn{2}{c}{Std.dev}\\
-&all&same&all&same&all&same&all&same&all&same\\
+&\all{}&\same{}&\all{}&\same{}&\all{}&\same{}&\all{}&\same{}&\all{}&\same{}\\
 \midrule
 %Panel A: TP&&&&&\\
 \multicolumn{11}{l}{\textbf{Panel A: TP}} \\
@@ -584,7 +610,8 @@ print(xtable(acast(melt(brok.full.stat.eps,id.vars=c('year','type')),year~type+v
 \begin{table}[hp]
   \caption{Example of ranking}
   \label{tab:example}
-\ This table shows target prices (panel A) and EPS forecasts (panel B) rankings for Amazon (AMZN) for the second quarter of 1999. We apply (\ref{tp:rank}) to obtain the ranks of the brokers. \emph{TP} are target prices; $\overline{PMAFE}^{TP}$ is the daily average proportional mean adjusted TP error. For the EPS case, $PRED$ are the EPS forecasts issued by the analysts; $PMAFE^{EPS}$ is the proportional mean-adjusted forecast error of quarterly EPS forecasts. 
+\ This table shows target prices (panel A) and EPS forecasts (panel B) rankings for Amazon (AMZN) for the second quarter of 1999. We apply (\ref{tp:rank}) to obtain the ranks of the brokers. \emph{TP} are target prices; $\overline{PMAFE}^{TP}$ is the daily average proportional mean adjusted TP error. For the EPS case, $PRED$ are the EPS forecasts issued by the analysts; $PMAFE^{EPS}$ is the proportional mean-adjusted forecast error of quarterly EPS forecasts.
+
 \begin{tabularx}{\linewidth}{r*{4}{Y}}
     \toprule
     \multicolumn{4}{c}{\textbf{Panel A: TP}} \\
@@ -624,11 +651,12 @@ ggplot(test,aes(x=s.Date,y=PT,group=Series,color=Series,shape=Series))+theme_bw(
   \caption{Analysts' accuracy consistency}
   \label{tab:rank-stat}
   
-\ This contingency table shows changes in analysts'  \textit{top}, \textit{middle}, \textit{bottom} ranking bins. Panel A (Panel B) depicts the dynamics of the analysts' ranks  based on the accuracy in target prices (EPS forecasts).
+\ This contingency table shows changes in analysts'  \textit{top}, \textit{middle}, \textit{bottom} ranking bins. Panel A (Panel B) depicts the dynamics of the analysts' ranks  based on the accuracy in target prices (EPS forecasts). Stocks in the \all{} set are part of the S\&P 500, stocks in the \same{} set are part of both the EPS and TP datasets.
+
 \begin{tabularx}{\linewidth}{r*{10}{Y}}
     \toprule
 &&\multicolumn{2}{c}{$top$}&\multicolumn{2}{c}{$middle$}&\multicolumn{2}{c}{$bottom$}&\multicolumn{2}{c}{$Sum$}\\
-&&all&same&all&same&all&same&all&same\\
+&&\all{}&\same{}&\all{}&\same{}&\all{}&\same{}&\all{}&\same{}\\
 \midrule
 \multirow{10}{*}{$t$}&\multicolumn{2}{l}{\textbf{Panel A: TP}}&\multicolumn{6}{c}{$t+1$} \\
 
@@ -665,12 +693,12 @@ print(xtable(tab.r,hline = F,digits=1),only.contents=T,include.colnames=F,includ
 \begin{table}[hp]
   \caption{Descriptive statistics of views}
   \label{tab:view-stat}
-\ This table shows the descriptive statistics of views (expected returns) based on the consensus (median) among the analysts (panel A); target price rankings (panel B); and EPS forecasts rankings (panel C).
+\ This table shows the descriptive statistics of views (expected returns) based on the consensus (median) among the analysts (panel A); target price rankings (panel B); and EPS forecasts rankings (panel C). Stocks in the \all{} set are part of the S\&P 500, stocks in the \same{} set are part of both the EPS and TP datasets.
 
 \begin{tabularx}{\linewidth}{r*{7}{Y}}
 \toprule
 & \multicolumn{2}{c}{Mean (in \%)}&\multicolumn{2}{c}{Median (in \%)}& \multicolumn{2}{c}{Std.dev}\\
-&all&same&all&same&all&same\\
+&\all{}&\same{}&\all{}&\same{}&\all{}&\same{}\\
 \midrule
 <<desc-q-cons,echo=F,results='asis'>>=
 test.a[,,,1:2,] <- test.a[,,,1:2,]*100
@@ -701,14 +729,14 @@ print(xtable(acast(melt(test.a[12,,'EPS',1:3,]),Var1~Var2+Var3,value.var='value'
 \begin{table}[hp]
   \caption{Number of active stocks}
   \label{tab:stocks}
-\ This table shows number of active stocks in each of the trading strategies conditional on different information sets: \tr{} (panel A), \naive{} (panel B) and \default{} (panel C). 
+\ This table shows number of active stocks in each of the trading strategies conditional on different information sets: \tr{} (panel A), \naive{} (panel B) and \default{} (panel C). Stocks in the \all{} set are part of the S\&P 500, stocks in the \same{} set are part of both the EPS and TP datasets.
 
 %\resizebox{\textwidth}{!}{%
 %\begin{tabular}{rrrrrrr}
 \begin{tabularx}{\linewidth}{r*{7}{Y}}
 \toprule
 Year&\multicolumn{2}{c}{\textit{CONS}}& \multicolumn{2}{c}{\textit{TP}} &\multicolumn{2}{c}{\textit{EPS}}\\
-&all&same&all&same&all&same\\
+&\all{}&\same{}&\all{}&\same{}&\all{}&\same{}\\
 <<stocks-true,echo=F,results='asis'>>=
 print(xtable(acast(melt(test.a[,1,c(1,3,2),4,]),Var1~Var2+Var3,value.var='value'),display=c('s','d','d','d','d','d','d'),digits=3),only.contents=T,include.colnames=FALSE,NA.string='-',hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,0,11),command=c('\\multicolumn{7}{l}{\\textbf{Panel A: \\tr{}}} \\\\ \n','\\midrule \n','\\midrule \n')),sanitize.text.function = function(x) x)
 @
@@ -746,7 +774,7 @@ ggplot(final.bl,aes(x=as.Date(Quarters),y=cum.ret,group=Views,color=Views,shape=
 \begin{table}[hp]
   \caption{Trading strategies performance: entire period}
   \label{tab:strategy}
-  \ This table shows the performance statistics of the different trading strategies. Panel A presents the results for the passive strategy. Panels B, C, and D show the results for the perfect foresight scenario (\tr{}), and, respectively, the scenarios for which we use the most recent  (\naive{}) and  all ranking history of analysts (\default{}) to weight the TP/EPS estimates. Within each panel, we show the strategy results of three views regarding expected return: \textit{CONS} uses the median of the analysts estimates; \textit{TP} is based upon TP accuracy ranking; and \textit{EPS} is based upon  EPS accuracy ranking. The trading period goes from \Sexpr{gsub('[[:space:]]','',final.bl[,head(Quarters,1)])} until \Sexpr{gsub('[[:space:]]','',final.bl[,tail(Quarters,1)])}.
+  \ This table shows the performance statistics of the different trading strategies. Panel A presents the results for the passive strategy. Panels B, C, and D show the results for the perfect foresight scenario (\tr{}), and, respectively, the scenarios for which we use the most recent  (\naive{}) and  all ranking history of analysts (\default{}) to weight the TP/EPS estimates. Within each panel, we show the strategy results of three views regarding expected return: \textit{CONS} uses the median of the analysts estimates; \textit{TP} is based upon TP accuracy ranking; and \textit{EPS} is based upon  EPS accuracy ranking. Stocks in the \all{} set are part of the S\&P 500, stocks in the \same{} set are part of both the EPS and TP datasets. The trading period goes from \Sexpr{gsub('[[:space:]]','',final.bl[,head(Quarters,1)])} until \Sexpr{gsub('[[:space:]]','',final.bl[,tail(Quarters,1)])}.
 
 \begin{tabularx}{\linewidth}{r*{5}{Y}}
   \toprule
@@ -765,7 +793,7 @@ cat('\\midrule \n')
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{rrrrrrrrrrr}
   \multicolumn{11}{c}{\textbf{Panel B: \tr{} }} \\
-  &all&same&all&same&all&same&all&same&all&same \\
+  &\all{}&\same{}&\all{}&\same{}&\all{}&\same{}&\all{}&\same{}&\all{}&\same {}\\
   
 <<bl-nr,echo=F,results='asis'>>=
 print(xtable(acast(melt(bl.results[1:3,1,,]),Var1~Var2+Var3,value.var='value'),display=c('s','f','f','f','f','f','f','d','d','f','f'),digits=3),only.contents=T,NA.string='-',include.colnames=FALSE,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(nrow(bl.results[1:3,1,,'all'])),command=c('\\midrule \n')),sanitize.text.function = function(x) x)
@@ -792,7 +820,7 @@ print(xtable(acast(melt(bl.results[1:3,3,,]),Var1~Var2+Var3,value.var='value'),d
 
 
 \begin{table}[hp]
-  \caption{Trading strategies performance: sub-periods}
+  \caption{Trading strategies performance: sub-periods for the \all{} set of stocks}
   \label{tab:substrategy}
   \ This table presents the annualized return (in \%) and the Sharpe ratio of each of the trading strategies: the passive (\textit{Market}) and the active (consensus and smart estimates) calculated for different holding periods. Panel A represents the perfect foresight information set; panels B and C show, respectively, the results of the strategies using the most recent and all history analysts' performance. 
 
@@ -842,8 +870,59 @@ print(xtable(acast(melt(periods.array[,c(4,1,2,3),3,'yes',c(1,4),'all']),Var1~Va
 \end{table}
 
 
+\begin{table}[hp]
+  \caption{Trading strategies performance: sub-periods for the  \same{} set of stocks}
+  \label{tab:substrategy-same}
+  \ This table presents the annualized return (in \%) and the Sharpe ratio of each of the trading strategies for the \same{} set of stocks: the passive (\textit{Market}) and the active (consensus and smart estimates) calculated for different holding periods. Panel A represents the perfect foresight information set; panels B and C show, respectively, the results of the strategies using the most recent and all history analysts' performance. 
 
-\begin{figure}[h]
+\resizebox{\textwidth}{!}{%
+%\begin{tabularx}{\linewidth}{r*{9}{Y}}
+\begin{tabular}{rrrrrrrrr}
+\toprule
+Period&\multicolumn{2}{c}{\textit{Market}}&\multicolumn{2}{c}{\textit{CONS}}&\multicolumn{2}{c}{\textit{TP}}&\multicolumn{2}{c}{\textit{EPS}} \\
+
+& Ann.ret&SR& Ann.ret&SR& Ann.ret&SR& Ann.ret&SR\\
+
+<<sr-true-same,echo=F,results='asis'>>=
+periods.array[,,,,1,'same'] <- periods.array[,,,,1,'same']*100
+#results.final <- bl.results['Market',1,]
+#cat(paste(c('Period','\\textit{Market}','\\textit{CONS}','\\textit{TP}','\\textit{EPS}'), collapse = "&"),'\\\\')
+#cat('\\multicolumn{5}{l}{\\textbf{Panel A: Market}} \n')
+#print(xtable(periods.array[,c(4,1,2,3),1,'yes','sr'],display=c('s','f','f','f','f'),digits=3),only.contents=T,include.colnames=F,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0),command=c('\\multicolumn{5}{l}{\\textbf{Panel A: \\tr{}}} \\\\\n')))
+
+print(xtable(acast(melt(periods.array[,c(4,1,2,3),1,'yes',c(1,4),'same']),Var1~Var2+Var3,value.var='value'),display=c('s','f','f','f','f','f','f','f','f'),digits=3),only.contents=T,NA.string='-',include.colnames=F,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,6),command=c('\\multicolumn{9}{l}{\\textbf{Panel A: \\tr{}}} \\\\\n', '\\midrule \n')))
+
+
+@
+\midrule
+\end{tabular}}
+
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{rrrrrrrrr}
+%\begin{tabularx}{\linewidth}{r*{9}{Y}}
+<<sr-naive-same,echo=F,results='asis'>>=
+#print(xtable(periods.array[,c(4,1,2,3),2,'yes','sr'],display=c('s','f','f','f','f'),digits=3),only.contents=T,include.colnames=F,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0),command=c('\\multicolumn{5}{l}{\\textbf{Panel B: \\naive{}}} \\\\\n')))
+
+print(xtable(acast(melt(periods.array[,c(4,1,2,3),2,'yes',c(1,4),'same']),Var1~Var2+Var3,value.var='value'),display=c('s','f','f','f','f','f','f','f','f'),digits=3),only.contents=T,include.colnames=F,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,6),command=c('\\multicolumn{9}{l}{\\textbf{Panel B: \\naive{}}} \\\\\n', '\\midrule \n')))
+
+@
+\midrule
+\end{tabular}}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{rrrrrrrrr}
+%\begin{tabularx}{\linewidth}{r*{9}{Y}}
+<<sr-default-same,echo=F,results='asis'>>=
+#print(xtable(periods.array[,c(4,1,2,3),3,'yes','sr'],display=c('s','f','f','f','f'),digits=3),only.contents=T,include.colnames=F,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0),command=c('\\multicolumn{5}{l}{\\textbf{Panel C: \\default{}}} \\\\\n')))
+
+print(xtable(acast(melt(periods.array[,c(4,1,2,3),3,'yes',c(1,4),'same']),Var1~Var2+Var3,value.var='value'),display=c('s','f','f','f','f','f','f','f','f'),digits=3),only.contents=T,include.colnames=F,hline.after=NULL, format.args=list(big.mark = " ", decimal.mark = "."),add.to.row=list(pos=list(0,6),command=c('\\multicolumn{5}{l}{\\textbf{Panel C: \\default{}}} \\\\\n','\\midrule \n')))
+@
+\bottomrule
+\end{tabular}}
+\end{table}
+
+
+
+\begin{figure}[!ht]
 \begin{center}
 \includegraphics[width=\linewidth]{figure/Black-litterman}
 \end{center}
@@ -853,7 +932,7 @@ print(xtable(acast(melt(periods.array[,c(4,1,2,3),3,'yes',c(1,4),'all']),Var1~Va
 \end{figure}
 
 
-\begin{figure}[h]
+\begin{figure}[!ht]
 \begin{center}
 \includegraphics[width=\linewidth]{figure/example-fig-1}
 \end{center}
@@ -862,13 +941,13 @@ print(xtable(acast(melt(periods.array[,c(4,1,2,3),3,'yes',c(1,4),'all']),Var1~Va
 \ Target price and actual prices for Amazon  the second quarter of 1999.
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[!ht]
 \begin{center}
 \includegraphics[width=\linewidth]{figure/bl-results-fig-1}
 \end{center}
 \caption{Performance of the BL model}
 \label{fig:bl-results}
-\ Quarterly performance of the cumulative portfolio wealth for all strategies. Panel \tr{} shows the case of the known future information; \naive{} is the case of ranking information know at $t-1$, and the \default{} is the case of using all ranking information for up to $t-1$. \textit{TP} is the strategy with rankings based on the accuracy in target prices, \textit{CONS} is the strategy based on the consensus among the analysts regarding a stock's expected return. \textit{EPS} is the strategy with rankings based on the accuracy of EPS forecasts. The trading period ranges from \Sexpr{gsub('[[:space:]]','',final.bl[,head(Quarters,1)])} until \Sexpr{gsub('[[:space:]]','',final.bl[,tail(Quarters,1)])}
+\ Quarterly performance of the cumulative portfolio wealth for all strategies. Panel \tr{} shows the case of the known future information; \naive{} is the case of ranking information know at $t-1$, and the \default{} is the case of using all ranking information for up to $t-1$. \textit{TP} is the strategy with rankings based on the accuracy in target prices, \textit{CONS} is the strategy based on the consensus among the analysts regarding a stock's expected return. \textit{EPS} is the strategy with rankings based on the accuracy of EPS forecasts. Stocks in the \all{} set are part of the S\&P 500, stocks in the \same{} set are part of both the EPS and TP datasets. The trading period ranges from \Sexpr{gsub('[[:space:]]','',final.bl[,head(Quarters,1)])} until \Sexpr{gsub('[[:space:]]','',final.bl[,tail(Quarters,1)])}
 \end{figure}
 
 \end{document}
