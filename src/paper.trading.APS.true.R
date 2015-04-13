@@ -96,12 +96,18 @@ require(scales)
 
 conf.dt <- melt(unique(core.dt,by=c('q.id','Stock','type'),fromLast = T)[,.(q.id,Stock,s.coefVar,type)][,true:=0][,naive:=c(NA,head(s.coefVar,-1)),by=.(Stock,type)][,default:=rollapplyr(naive,seq_len(length(naive)),mean,na.rm=T,partial=T),by=.(Stock,type)],id.vars = c('q.id','Stock','type'),measure.vars = c('true','naive','default'))[q.id!='1999 Q2',]
 
+### for CONS strategy true confidnece = naive confidence
+cons.conf.dt <- melt(unique(core.dt,by=c('q.id','Stock','type'),fromLast = T)[,.(q.id,Stock,s.coefVar,type)][,true:=0][,naive:=c(NA,head(s.coefVar,-1)),by=.(Stock,type)][,default:=rollapplyr(naive,seq_len(length(naive)),mean,na.rm=T,partial=T),by=.(Stock,type)][,true:=naive],id.vars = c('q.id','Stock','type'),measure.vars = c('true','naive','default'))[q.id!='1999 Q2',]
+
 #conf.dt <- melt(conf.dt[,naive:=c(NA,head(s.coefVar,-1)),by=Stock][,default:=rollapplyr(naive,seq_len(length(naive)),mean,na.rm=T,partial=T),by=Stock],id.vars = c('q.id','Stock'),measure.vars = c('true','naive','default'))[q.id!='1999 Q2',]
 
 
 conf.coef <- dlply(conf.dt,'type',acast,q.id~Stock~variable,value.var='value')
 
+cons.conf.coef <- dlply(cons.conf.dt,'type',acast,q.id~Stock~variable,value.var='value')
+
 eps.stocks <- intersect(dimnames(eps.list.rank[[1]])[[2]],dimnames(conf.coef[[1]])[[2]])
+
 
 #same.stocks <- intersect(intersect(dimnames(pt.list.rank)[[2]],dimnames(conf.coef)[[2]]),dimnames(eps.list.rank)[[2]])
 
@@ -127,7 +133,7 @@ opt.w <- rbindlist(mclapply(c('same','all'),function(t)
 {
 rbind(
         opt.w.f(pt.list.rank[[t]],conf.coef[[t]],tau)[,Views:='TP'],
-        opt.w.f(cons.list.rank[[t]],conf.coef[[t]],tau)[,Views:='CONS'],
+        opt.w.f(cons.list.rank[[t]],cons.conf.coef[[t]],tau)[,Views:='CONS'],
         opt.w.f(eps.list.rank[[t]],conf.coef[[t]][,eps.stocks,],tau)[,Views:='EPS'])[,type:=t]
 },mc.cores=cores))
 
