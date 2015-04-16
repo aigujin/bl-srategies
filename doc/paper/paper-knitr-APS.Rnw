@@ -195,13 +195,13 @@ end.year <- format(as.Date(final.bl[,tail(Quarters,1)]),'%Y')
 @
 
 \title{Are rankings of financial analysts useful to investors?}
- \author[1,2]{ Artur Aiguzhinov (\href{mailto:artur.aiguzhinov@inescporto.pt}{artur.aiguzhinov@inescporto.pt})}
- \author[1]{ Ana Paula Serra (\href{mailto:aserra@fep.up.pt}{aserra@fep.up.pt})}
- \author[2,4]{Carlos Soares (\href{mailto:csoares@fe.up.pt}{csoares@fe.up.pt})}
+% \author[1,2]{ Artur Aiguzhinov (\href{mailto:artur.aiguzhinov@inescporto.pt}{artur.aiguzhinov@inescporto.pt})}
+% \author[1]{ Ana Paula Serra (\href{mailto:aserra@fep.up.pt}{aserra@fep.up.pt})}
+% \author[2,4]{Carlos Soares (\href{mailto:csoares@fe.up.pt}{csoares@fe.up.pt})}
 
-\affil[1]{FEP \& CEF.UP, University of Porto}
-\affil[2]{INESC TEC}
-\affil[4]{FEUP, University of Porto}
+%\affil[1]{FEP \& CEF.UP, University of Porto}
+%\affil[2]{INESC TEC}
+%\affil[4]{FEUP, University of Porto}
 
 
 \maketitle
