@@ -1,0 +1,30 @@
+\begin{figure}[!ht]
+\begin{center}
+\includegraphics[width=\linewidth]{figure/Black-litterman}
+\end{center}
+\caption{Trading strategy timeline}
+\label{fig:bl}
+\ Black-Litterman model inputs are at the beginning of $t$ we apply the BL model and form the active portfolio. At the end of $t$, we evaluate performance.
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}[!ht]
+\begin{center}
+\includegraphics[width=\linewidth]{figure/example-fig-1}
+\end{center}
+\caption{Amazon daily stock price and brokers target prices}
+\label{fig:example}
+\ Target price and actual prices for Amazon  the second quarter of 1999.
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}[!ht]
+\begin{center}
+\includegraphics[width=\linewidth]{figure/bl-results-fig-1}
+\end{center}
+\caption{Performance of the BL model}
+\label{fig:bl-results}
+\ Quarterly performance of the cumulative portfolio wealth for all strategies. Panel \tr{} shows the case of the known future information; \naive{} is the case of ranking information know at $t-1$, and the \default{} is the case of using all ranking information for up to $t-1$. \textit{TP} is the strategy with rankings based on the accuracy in target prices, \textit{CONS} is the strategy based on the consensus among the analysts regarding a stock's expected return. \textit{EPS} is the strategy with rankings based on the accuracy of EPS forecasts. Stocks in the \all{} sample are subsamples of the S\&P 500, stocks in the \same{} sample integrate both the EPS and TP datasets. The trading period ranges from 2000Q1 until 2009Q4.
+\end{figure}
+\efloatseparator
+ 

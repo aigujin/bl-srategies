@@ -1,19 +1,28 @@
 
+q.data <- na.omit(q.data)
 
-stocks.m <- sort(unique(unlist(lapply(market.list,function(m){m$stock.names}))))
+stocks.m <- setkey(data.table(Stock.m=sort(unique(unlist(lapply(market.list,function(m){m$stock.names}))))),Stock.m)
 
 load('~/Dropbox/workspace/Projects/EPS/cache/complete.dt.RData')
 
 quarters <- setnames(unique(market.set[,.(Quarters)]),'q.id')[,q.id:=as.yearqtr(q.id)]
 
-stocks <- sort(intersect(intersect(stocks.m,setkey(q.data,q.id)[quarters]$Stock),setkey(complete.dt,q.id)[quarters]$Stock))
+stocks <- setkey(data.table(Stock=sort(intersect(intersect(stocks.m$Stock.m,setkey(q.data,q.id)[quarters]$Stock),setkey(complete.dt,q.id)[quarters]$Stock))),Stock)
 
 
 
-core.dt.tmp <- setkey(q.data[,core.b:=.N>=12,by=list(Stock,Broker)][(core.b)][,true:=rank(score),by=list(q.id,Stock)][,core.s:=.N>=3,by=list(q.id,Stock)][(core.s)][,core.q:=length(unique(q.id))>=8,by=.(Stock)][(core.q)],Stock)
+core.dt.tmp <- setkey(setkey(q.data,Stock)[stocks,core.b:=.N>=12,by=list(Stock,Broker)][(core.b)][,true:=rank(score),by=list(q.id,Stock)][,core.s:=.N>=3,by=list(q.id,Stock)][(core.s)][,core.q:=length(unique(q.id))>=8,by=.(Stock)][(core.q)],Stock)
 
-core.dt <- rbind(core.dt.tmp[stocks][,type:='same'],core.dt.tmp[stocks.m][,type:='all'])
+load('cache/q.data.RData')
+q.data <- na.omit(q.data)
+core.dt.tmp.m <- setkey(setkey(q.data,Stock)[stocks.m,core.b:=.N>=12,by=list(Stock,Broker)][(core.b)][,true:=rank(score),by=list(q.id,Stock)][,core.s:=.N>=3,by=list(q.id,Stock)][(core.s)][,core.q:=length(unique(q.id))>=8,by=.(Stock)][(core.q)],Stock)
 
+
+core.dt <- rbind(core.dt.tmp[,type:='same'],core.dt.tmp.m[,type:='all'])[,year:=format(q.id,'%Y')]
+
+
+
+cache('core.dt')
 
 pt.exp.ret <- setkey(melt(core.dt[,merge(setkey(quarters,q.id),.SD,all=T),by=list(Broker,Stock,type),.SDcols=c('q.id','Broker','Stock','b.view','type')][,.(q.id,Broker,Stock,b.view,type)][,true:=truncate.f(b.view,percentile),by=type][,naive:=c(NA,head(true,-1)),by=.(Broker,Stock,type)][,':='(true=naive,default=naive),by=.(Broker,Stock,type)],id.vars = c('q.id','Stock','Broker','type'),measure.vars = c('true','naive','default'),value.name = 'exp.ret',variable.name = 'Method'),q.id,Stock,Broker,Method,type)
 
@@ -87,12 +96,18 @@ require(scales)
 
 conf.dt <- melt(unique(core.dt,by=c('q.id','Stock','type'),fromLast = T)[,.(q.id,Stock,s.coefVar,type)][,true:=0][,naive:=c(NA,head(s.coefVar,-1)),by=.(Stock,type)][,default:=rollapplyr(naive,seq_len(length(naive)),mean,na.rm=T,partial=T),by=.(Stock,type)],id.vars = c('q.id','Stock','type'),measure.vars = c('true','naive','default'))[q.id!='1999 Q2',]
 
+### for CONS strategy true confidnece = naive confidence
+cons.conf.dt <- melt(unique(core.dt,by=c('q.id','Stock','type'),fromLast = T)[,.(q.id,Stock,s.coefVar,type)][,true:=0][,naive:=c(NA,head(s.coefVar,-1)),by=.(Stock,type)][,default:=rollapplyr(naive,seq_len(length(naive)),mean,na.rm=T,partial=T),by=.(Stock,type)][,true:=naive],id.vars = c('q.id','Stock','type'),measure.vars = c('true','naive','default'))[q.id!='1999 Q2',]
+
 #conf.dt <- melt(conf.dt[,naive:=c(NA,head(s.coefVar,-1)),by=Stock][,default:=rollapplyr(naive,seq_len(length(naive)),mean,na.rm=T,partial=T),by=Stock],id.vars = c('q.id','Stock'),measure.vars = c('true','naive','default'))[q.id!='1999 Q2',]
 
 
 conf.coef <- dlply(conf.dt,'type',acast,q.id~Stock~variable,value.var='value')
 
+cons.conf.coef <- dlply(cons.conf.dt,'type',acast,q.id~Stock~variable,value.var='value')
+
 eps.stocks <- intersect(dimnames(eps.list.rank[[1]])[[2]],dimnames(conf.coef[[1]])[[2]])
+
 
 #same.stocks <- intersect(intersect(dimnames(pt.list.rank)[[2]],dimnames(conf.coef)[[2]]),dimnames(eps.list.rank)[[2]])
 
@@ -118,7 +133,7 @@ opt.w <- rbindlist(mclapply(c('same','all'),function(t)
 {
 rbind(
         opt.w.f(pt.list.rank[[t]],conf.coef[[t]],tau)[,Views:='TP'],
-        opt.w.f(cons.list.rank[[t]],conf.coef[[t]],tau)[,Views:='CONS'],
+        opt.w.f(cons.list.rank[[t]],cons.conf.coef[[t]],tau)[,Views:='CONS'],
         opt.w.f(eps.list.rank[[t]],conf.coef[[t]][,eps.stocks,],tau)[,Views:='EPS'])[,type:=t]
 },mc.cores=cores))
 
